@@ -748,7 +748,8 @@ progress {
 
 .blockquote {
     margin-bottom: 1rem;
-    font-size: 1.25rem
+    font-size: 1rem;
+    font-weight: 200;
 }
 
 .blockquote>:last-child {
@@ -5154,7 +5155,8 @@ fieldset:disabled .btn {
 .card-img,
 .card-img-bottom,
 .card-img-top {
-    width: 100%
+    width: 100%;
+    cursor: zoom-in;
 }
 
 .card-img,
@@ -13996,21 +13998,4 @@ z-index: 1500;
 display: block !important;
 }
 
-.close {
-  position: absolute;
-  top: 15px;
-  right: 35px;
-  color: #f1f1f1;
-  font-size: 40px;
-  font-weight: bold;
-  transition: 0.3s;
-  cursor: pointer;
-}
-
-.close:hover,
-.close:focus {
-  color: #bbb;
-  text-decoration: none;
-  cursor: pointer;
-}
 /*# sourceMappingURL=bootstrap.min.css.map */
