@@ -14,7 +14,7 @@ var closeButton = document.querySelector(".close");
 images.forEach(function(image) {
   image.addEventListener("click", function() {
     // Set the clicked image source as modal content
-    modalImg.src = this.src;
+    modalImg.src = this.src.replace(/\/c_scale,w_500\/f_auto\/q_auto/, "");
 
     // Determine aspect ratio
     var aspectRatio = this.naturalWidth / this.naturalHeight;
