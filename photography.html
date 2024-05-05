@@ -13,6 +13,13 @@
   <link href="./assets/fontawesome/css/all.css" rel="stylesheet">
   <link href="./assets/css/bootstrap.min.css" rel="stylesheet">
   <style>
+    [data-bs-theme=light] {
+      --title-color: #dee2e6;
+    }
+    [data-bs-theme=dark] {
+      --title-color: #dee2e6;
+    }
+
     .box {
       position: relative;
       width: 300px;
@@ -41,8 +48,8 @@
       transform: translate(-50%, -50%);
       font-size: 33px;
       font-weight: bold;
-      /* color: #333; */
       opacity: 1;
+      color: var(--title-color);
       /* Initially hidden */
       transition: opacity 0.3s ease-in-out;
     }
