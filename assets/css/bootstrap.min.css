@@ -452,7 +452,8 @@ figure {
 
 img,
 svg {
-    vertical-align: middle
+    vertical-align: middle;
+    pointer-events: none;
 }
 
 table {
