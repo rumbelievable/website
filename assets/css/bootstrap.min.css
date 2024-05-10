@@ -454,7 +454,7 @@ figure {
     margin: 0 0 1rem
 }
 
-img,
+
 svg {
     vertical-align: middle;
     pointer-events: none;
@@ -4386,7 +4386,7 @@ fieldset:disabled .btn {
     margin-bottom: 0;
     list-style: none;
     font-size: larger;
-    font-weight: 550;
+    font-weight: 500;
 }
 
 .nav-link {

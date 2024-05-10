@@ -1,5 +1,5 @@
 /* Modal Styles */
-.modal {
+.image-modal {
   display: none;
   position: fixed;
   z-index: 1;
@@ -12,7 +12,7 @@
   background-color: rgba(0, 0, 0, 0.85);
 }
 
-.modal-content {
+.image-modal-content {
   margin: auto;
   display: block;
   max-width: 80%;
@@ -36,6 +36,7 @@
   text-decoration: none;
   cursor: pointer;
 }
+
 
 .img-stack {
   display: flex;
