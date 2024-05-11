@@ -27,11 +27,16 @@ document.addEventListener("DOMContentLoaded", function() {
       if (aspectRatio > 1) {
         // Landscape photo
         modalImg.style.width = "auto";
-        modalImg.style.height = "80vh"; // Adjust as needed
+        modalImg.style.height = "auto";
+        modalImg.style.maxHeight = "100%";
+        modalImg.style.objectFit = "contain";
       } else {
         // Portrait photo
-        modalImg.style.width = "30vw"; // Adjust as needed
         modalImg.style.height = "auto";
+        modalImg.style.width = "auto";
+        modalImg.style.maxWidth = "100%";
+        modalImg.style.objectFit = "contain";
+
       }
 
       // Display the modal
