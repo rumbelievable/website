@@ -17,6 +17,11 @@ h1, h2, h3, h4, h5, h6 {
   flex: 0 0 auto;
 }
 
+.h-md-200 { height: 200; }
+@media (min-width: 384) {
+  .h-md-200 { height: 200; }
+}
+
 .h-250 { height: 250px; }
 @media (min-width: 768px) {
   .h-md-250 { height: 250px; }
@@ -36,4 +41,38 @@ h1, h2, h3, h4, h5, h6 {
 .blog-post-meta {
   margin-bottom: 1.25rem;
   color: #727272;
+}
+
+.title {
+  margin: 0; /* Remove default margins to align properly */
+  display: flex;
+}
+
+.title-with-number {
+  display: flex;
+  align-items: flex-start;
+}
+
+.number {
+  font-family: "Playfair Display", Georgia, "Times New Roman", serif/*rtl:Amiri, Georgia, "Times New Roman", serif*/;
+  font-size: 2.25em;
+  font-weight: 800;
+  color: #4d9587; /* Change this to the desired color for the number */
+  position: relative;
+  margin-right: 10px; /* Adjust spacing between number and title */
+  line-height: 1.25;
+  top: 0;
+  vertical-align: top;
+}
+
+.number::after {
+  content: "";
+  display: block;
+  width: 100%;
+  height: 2px; 
+  background-color: #4d9587; 
+  position: static;
+  bottom: -5px; 
+  left: 0;
+  top: 100%;
 }
