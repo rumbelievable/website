@@ -3,12 +3,16 @@ document.addEventListener('DOMContentLoaded', () => {
     const commentText = document.getElementById('commentText');
     const commentsContainer = document.getElementById('commentsContainer');
 
+    // Load comments from localStorage
+    loadComments();
+
     commentForm.addEventListener('submit', (e) => {
         e.preventDefault();
         const comment = commentText.value.trim();
 
         if (comment) {
             addComment(comment);
+            saveComment(comment);
             commentText.value = '';
         }
     });
@@ -35,4 +39,25 @@ document.addEventListener('DOMContentLoaded', () => {
 
         commentsContainer.appendChild(allElement);
     }
+
+    function saveComment(comment) {
+        let comments = getComments();
+        comments.push(comment);
+        localStorage.setItem('comments', JSON.stringify(comments));
+    }
+
+    function loadComments() {
+        let comments = getComments();
+        comments.forEach(comment => addComment(comment));
+    }
+
+    function getComments() {
+        let comments = localStorage.getItem('comments');
+        if (comments) {
+            return JSON.parse(comments);
+        } else {
+            return [];
+        }
+    }
 });
+
