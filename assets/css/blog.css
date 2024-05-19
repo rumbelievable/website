@@ -1,5 +1,17 @@
 /* stylelint-disable @stylistic/selector-list-comma-newline-after */
 
+/*
+* Globals
+*/
+
+[data-bs-theme=light] {
+  --border-color: #E2E2E2;
+}
+
+[data-bs-theme=dark] {
+  --border-color: #7B7B7B;
+}
+
 .blog-header-logo {
   font-family: "Playfair Display", Georgia, "Times New Roman", serif/*rtl:Amiri, Georgia, "Times New Roman", serif*/;
   font-size: 2.25rem;
@@ -28,7 +40,7 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .border:hover {
-  background-color: #005545; /* Change this to the desired hover color */
+  background-color: var(--border-color); /* Change this to the desired hover color */
 }
 
 /* Pagination */
