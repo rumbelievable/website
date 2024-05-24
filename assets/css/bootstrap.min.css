@@ -863,6 +863,7 @@ progress {
     .container-md,
     .container-sm,
     .container-xl,
+    .container-photo,
     .container-xxl {
         max-width: 1320px
     }
@@ -9840,6 +9841,21 @@ fieldset:disabled .btn {
 .bg-white {
     --bs-bg-opacity: 1;
     background-color: rgba(var(--bs-white-rgb), var(--bs-bg-opacity)) !important
+}
+
+.bg-label-1 {
+    --bs-bg-opacity: 1;
+    background-color: #479284 !important
+}
+
+.bg-label-2 {
+    --bs-bg-opacity: 1;
+    background-color: #475592 !important
+}
+
+.bg-label-3 {
+    --bs-bg-opacity: 1;
+    background-color: #92477A !important
 }
 
 .bg-body {
