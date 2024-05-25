@@ -5,14 +5,14 @@
 */
 
 [data-bs-theme=light] {
-  --border-color: #fff;
+  --border-color: #aaa9a9b1;
   --tag-hover-bg-color: #65a895;
   --tag-hover-font-color: #fff;
   --tag-font-color: #fff;
 }
 
 [data-bs-theme=dark] {
-  --border-color: #7B7B7B;
+  --border-color: #484848b1;
   --tag-hover-bg-color: #65a895;
   --tag-hover-font-color: #fff;
   --tag-font-color: #fff;
