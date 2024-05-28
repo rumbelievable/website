@@ -24,11 +24,6 @@
  * Base structure
  */
 
-.cover-container {
-  max-width: 42em;
-}
-
-
 /*
  * Header
  */
@@ -57,4 +52,19 @@
   font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", "Noto Sans", "Liberation Sans", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
   font-weight: 700;
   text-shadow: -2px 2px 0 var(--bs-primary-text-shadow);
+}
+
+@media (max-width: 600px) {
+  img {
+    max-width: 100%;
+    height: auto;
+  }
+}
+
+/* For larger screens */
+@media (min-width: 601px) {
+  img {
+    max-width: 800px;
+    height: auto;
+  }
 }
