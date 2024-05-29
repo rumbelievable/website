@@ -12,6 +12,14 @@
   --bs-primary-text-shadow: rgb(255, 255, 255)
 }
 
+main {
+  flex: 1;
+}
+
+footer {
+  margin-top: auto;
+}
+
 /* Custom default button */
 .btn-light,
 /* .btn-light:hover, */

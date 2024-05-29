@@ -213,6 +213,9 @@ body {
     background-color: var(--bs-body-bg);
     text-shadow: var(--cover-body-text-shadow);
     box-shadow: var(--cover-body-box-shadow);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
     -webkit-text-size-adjust: 100%;
     -webkit-tap-highlight-color: transparent
 }
@@ -821,6 +824,7 @@ progress {
 @media (min-width:576px) {
 
     .container,
+    .container-photo,
     .container-sm {
         max-width: 540px
     }
@@ -830,6 +834,7 @@ progress {
 
     .container,
     .container-md,
+    .container-photo,
     .container-sm {
         max-width: 720px
     }
@@ -840,6 +845,7 @@ progress {
     .container,
     .container-lg,
     .container-md,
+    .container-photo,
     .container-sm {
         max-width: 960px
     }
@@ -851,6 +857,7 @@ progress {
     .container-lg,
     .container-md,
     .container-sm,
+    .container-photo,
     .container-xl {
         max-width: 1140px
     }
