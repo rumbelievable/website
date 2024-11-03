@@ -1,9 +1,18 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Typography, Grid2, Box, CardMedia, Divider, Paper } from '@mui/material';
+import { Typography, Grid2, Box, CardMedia, Divider, Paper, Chip } from '@mui/material';
 import { StyledCard, StyledCardContent, StyledTypography, Metadata } from '../components/BlogPostCard';
 
 const cardData = [
+  {
+    id: 5,
+    title: "Oops, I did it again",
+    description: "",
+    date: "November 2, 2024",
+    link: "/blog/20241102",
+    img: "https://res.cloudinary.com/df4rizvgx/image/upload/v1730568620/IMG_5638_ohp8as.jpg",
+    tags: ["life", "programming"]
+  },
   {
     id: 4,
     title: "Proud, Prouder, Proudest",
@@ -11,7 +20,7 @@ const cardData = [
     date: "June 1, 2024",
     link: "/blog/20240601",
     img: "https://res.cloudinary.com/df4rizvgx/image/upload/v1730334529/IMG_5826_lyuvx7.jpg",
-    tag: ""
+    tags: ["life", "woodworking"]
   },
   {
     id: 3,
@@ -20,7 +29,7 @@ const cardData = [
     date: "May 24, 2024",
     link: "/blog/20240524",
     img: "https://res.cloudinary.com/df4rizvgx/image/upload/v1716589582/blog_images/IMG_4855_cyiygn.jpg",
-    tag: ""
+    tags: ["life"]
   },
   {
     id: 2,
@@ -29,7 +38,7 @@ const cardData = [
     date: "May 17, 2024",
     link: "/blog/20240517",
     img: "https://res.cloudinary.com/df4rizvgx/image/upload/v1716000410/blog_images/IMG_3622_lv65cy.jpg",
-    tag: ""
+    tags: ["woodworking"]
   },
   {
     id: 1,
@@ -38,7 +47,7 @@ const cardData = [
     date: "May 13, 2024",
     link: "/blog/20240513",
     img: "https://res.cloudinary.com/df4rizvgx/image/upload/v1730334729/IMG_5099_j5h39o.jpg",
-    tag: ""
+    tags: ["life"]
   }
 ];
 
@@ -63,7 +72,7 @@ const Blog = () => {
         <Typography variant="h5" sx={{ fontWeight: 600, pl: 3, pb: 3 }}>
           Stay in the loop of my machinations
         </Typography>
-        </Paper>
+      </Paper>
       <Divider />
       <Grid2 container spacing={2} columns={12}>
         {cardData.map((card, index) => (
@@ -99,9 +108,18 @@ const Blog = () => {
                   }}
                 />
                 <StyledCardContent>
-                  <Typography gutterBottom variant="caption" component="div">
-                    {card.tag}
-                  </Typography>
+                <Box display="flex" flexWrap="wrap" gap={1} justifyContent="flex-end" alignItems="center">
+                  {card.tags.map((tag) => (
+                    <Typography gutterBottom variant="caption" component="div">
+                      <Chip
+                        label={tag}
+                        size="small"
+                        variant="outlined"
+                        sx={{ textTransform: 'capitalize' }}
+                      />
+                    </Typography>
+                  ))}
+                  </Box>
                   <Typography gutterBottom variant="h6" component="div">
                     {card.title}
                   </Typography>

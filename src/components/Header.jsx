@@ -22,11 +22,12 @@ function Header() {
   const [anchorEl, setAnchorEl] = React.useState(null);
   const navigate = useNavigate();
 
-  const [open, setOpen] = React.useState(false);
+  const handleClick = (event) => {
+    setAnchorEl(anchorEl ? null : event.currentTarget);
+  };
 
-  const handleMouseEnter = (event) => {
-    setAnchorEl(event.currentTarget);
-    setOpen(true);
+  const handleClose = () => {
+    setAnchorEl(null);
   };
 
   const goToHomePage = () => {
@@ -36,10 +37,6 @@ function Header() {
   const Icon = ({ src, alt, width, height }) => {
     return <img src={src} alt={alt} width={width} height={height} />;
   };
-
-  function handleClose() {
-    setAnchorEl(null);
-  }
 
   return (
     <Box sx={{ flexGrow: 1 }}>
@@ -73,42 +70,40 @@ function Header() {
             Home
           </Button>
           <Button
-            startIcon={<CameraIcon />}
-            color="inherit"
-            endIcon={<ExpandMoreIcon />}
-            aria-owns={anchorEl ? "header" : undefined}
-            aria-haspopup="true"
-            component={Link}
-            to="/photography"
-            onMouseEnter={handleMouseEnter}
-          >
-            Photography
-          </Button>
-          <Menu
-            id="header"
-            anchorEl={anchorEl}
-            open={Boolean(anchorEl)}
-            MenuListProps={{ onMouseLeave: handleClose }}
-          >
-            <MenuItem component={Link} to="/albums/landscapes" onClick={handleClose}>
-              <ForestIcon fontSize="small" style={{ marginRight: 8 }} /> Landscapes
-            </MenuItem>
-            <MenuItem component={Link} to="/albums/mountains" onClick={handleClose}>
-              <LandscapeIcon fontSize="small" style={{ marginRight: 8 }} /> Mountains
-            </MenuItem>
-            <MenuItem component={Link} to="/albums/night-sky" onClick={handleClose}>
-              <NightlightIcon fontSize="small" style={{ marginRight: 8 }} /> Night Sky
-            </MenuItem>
-            <MenuItem component={Link} to="/albums/panoramas" onClick={handleClose}>
-              <PanoramaIcon fontSize="small" style={{ marginRight: 8 }} /> Panoramas
-            </MenuItem>
-            <MenuItem component={Link} to="/albums/reflections" onClick={handleClose}>
-              <DiamondIcon fontSize="small" style={{ marginRight: 8 }} /> Reflections
-            </MenuItem>
-            <MenuItem component={Link} to="/albums/wildlife" onClick={handleClose}>
-              <PetsIcon fontSize="small" style={{ marginRight: 8 }} /> Wildlife
-            </MenuItem>
-          </Menu>
+        startIcon={<CameraIcon />}
+        color="inherit"
+        endIcon={<ExpandMoreIcon />}
+        aria-controls="photography-menu"
+        aria-haspopup="true"
+        onClick={handleClick}
+      >
+        Photography
+      </Button>
+      <Menu
+        id="photography-menu"
+        anchorEl={anchorEl}
+        open={Boolean(anchorEl)}
+        onClose={handleClose}
+      >
+        <MenuItem component={Link} to="/albums/landscapes" onClick={handleClose}>
+          <ForestIcon fontSize="small" style={{ marginRight: 8 }} /> Landscapes
+        </MenuItem>
+        <MenuItem component={Link} to="/albums/mountains" onClick={handleClose}>
+          <LandscapeIcon fontSize="small" style={{ marginRight: 8 }} /> Mountains
+        </MenuItem>
+        <MenuItem component={Link} to="/albums/night-sky" onClick={handleClose}>
+          <NightlightIcon fontSize="small" style={{ marginRight: 8 }} /> Night Sky
+        </MenuItem>
+        <MenuItem component={Link} to="/albums/panoramas" onClick={handleClose}>
+          <PanoramaIcon fontSize="small" style={{ marginRight: 8 }} /> Panoramas
+        </MenuItem>
+        <MenuItem component={Link} to="/albums/reflections" onClick={handleClose}>
+          <DiamondIcon fontSize="small" style={{ marginRight: 8 }} /> Reflections
+        </MenuItem>
+        <MenuItem component={Link} to="/albums/wildlife" onClick={handleClose}>
+          <PetsIcon fontSize="small" style={{ marginRight: 8 }} /> Wildlife
+        </MenuItem>
+      </Menu>
           <Button color="inherit" component={Link} to="/blog" startIcon={<ArticleIcon />}>
             Blog
           </Button>

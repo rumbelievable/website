@@ -18,6 +18,7 @@ import Blog1 from './pages/blogs/20240513'
 import Blog2 from './pages/blogs/20240517'
 import Blog3 from './pages/blogs/20240524'
 import Blog4 from './pages/blogs/20240601'
+import Blog5 from './pages/blogs/20241102'
 
 
 const theme = createTheme({
@@ -48,7 +49,7 @@ const theme = createTheme({
       '"Apple Color Emoji"',
       '"Segoe UI Emoji"',
       '"Segoe UI Symbol"',
-    ].join(','),
+    ].join(',')
   },
 });
 
@@ -75,6 +76,7 @@ function App() {
               <Route path="/blog/20240517" element={<Blog2 />} />
               <Route path="/blog/20240524" element={<Blog3 />} />
               <Route path="/blog/20240601" element={<Blog4 />} />
+              <Route path="/blog/20241102" element={<Blog5 />} />
             </Routes>
           </main>
           <Footer />

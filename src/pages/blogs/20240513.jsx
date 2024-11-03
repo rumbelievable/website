@@ -54,14 +54,14 @@ function BlogPost(props) {
   return (
     <React.Fragment>
     <Container maxWidth="md">
-      <Box sx={{ my: 5}}>
+      <Box sx={{ my: 5, pt: 5 }}>
         <Typography variant="h2" component="h1" gutterBottom>
           Vulnerability Central
         </Typography>
         <Typography variant="subtitle1" color="text.secondary" gutterBottom>
           May 13, 2024
         </Typography>
-        <Typography variant='p'>
+        <Typography variant='body1' gutterBottom component="div">
           Well, here we go. I've made a website, I'm not sure if it'll get hacked? I don't know how
           hacking works? Please don't hurt me. But yeah, I'm gonna assume
           no one is gonna be a jerk. Which means I'm gonna make an ass out of you and me. Mostly me.
@@ -87,22 +87,22 @@ function BlogPost(props) {
             <ListItemText primary="So I figured it out and made this little diddy 🤷" />
           </ListItem>
         </List>
-        <Typography variant='p'>
+        <Typography variant='body1' gutterBottom component="div">
           The main point of this website is for my photography, or what was my photography, in the
           hopes that maybe it'll inspire me again to take some snippity snaps.
           So you can find all that stuff, sorry if the formatting is messed up, I didn't dive tooooo
           deep into CSS 🏊. 
         </Typography>
-        <Typography variant='p'>
+        <Typography variant='body1' gutterBottom component="div">
           But otherwise, I kind of wanted a journal, which seems silly, cause this is public, but
           there are some things I thought might be cool to just blog about! How
           2004 of me!! You're not mad about it, you're probably my mum or my partner so you're just
           loving this anyway cause you think I'm so dang cute. Hi mum and Lace 👋.
         </Typography>
-        <Typography variant="h4" gutterBottom sx={{ lineHeight: "24px", whiteSpace: 'pre-line' }}>
-          {`\nSo what can you expect?`}
+        <Typography variant="h4" gutterBottom component="div">
+          So what can you expect?
         </Typography>
-        <Typography variant='p'>
+        <Typography variant='body1' gutterBottom component="div">
           Well shoot, I dunno! I was thinking maybe some stuff like:
         </Typography>
         <List sx={{ listStyleType: 'disc' }}>
