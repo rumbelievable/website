@@ -1,7 +1,7 @@
 {
   "name": "rumbelievable",
   "version": "0.1.0",
-  "homepage": "https://rumbelievable.github.io/website",
+  "homepage": "https://rumbelievable.com",
   "private": true,
   "dependencies": {
     "@emotion/react": "^11.13.3",
