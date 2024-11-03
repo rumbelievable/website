@@ -76,13 +76,14 @@ const Blog = () => {
       <Divider />
       <Grid2 container spacing={2} columns={12}>
         {cardData.map((card, index) => (
-          <Grid2 size={{ xs: 12, md: 3 }}>
+          <Grid2 size={{ xs: 12, md: 3 }} key={`${index + 1}-grid`}>
             <StyledCard
               variant="outlined"
               onFocus={() => handleFocus(index)}
               onBlur={handleBlur}
               tabIndex={index}
               className={focusedCardIndex === index ? 'Mui-focused' : ''}
+              key={`${index + 1}-card`}
             >
               <Link
                 to={card.link}
@@ -109,8 +110,8 @@ const Blog = () => {
                 />
                 <StyledCardContent>
                 <Box display="flex" flexWrap="wrap" gap={1} justifyContent="flex-end" alignItems="center">
-                  {card.tags.map((tag) => (
-                    <Typography gutterBottom variant="caption" component="div">
+                  {card.tags.map((tag, cardIndex) => (
+                    <Typography gutterBottom variant="caption" component="div" key={`${cardIndex + 1}`}>
                       <Chip
                         label={tag}
                         size="small"

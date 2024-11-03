@@ -32,7 +32,7 @@ const AboutMe = () => {
           <ListItem><CreateIcon />&nbsp;&nbsp; I wanted a place to put some thoughts... whether that's a good idea is yet to be seen *sweat emoji*</ListItem>
         </List>
         <Divider />
-        <Typography variant="body1" component="body" sx={{ lineHeight: "24px", whiteSpace: 'pre-line' }}>
+        <Typography variant="body1" sx={{ lineHeight: "24px", whiteSpace: 'pre-line' }}>
           {`\nI was born in England and moved to Boulder, Colorado when I was 5 years old. With that came a pride in being both English and American, and neither!
           \nMy days consist of some amalgamation of watching football (soccer), both womens and mens; taking my two wonderful dogs, Tetley and Lupine, on a walk or hike with my lovely partner; reading lots and lots of books; trying my hand at woodworking; listening to podcasts and other audiobooks trying to learn some stuff; having therapy trying to learn about myself.
           \nI'm not sure what life is all about, but so far it seems like community, creativity, and experiencing things that allow you to feel are the current front-runners.

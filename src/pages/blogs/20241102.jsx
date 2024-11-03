@@ -75,13 +75,13 @@ function BlogPost(props) {
                 justifyContent: 'center'
               }}>
                 <Box>
-                  <Paper elevation={16} sx={{ p: 2, fontWeight: 750, color: 'rgb(78, 171, 142)' }} maxWidth="100%">
+                  <Paper elevation={16} sx={{ p: 2, fontWeight: 750, color: 'rgb(78, 171, 142)' }}>
                     Check out my old blog, <Link href="https://rumbelievable.wordpress.com/">Quoi De Neuf?</Link> from the summer of 2013, aw baby Annie!
                   </Paper>
                 </Box>
               </Box>
             </Box>
-            <Divider variant='body1' gutterBottom component="div" sx={{ pb: 3 }}>
+            <Divider variant='body1' component="div" sx={{ pb: 3 }}>
                   RECORD SCRATCH
                 </Divider>
             <Typography variant='body1' gutterBottom component="div">

@@ -65,8 +65,7 @@ const images = [
   "v1714330315/landscapes/DSC_4562_dcfb1o.jpg",
   "v1714330306/landscapes/DSC_5620_sfkpni.jpg",
   "v1714330282/landscapes/DSC_6611_k7bwyq.jpg",
-  "v1714330296/landscapes/DSC_8438_wdmmcv.jpg",
-  "DSC_9016_kvckxf.jpg"
+  "v1714330296/landscapes/DSC_8438_wdmmcv.jpg"
 ];
 
 function LandscapeGallery(props) {

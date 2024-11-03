@@ -101,7 +101,7 @@ function BlogPost(props) {
               "https://res.cloudinary.com/df4rizvgx/image/upload/v1716000410/blog_images/IMG_3622_lv65cy.jpg",
               "https://res.cloudinary.com/df4rizvgx/image/upload/v1716000411/blog_images/72875288172__343E8C8B-49CB-4CB4-BBB6-F234CA318008-preview_xaqdbg.jpg"
             ].map((img, index) => (
-              <Grid2 item xs={12} sm={6} key={index}>
+              <Grid2 xs={12} sm={6} key={index}>
                 <Card sx={{ maxWidth: '100%', height: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
                   <CardMedia
                     component="img"
