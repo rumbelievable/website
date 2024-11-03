@@ -62,7 +62,6 @@ function App() {
           <Header />
           <main className="flex-grow-1">
             <Routes>
-              <Route path="/website" element={<Home />} />
               <Route path="/" element={<Home />} />
               <Route path="/photography" element={<Photography />} />
               <Route path="/blog" element={<Blog />} />
