@@ -6,7 +6,17 @@ import EmailIcon from '@mui/icons-material/Email';
 
 const Footer = () => {
   return (
-    <Box component="footer" sx={{ py: 3, bgcolor: 'background.paper', textAlign: 'center', width: '100%', position: 'relative', bottom: 0 }}>
+    <Box 
+      component="footer" 
+      sx={{ 
+        py: 3, 
+        bgcolor: 'background.paper', 
+        textAlign: 'center', 
+        width: '100%', 
+        position: 'relative', 
+        bottom: 0
+      }}
+    >
       <Container maxWidth="sm">
         <Box sx={{ mb: 1 }}>
           <IconButton

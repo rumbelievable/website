@@ -11,7 +11,6 @@ import {
   Card,
   CardMedia,
   Grid2,
-  Chip,
   Link,
   Fab
 } from '@mui/material';
@@ -141,15 +140,6 @@ function BlogPost(props) {
                   sx={{ width: '100%', height: 'auto' }}
                 />
               </Card>
-            </Box>
-
-            <Divider sx={{ my: 2 }} />
-
-            <Box>
-              <Typography variant="h5" gutterBottom sx={{ fontWeight: 100 }}>
-                Tags
-              </Typography>
-              <Chip label="woodworking" />
             </Box>
           </Box>
         </Container>

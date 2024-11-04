@@ -7,8 +7,6 @@ import {
   ListItem,
   ListItemText,
   ListItemIcon,
-  Divider,
-  Chip,
   Fade,
   Fab,
   useScrollTrigger
@@ -144,13 +142,6 @@ function BlogPost(props) {
           </ListItem>
         </List>
         <Typography variant='h5'>Stay tuned!</Typography>
-        <Divider sx={{ my: 2 }} />
-        <Box>
-          <Typography variant="h5" gutterBottom sx={{ fontWeight: 100 }}>
-            Tags
-          </Typography>
-          <Chip label="life" />
-        </Box>
       </Box>
     </Container>
     <ScrollTop {...props}>

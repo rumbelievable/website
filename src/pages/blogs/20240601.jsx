@@ -7,10 +7,8 @@ import {
   ListItem,
   ListItemText,
   ListItemIcon,
-  Divider,
   Link,
   Paper,
-  Chip,
   Fab
 } from '@mui/material';
 import RainbowIcon from '@mui/icons-material/Looks';
@@ -149,15 +147,6 @@ function BlogPost(props) {
               <ListItemText primary="I got to do whatever the h*ck I wanted." />
             </ListItem>
           </List>
-          <Divider sx={{ my: 2 }} />
-
-          <Box>
-            <Typography variant="h5" gutterBottom sx={{ fontWeight: 100 }}>
-              Tags
-            </Typography>
-            <Chip label="life" sx={{ mr: 1 }} />
-            <Chip label="work" />
-          </Box>
         </Box>
       </Container>
       <ScrollTop {...props}>

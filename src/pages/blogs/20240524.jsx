@@ -215,15 +215,6 @@ function BlogPost(props) {
               </ListItem>
             ))}
           </List>
-
-          <Divider sx={{ my: 2 }} />
-
-          <Box>
-            <Typography variant="h5" gutterBottom sx={{ fontWeight: 100 }}>
-              Tags
-            </Typography>
-            <Chip label="life" />
-          </Box>
         </Box>
       </Container>
       <ScrollTop {...props}>

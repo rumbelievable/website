@@ -17,9 +17,9 @@ const AboutMe = () => {
         </ImageList>
       </Grid2>
       <Grid2 size={7} sx={{ ml: 2 }}>
-      <Paper sx={{ lineHeight: '60px' }} elevation={8}>
-        <Typography variant="h2" sx={{ fontWeight: 'bold', pl: 3, pt: 2, pb: 2 }}>About Me</Typography>
-        <Typography variant="h5" sx={{ fontWeight: 600, pl: 3, pb: 3 }}>
+      <Paper sx={{ lineHeight: '60px' }} elevation={1}>
+        <Typography variant="h3" sx={{ fontWeight: 'bold', pl: 3, pt: 2, pb: 1 }}>About Me</Typography>
+        <Typography variant="subtitle1" sx={{ fontWeight: 600, pl: 3, pb: 3 }}>
           Hi, I'm Annie!
         </Typography>
         </Paper>

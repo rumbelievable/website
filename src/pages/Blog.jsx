@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { Typography, Grid2, Box, CardMedia, Divider, Paper, Chip } from '@mui/material';
-import { StyledCard, StyledCardContent, StyledTypography, Metadata } from '../components/BlogPostCard';
+import { StyledCard, StyledCardContent, Metadata } from '../components/BlogPostCard';
 
 const cardData = [
   {
@@ -65,11 +65,11 @@ const Blog = () => {
 
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column', gap: 4, padding: 3 }}>
-      <Paper sx={{ lineHeight: '60px' }} elevation={8}>
-        <Typography variant="h2" sx={{ fontWeight: 'bold', pl: 3, pb: 2, pt: 2 }}>
+      <Paper sx={{ lineHeight: '60px' }} elevation={1}>
+        <Typography variant="h3" sx={{ fontWeight: 'bold', pl: 3, pb: 1, pt: 2 }}>
           Blog
         </Typography>
-        <Typography variant="h5" sx={{ fontWeight: 600, pl: 3, pb: 3 }}>
+        <Typography variant="subtitle1" sx={{ fontWeight: 600, pl: 3, pb: 3 }}>
           Stay in the loop of my machinations
         </Typography>
       </Paper>
@@ -121,12 +121,9 @@ const Blog = () => {
                     </Typography>
                   ))}
                   </Box>
-                  <Typography gutterBottom variant="h6" component="div">
+                  <Typography variant="h6" component="div">
                     {card.title}
                   </Typography>
-                  <StyledTypography variant="body2" color="text.secondary" gutterBottom>
-                    {card.description}
-                  </StyledTypography>
                 </StyledCardContent>
                 <Metadata card={card} />
               </Link>
