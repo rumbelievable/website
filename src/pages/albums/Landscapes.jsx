@@ -1,5 +1,5 @@
-import React from 'react';
-import { Container, Typography, Box, Fab } from '@mui/material';
+import React, { useState } from 'react';
+import { Container, Typography, Box, Fab, Modal } from '@mui/material';
 import Masonry from '@mui/lab/Masonry';
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 import { ScrollTop } from '../blogs/20240513';
@@ -69,40 +69,82 @@ const images = [
 ];
 
 function LandscapeGallery(props) {
+  const [selectedImage, setSelectedImage] = useState(null);
+
+  const handleImageClick = (image) => {
+    setSelectedImage(image);
+  };
+
+  const handleCloseModal = () => {
+    setSelectedImage(null);
+  };
+
   return (
     <React.Fragment>
-    <Container maxWidth="100%">
-      <Typography variant="h2" align="center" gutterBottom sx={{ fontWeight: 'bold', mt: 3 }}>
-        Landscapes
-      </Typography>
-      <Typography variant="h6" align="center">
-        My favorite umbrella term for everything that isn't the rest of these categories.
-      </Typography>
-      <Box sx={{ mt: 3 }}>
-        <Masonry columns={4} spacing={2}>
-          {images.map((image, index) => (
-            <div key={index}>
-              <img
-                src={`https://res.cloudinary.com/df4rizvgx/image/upload/c_scale,w_650/f_auto/q_auto/${image}`}
-                alt={`${index + 1}`}
-                loading="lazy"
-                style={{
-                  borderRadius: 4,
-                  display: 'block',
-                  width: '100%',
-                }}
-              />
-            </div>
-          ))}
-        </Masonry>
-      </Box>
-    </Container>
-    <ScrollTop {...props}>
-    <Fab size="small" aria-label="scroll back to top">
-      <KeyboardArrowUpIcon />
-    </Fab>
-  </ScrollTop>
-</React.Fragment>
+      <Container maxWidth="100%">
+        <Typography variant="h2" align="center" gutterBottom sx={{ fontWeight: 'bold', mt: 3 }}>
+          Landscapes
+        </Typography>
+        <Typography variant="h6" align="center">
+          My favorite umbrella term for everything that isn't the rest of these categories.
+        </Typography>
+        <Box sx={{ mt: 3 }}>
+          <Masonry columns={4} spacing={2}>
+            {images.map((image, index) => (
+              <div key={index} onClick={() => handleImageClick(image)}>
+                <img
+                  src={`https://res.cloudinary.com/df4rizvgx/image/upload/c_scale,w_650/f_auto/q_auto/${image}`}
+                  alt={`${index + 1}`}
+                  loading="lazy"
+                  style={{
+                    borderRadius: 4,
+                    display: 'block',
+                    width: '100%',
+                  }}
+                />
+              </div>
+            ))}
+          </Masonry>
+        </Box>
+      </Container>
+      <Modal
+        open={selectedImage !== null}
+        onClose={handleCloseModal}
+        aria-labelledby="modal-modal-title"
+        aria-describedby="modal-modal-description"
+      >
+        <Box sx={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          width: '100%',
+          height: '100%',
+          backgroundColor: 'rgba(0, 0, 0, 0.8)', // Darkened background
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+        }}
+        onClick={handleCloseModal}>
+
+          {selectedImage && (
+            <img
+              src={`https://res.cloudinary.com/df4rizvgx/image/upload/${selectedImage}`}
+              alt="Enlarged"
+              style={{
+                maxWidth: '100%',
+                maxHeight: '100%',
+                objectFit: 'contain',
+              }}
+            />
+          )}
+        </Box>
+      </Modal>
+      <ScrollTop {...props}>
+        <Fab size="small" aria-label="scroll back to top">
+          <KeyboardArrowUpIcon />
+        </Fab>
+      </ScrollTop>
+    </React.Fragment>
   );
 }
 

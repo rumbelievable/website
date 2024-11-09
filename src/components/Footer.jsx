@@ -24,6 +24,11 @@ const Footer = () => {
             href="https://www.linkedin.com/in/annie-rumbles/"
             target="_blank"
             rel="noopener noreferrer"
+            sx={{
+              '&:hover': {
+                backgroundColor: "#2d6e54"
+              }
+            }}
           >
             <LinkedInIcon fontSize="large" />
           </IconButton>
@@ -32,12 +37,22 @@ const Footer = () => {
             href="https://github.com/rumbelievable"
             target="_blank"
             rel="noopener noreferrer"
+            sx={{
+              '&:hover': {
+                backgroundColor: "#2d6e54"
+              }
+            }}
           >
             <GitHubIcon fontSize="large" />
           </IconButton>
           <IconButton
             aria-label="Email"
             href="mailto:amrumbles@gmail.com"
+            sx={{
+              '&:hover': {
+                backgroundColor: "#2d6e54"
+              }
+            }}
           >
             <EmailIcon fontSize="large" />
           </IconButton>

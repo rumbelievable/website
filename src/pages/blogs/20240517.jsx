@@ -17,6 +17,7 @@ import {
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 import { ScrollTop } from './20240513';
+import CommentSection from '../../components/CommentSection';
 
 function BlogPost(props) {
   return (
@@ -142,6 +143,7 @@ function BlogPost(props) {
               </Card>
             </Box>
           </Box>
+          <CommentSection />
         </Container>
         <ScrollTop {...props}>
           <Fab size="small" aria-label="scroll back to top">

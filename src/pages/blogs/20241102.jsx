@@ -10,6 +10,7 @@ import {
 } from '@mui/material';
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 import { ScrollTop } from './20240513';
+import CommentSection from '../../components/CommentSection';
 
 function BlogPost(props) {
   return (
@@ -108,6 +109,7 @@ function BlogPost(props) {
               beer I cared about, maybe it was just the place and the company.
             </Typography>
         </Box>
+        <CommentSection />
       </Container>
       <ScrollTop {...props}>
         <Fab size="small" aria-label="scroll back to top">

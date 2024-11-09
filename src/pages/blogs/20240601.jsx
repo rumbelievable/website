@@ -21,6 +21,7 @@ import ChecklistIcon from '@mui/icons-material/Checklist';
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 import InsertEmoticonIcon from '@mui/icons-material/InsertEmoticon';
 import { ScrollTop } from './20240513';
+import CommentSection from '../../components/CommentSection';
 
 function BlogPost(props) {
   return (
@@ -148,6 +149,7 @@ function BlogPost(props) {
             </ListItem>
           </List>
         </Box>
+        <CommentSection />
       </Container>
       <ScrollTop {...props}>
         <Fab size="small" aria-label="scroll back to top">

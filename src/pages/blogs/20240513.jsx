@@ -13,6 +13,7 @@ import {
 } from '@mui/material';
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
+import CommentSection from '../../components/CommentSection';
 
 export function ScrollTop(props) {
   const { children, window } = props;
@@ -143,6 +144,7 @@ function BlogPost(props) {
         </List>
         <Typography variant='h5'>Stay tuned!</Typography>
       </Box>
+      <CommentSection />
     </Container>
     <ScrollTop {...props}>
         <Fab size="small" aria-label="scroll back to top">

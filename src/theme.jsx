@@ -18,8 +18,8 @@ const lightTheme = createTheme({
   },
   typography: {
     fontFamily: [
-      'Roboto',
       '-apple-system',
+      'Roboto',
       'BlinkMacSystemFont',
       '"Segoe UI"',
       '"Helvetica Neue"',

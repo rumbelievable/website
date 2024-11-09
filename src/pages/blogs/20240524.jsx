@@ -18,6 +18,7 @@ import {
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 import { ScrollTop } from './20240513';
+import CommentSection from '../../components/CommentSection';
 
 const listItems = [
   { text: "Get an ergonomic mouse, one of those really horrendous ones, so I don't give myself carpal tunnel… again", label: "home" },
@@ -216,6 +217,7 @@ function BlogPost(props) {
             ))}
           </List>
         </Box>
+        <CommentSection />
       </Container>
       <ScrollTop {...props}>
         <Fab size="small" aria-label="scroll back to top">

@@ -1,5 +1,5 @@
 import React from 'react';
-import { Card, CardContent, Typography, Box, Chip, styled } from '@mui/material';
+import { Card, CardContent, Typography, Box, Chip, styled, alpha } from '@mui/material';
 
 export const StyledCard = styled(Card)(({ theme }) => ({
   display: 'flex',
@@ -8,7 +8,7 @@ export const StyledCard = styled(Card)(({ theme }) => ({
   height: '100%',
   backgroundColor: (theme.vars || theme).palette.background.paper,
   '&:hover': {
-    backgroundColor: 'transparent',
+    backgroundColor: alpha(theme.palette.primary.main, .1),
     cursor: 'pointer',
   },
   '&:focus-visible': {

@@ -10,7 +10,7 @@ const AboutMe = () => {
     <Box sx={{ flexGrow: 1, padding: 3 }}>
     <Grid2 container spacing={5}>
       <Grid2 size={4}>
-        <ImageList sx={{ width: "100%", height: "100%", borderRadius: 20 }} cols={1}>
+        <ImageList sx={{ width: "100%", height: "auto", borderRadius: 3 }} cols={1}>
           <ImageListItem>
             <img src="https://res.cloudinary.com/df4rizvgx/image/upload/v1730066308/IMG_2975_2_plnsud_raz2ve.jpg" loading="lazy" alt="me" />
           </ImageListItem>

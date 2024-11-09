@@ -28,6 +28,10 @@
   color: #67a895;
 }
 
+/* a:visited {
+  color: #7e3450;
+} */
+
 @keyframes App-logo-spin {
   from {
     transform: rotate(0deg);
