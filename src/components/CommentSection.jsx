@@ -22,7 +22,7 @@ const CommentSection = () => {
           multiline
           rows={3}
           variant="outlined"
-          placeholder="Write a comment..."
+          placeholder="Comments are out of order... send me an email! :) "
           value={newComment}
           onChange={(e) => setNewComment(e.target.value)}
           sx={{ mb: 2 }}
