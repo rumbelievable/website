@@ -1,0 +1,344 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Get in touch with Annie Rumbles for photography or woodworking commissions">
+  <title>Contact — Rumbelievable</title>
+  <link rel="shortcut icon" type="image/x-icon"
+    href="https://res.cloudinary.com/df4rizvgx/image/upload/v1777813270/rumbelievable-bronze_lkvsxj.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+  <link href="./assets/fontawesome/css/all.css" rel="stylesheet">
+  <link href="./assets/css/rumbelievable.css" rel="stylesheet">
+  <style>
+    .contact-layout {
+      display: grid;
+      grid-template-columns: 2fr 3fr;
+      gap: 5rem;
+      align-items: start;
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: calc(var(--nav-h) + 5rem) clamp(1.5rem, 5vw, 4rem) 6rem;
+    }
+
+    @media (max-width: 860px) {
+      .contact-layout {
+        grid-template-columns: 1fr;
+        gap: 3rem;
+      }
+    }
+
+    .contact-intro h1 {
+      font-size: clamp(2rem, 4vw, 3.2rem);
+      margin-bottom: 0.5rem;
+    }
+
+    .contact-intro .eyebrow {
+      font-size: 0.72rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--brass);
+      margin-bottom: 1rem;
+    }
+
+    .contact-divider {
+      width: 48px;
+      height: 1px;
+      background: var(--brass);
+      margin: 2rem 0;
+      opacity: 0.5;
+    }
+
+    .contact-intro p {
+      font-size: 0.95rem;
+      line-height: 1.85;
+      color: var(--fog);
+      margin-bottom: 1.4rem;
+    }
+
+    .contact-types {
+      list-style: none;
+      margin-top: 1.5rem;
+    }
+
+    .contact-types li {
+      display: flex;
+      align-items: baseline;
+      gap: 0.75rem;
+      padding: 0.5rem 0;
+      font-size: 0.9rem;
+      color: var(--fog);
+      border-bottom: 1px solid rgba(255,255,255,0.04);
+    }
+
+    .contact-types li i {
+      color: var(--brass);
+      font-size: 0.8rem;
+      flex-shrink: 0;
+    }
+
+    /* Form */
+    .contact-form {
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 0.45rem;
+    }
+
+    .form-group label {
+      font-size: 0.72rem;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--stone);
+    }
+
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 2px;
+      color: var(--cream);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.9rem;
+      padding: 0.75rem 1rem;
+      transition: border-color 0.2s;
+      width: 100%;
+      box-sizing: border-box;
+    }
+
+    .form-group input::placeholder,
+    .form-group textarea::placeholder {
+      color: var(--stone);
+      opacity: 0.6;
+    }
+
+    .form-group input:focus,
+    .form-group select:focus,
+    .form-group textarea:focus {
+      outline: none;
+      border-color: var(--brass);
+    }
+
+    .form-group select {
+      appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23a07d3a' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 1rem center;
+      cursor: pointer;
+    }
+
+    .form-group select option {
+      background: #1a1610;
+      color: var(--cream);
+    }
+
+    .form-group textarea {
+      resize: vertical;
+      min-height: 140px;
+    }
+
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.25rem;
+    }
+
+    @media (max-width: 560px) {
+      .form-row { grid-template-columns: 1fr; }
+    }
+
+    .form-submit {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.6rem;
+      background: var(--brass);
+      color: var(--ink);
+      border: none;
+      border-radius: 2px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.8rem;
+      font-weight: 500;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      padding: 0.85rem 2rem;
+      cursor: pointer;
+      transition: opacity 0.2s;
+      align-self: flex-start;
+    }
+
+    .form-submit:hover { opacity: 0.85; }
+
+    .form-note {
+      font-size: 0.8rem;
+      color: var(--stone);
+      opacity: 0.7;
+      margin-top: -0.5rem;
+    }
+
+    /* Success/error state */
+    .form-status {
+      display: none;
+      padding: 1rem 1.25rem;
+      border-radius: 2px;
+      font-size: 0.9rem;
+    }
+
+    .form-status.success {
+      display: block;
+      background: rgba(160, 125, 58, 0.12);
+      border: 1px solid rgba(160, 125, 58, 0.3);
+      color: var(--brass-light);
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Navigation -->
+  <nav class="site-nav scrolled" id="siteNav">
+    <a href="./index.html" class="nav-logo">
+      <img src="https://res.cloudinary.com/df4rizvgx/image/upload/v1777813270/rumbelievable-bronze_lkvsxj.png" alt="">
+      Rumbelievable
+    </a>
+    <button class="nav-toggle" id="navToggle" aria-label="Toggle navigation">
+      <span></span><span></span><span></span>
+    </button>
+    <ul class="nav-links" id="navLinks">
+      <li><a href="./index.html">Home</a></li>
+      <li class="nav-dropdown">
+        <a href="./photography.html">Photography</a>
+        <ul class="nav-dropdown-menu">
+          <li><a href="./pages/albums/landscapes.html">Landscapes</a></li>
+          <li><a href="./pages/albums/mountains.html">Mountains</a></li>
+          <li><a href="./pages/albums/reflections.html">Reflections</a></li>
+          <li><a href="./pages/albums/night-sky.html">Night Sky</a></li>
+          <li><a href="./pages/albums/wildlife.html">Wildlife</a></li>
+          <li><a href="./pages/albums/panoramas.html">Panoramas</a></li>
+        </ul>
+      </li>
+      <li><a href="./woodworking.html">Woodworking</a></li>
+      <li><a href="./about-me.html">About</a></li>
+      <li><a href="./contact.html" class="active">Contact</a></li>
+    </ul>
+  </nav>
+
+  <main>
+    <div class="contact-layout">
+
+      <!-- Intro col -->
+      <div class="contact-intro">
+        <p class="eyebrow">Get in touch</p>
+        <h1>Let's talk</h1>
+
+        <div class="contact-divider"></div>
+
+        <p>Whether you're after a print, a custom woodworking piece, or just want to say hello — I'd love to hear from you.</p>
+
+        <p>I take on a limited number of commissions each year, so the earlier you reach out the better.</p>
+
+        <ul class="contact-types">
+          <li><i class="fa-solid fa-camera-retro"></i> Photography prints &amp; commissions</li>
+          <li><i class="fa-solid fa-hammer"></i> Custom woodworking pieces</li>
+          <li><i class="fa-regular fa-comment"></i> General enquiries</li>
+        </ul>
+      </div>
+
+      <!-- Form col -->
+      <form
+        class="contact-form"
+        id="contactForm"
+        action="https://formspree.io/f/xwvyvyak"
+        method="POST"
+      >
+        <div class="form-row">
+          <div class="form-group">
+            <label for="name">Name</label>
+            <input type="text" id="name" name="name" placeholder="Your name" required>
+          </div>
+          <div class="form-group">
+            <label for="email">Email</label>
+            <input type="email" id="email" name="email" placeholder="your@email.com" required>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="inquiry">Type of enquiry</label>
+          <select id="inquiry" name="inquiry" required>
+            <option value="" disabled selected>Select one…</option>
+            <option value="photography">Photography commission / print</option>
+            <option value="woodworking">Custom woodworking piece</option>
+            <option value="both">Photography &amp; woodworking</option>
+            <option value="general">General enquiry</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="message">Message</label>
+          <textarea id="message" name="message" placeholder="Tell me what you have in mind…" required></textarea>
+        </div>
+
+        <p class="form-note">I'll do my best to respond within a few days.</p>
+
+        <button type="submit" class="form-submit">
+          Send message <i class="fa-solid fa-arrow-right" style="font-size:0.75em"></i>
+        </button>
+
+        <div class="form-status" id="formStatus" role="status">
+          Thanks — your message is on its way. I'll be in touch soon.
+        </div>
+      </form>
+
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer class="site-footer">
+    <div class="footer-links">
+      <a href="https://www.linkedin.com/in/annie-rumbles/" aria-label="LinkedIn"><i class="fa-brands fa-linkedin"></i></a>
+      <a href="https://github.com/rumbelievable" aria-label="GitHub"><i class="fa-brands fa-github"></i></a>
+      <a href="mailto:amrumbles@gmail.com" aria-label="Email"><i class="fa-solid fa-envelope"></i></a>
+    </div>
+    <p class="footer-copy">&copy; Rumbelievable 2026</p>
+  </footer>
+
+  <script>
+    {
+      const nav      = document.getElementById('siteNav');
+      const navLinks = document.getElementById('navLinks');
+
+      window.addEventListener('scroll', () => nav.classList.toggle('scrolled', window.scrollY > 40), { passive: true });
+
+      document.getElementById('navToggle').addEventListener('click', () => navLinks.classList.toggle('open'));
+
+      document.addEventListener('click', e => {
+        if (!nav.contains(e.target)) navLinks.classList.remove('open');
+      });
+
+      document.addEventListener('keydown', e => {
+        if (e.key === 'Escape') navLinks.classList.remove('open');
+      });
+
+      const form   = document.getElementById('contactForm');
+      const status = document.getElementById('formStatus');
+
+      form.addEventListener('submit', async e => {
+        e.preventDefault();
+        const data = new FormData(form);
+        const res  = await fetch(form.action, { method: 'POST', body: data, headers: { Accept: 'application/json' } });
+        if (res.ok) {
+          form.reset();
+          status.classList.add('success');
+          status.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
+      });
+    }
+  </script>
+</body>
+</html>

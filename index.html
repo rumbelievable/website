@@ -1,153 +1,442 @@
 <!doctype html>
-<html lang="en" class="h-100" data-bs-theme="auto">
-
+<html lang="en">
 <head>
-  <script src="./assets/js/color-modes.js"></script>
-
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="">
-
+  <meta name="description" content="Rumbelievable — Photography, woodworking, and words by Annie Rumbles">
   <title>Rumbelievable</title>
-
-  <link rel="canonical" href="https://getbootstrap.com/docs/5.3/examples/cover/">
-
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@docsearch/css@3">
-
-  <link href="./assets/css/bootstrap.min.css" rel="stylesheet">
-  <link href="./assets/fontawesome/css/all.css" rel="stylesheet">
-
-  <link href="./assets/css/cover.css" rel="stylesheet">
   <link rel="shortcut icon" type="image/x-icon"
-    href="https://res.cloudinary.com/df4rizvgx/image/upload/v1714956306/rumbelievable.png">
+    href="https://res.cloudinary.com/df4rizvgx/image/upload/v1777813270/rumbelievable-bronze_lkvsxj.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+  <link href="./assets/fontawesome/css/all.css" rel="stylesheet">
+  <link href="./assets/css/rumbelievable.css" rel="stylesheet">
+  <style>
+    /* Index-specific: full-bleed hero */
+    body { overflow-x: hidden; }
+
+    .hero {
+      position: relative;
+      height: 100svh;
+      min-height: 560px;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      padding: 0 clamp(1.5rem, 5vw, 4rem) 5rem;
+      overflow: hidden;
+    }
+
+    .hero-bg {
+      position: absolute;
+      inset: 0;
+      background-image:
+        url('https://res.cloudinary.com/df4rizvgx/image/upload/v1714331957/panoramas/_DSC5075-Pano_kqndj7.jpg');
+      background-size: cover;
+      background-position: center 35%;
+      transform: scale(1.04);
+      transition: transform 8s ease-out;
+    }
+
+    .hero-bg.loaded { transform: scale(1); }
+
+    .hero-overlay {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(
+        to top,
+        rgba(16, 13, 10, 0.92) 0%,
+        rgba(16, 13, 10, 0.55) 40%,
+        rgba(16, 13, 10, 0.25) 70%,
+        rgba(16, 13, 10, 0.15) 100%
+      );
+    }
+
+    .hero-content {
+      position: relative;
+      z-index: 2;
+      max-width: 720px;
+    }
+
+    .hero-eyebrow {
+      font-size: 0.72rem;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      color: var(--brass);
+      margin-bottom: 1.2rem;
+      font-family: 'DM Sans', sans-serif;
+      font-weight: 400;
+      opacity: 0;
+      transform: translateY(12px);
+      animation: fadeUp 0.8s ease forwards 0.3s;
+    }
+
+    .hero-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(3.5rem, 8vw, 7rem);
+      font-weight: 300;
+      color: var(--cream);
+      line-height: 0.95;
+      letter-spacing: -0.01em;
+      margin-bottom: 1.75rem;
+      opacity: 0;
+      transform: translateY(16px);
+      animation: fadeUp 0.9s ease forwards 0.5s;
+    }
+
+    .hero-title em {
+      font-style: italic;
+      color: var(--brass-light);
+    }
+
+    .hero-desc {
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.95rem;
+      font-weight: 300;
+      color: var(--fog);
+      max-width: 420px;
+      line-height: 1.7;
+      margin-bottom: 2.5rem;
+      opacity: 0;
+      transform: translateY(12px);
+      animation: fadeUp 0.8s ease forwards 0.7s;
+    }
+
+    .hero-ctas {
+      display: flex;
+      gap: 1rem;
+      flex-wrap: wrap;
+      opacity: 0;
+      transform: translateY(10px);
+      animation: fadeUp 0.8s ease forwards 0.9s;
+    }
+
+    .btn-primary {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.75rem 1.75rem;
+      background: var(--brass);
+      color: var(--ink);
+      font-size: 0.78rem;
+      font-weight: 500;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      border-radius: 2px;
+      transition: background 0.2s, transform 0.15s;
+    }
+
+    .btn-primary:hover {
+      background: var(--brass-light);
+      transform: translateY(-1px);
+    }
+
+    .btn-ghost {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.75rem 1.75rem;
+      border: 1px solid rgba(255,255,255,0.2);
+      color: var(--bone);
+      font-size: 0.78rem;
+      font-weight: 400;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      border-radius: 2px;
+      transition: border-color 0.2s, color 0.2s, transform 0.15s;
+    }
+
+    .btn-ghost:hover {
+      border-color: rgba(255,255,255,0.45);
+      color: var(--cream);
+      transform: translateY(-1px);
+    }
+
+    /* Scroll indicator */
+    .scroll-hint {
+      position: absolute;
+      bottom: 2.5rem;
+      right: clamp(1.5rem, 4vw, 3.5rem);
+      z-index: 2;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.5rem;
+      opacity: 0;
+      animation: fadeUp 0.8s ease forwards 1.2s;
+    }
+
+    .scroll-hint span {
+      font-size: 0.65rem;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--stone);
+      writing-mode: vertical-rl;
+    }
+
+    .scroll-line {
+      width: 1px;
+      height: 50px;
+      background: linear-gradient(to bottom, var(--stone), transparent);
+      animation: scrollLine 2s ease-in-out infinite 1.5s;
+    }
+
+    @keyframes scrollLine {
+      0%, 100% { transform: scaleY(1); opacity: 0.5; }
+      50%       { transform: scaleY(0.4) translateY(30px); opacity: 0.2; }
+    }
+
+    /* Sections */
+    .section-nav {
+      padding: 5rem clamp(1.5rem, 5vw, 4rem);
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+    }
+
+    .section-label {
+      font-size: 0.68rem;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: var(--brass);
+      margin-bottom: 3rem;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .section-label::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: rgba(255,255,255,0.07);
+      max-width: 160px;
+    }
+
+    .two-col-nav {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 2px;
+    }
+
+    @media (max-width: 900px) { .two-col-nav { grid-template-columns: 1fr 1fr; } }
+    @media (max-width: 560px) { .two-col-nav { grid-template-columns: 1fr; } }
+
+    .nav-card {
+      position: relative;
+      overflow: hidden;
+      aspect-ratio: 16/10;
+      display: block;
+    }
+
+    .nav-card img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+      filter: brightness(0.55) saturate(0.8);
+      transition: transform 0.7s cubic-bezier(0.25, 0.1, 0.25, 1), filter 0.5s;
+    }
+
+    .nav-card:hover img {
+      transform: scale(1.06);
+      filter: brightness(0.45) saturate(0.85);
+    }
+
+    .nav-card-body {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      padding: 2.5rem;
+    }
+
+    .nav-card-label {
+      font-size: 0.68rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--brass);
+      margin-bottom: 0.6rem;
+    }
+
+    .nav-card-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(2rem, 4vw, 2.8rem);
+      font-weight: 300;
+      color: var(--cream);
+      line-height: 1;
+      margin-bottom: 0.75rem;
+    }
+
+    .nav-card-link {
+      font-size: 0.72rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--fog);
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      transform: translateX(0);
+      transition: gap 0.3s, color 0.2s;
+    }
+
+    .nav-card:hover .nav-card-link {
+      gap: 0.85rem;
+      color: var(--cream);
+    }
+
+    /* Intro strip */
+    .intro-strip {
+      padding: 5rem clamp(1.5rem, 5vw, 4rem);
+      max-width: 800px;
+    }
+
+    .intro-strip blockquote {
+      font-family: 'Cormorant Garamond', serif;
+      font-style: italic;
+      font-size: clamp(1.4rem, 2.5vw, 1.8rem);
+      color: var(--cream);
+      font-weight: 300;
+      line-height: 1.55;
+      padding-left: 1.5rem;
+      border-left: 2px solid var(--brass);
+    }
+
+    .intro-strip p {
+      margin-top: 1.5rem;
+      font-size: 0.9rem;
+      color: var(--stone);
+      padding-left: 1.5rem;
+    }
+
+    @keyframes fadeUp {
+      to { opacity: 1; transform: translateY(0); }
+    }
+  </style>
 </head>
+<body>
 
-<body class="d-flex h-100 text-center text-bg-auto">
-  <svg xmlns="http://www.w3.org/2000/svg" class="d-none">
-    <symbol id="check2" viewBox="0 0 16 16">
-      <path
-        d="M13.854 3.646a.5.5 0 0 1 0 .708l-7 7a.5.5 0 0 1-.708 0l-3.5-3.5a.5.5 0 1 1 .708-.708L6.5 10.293l6.646-6.647a.5.5 0 0 1 .708 0z" />
-    </symbol>
-    <symbol id="circle-half" viewBox="0 0 16 16">
-      <path d="M8 15A7 7 0 1 0 8 1v14zm0 1A8 8 0 1 1 8 0a8 8 0 0 1 0 16z" />
-    </symbol>
-    <symbol id="moon-stars-fill" viewBox="0 0 16 16">
-      <path
-        d="M6 .278a.768.768 0 0 1 .08.858 7.208 7.208 0 0 0-.878 3.46c0 4.021 3.278 7.277 7.318 7.277.527 0 1.04-.055 1.533-.16a.787.787 0 0 1 .81.316.733.733 0 0 1-.031.893A8.349 8.349 0 0 1 8.344 16C3.734 16 0 12.286 0 7.71 0 4.266 2.114 1.312 5.124.06A.752.752 0 0 1 6 .278z" />
-      <path
-        d="M10.794 3.148a.217.217 0 0 1 .412 0l.387 1.162c.173.518.579.924 1.097 1.097l1.162.387a.217.217 0 0 1 0 .412l-1.162.387a1.734 1.734 0 0 0-1.097 1.097l-.387 1.162a.217.217 0 0 1-.412 0l-.387-1.162A1.734 1.734 0 0 0 9.31 6.593l-1.162-.387a.217.217 0 0 1 0-.412l1.162-.387a1.734 1.734 0 0 0 1.097-1.097l.387-1.162zM13.863.099a.145.145 0 0 1 .274 0l.258.774c.115.346.386.617.732.732l.774.258a.145.145 0 0 1 0 .274l-.774.258a1.156 1.156 0 0 0-.732.732l-.258.774a.145.145 0 0 1-.274 0l-.258-.774a1.156 1.156 0 0 0-.732-.732l-.774-.258a.145.145 0 0 1 0-.274l.774-.258c.346-.115.617-.386.732-.732L13.863.1z" />
-    </symbol>
-    <symbol id="sun-fill" viewBox="0 0 16 16">
-      <path
-        d="M8 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM8 0a.5.5 0 0 1 .5.5v2a.5.5 0 0 1-1 0v-2A.5.5 0 0 1 8 0zm0 13a.5.5 0 0 1 .5.5v2a.5.5 0 0 1-1 0v-2A.5.5 0 0 1 8 13zm8-5a.5.5 0 0 1-.5.5h-2a.5.5 0 0 1 0-1h2a.5.5 0 0 1 .5.5zM3 8a.5.5 0 0 1-.5.5h-2a.5.5 0 0 1 0-1h2A.5.5 0 0 1 3 8zm10.657-5.657a.5.5 0 0 1 0 .707l-1.414 1.415a.5.5 0 1 1-.707-.708l1.414-1.414a.5.5 0 0 1 .707 0zm-9.193 9.193a.5.5 0 0 1 0 .707L3.05 13.657a.5.5 0 0 1-.707-.707l1.414-1.414a.5.5 0 0 1 .707 0zm9.193 2.121a.5.5 0 0 1-.707 0l-1.414-1.414a.5.5 0 0 1 .707-.707l1.414 1.414a.5.5 0 0 1 0 .707zM4.464 4.465a.5.5 0 0 1-.707 0L2.343 3.05a.5.5 0 1 1 .707-.707l1.414 1.414a.5.5 0 0 1 0 .708z" />
-    </symbol>
-  </svg>
-
-  <div class="position-fixed bottom-0 end-0 mb-3 me-3 bd-mode-toggle">
-    <button class="btn btn-bd-primary py-2 dropdown-toggle d-flex align-items-center" id="bd-theme" type="button"
-      aria-expanded="false" data-bs-toggle="dropdown" aria-label="Toggle theme (auto)">
-      <svg class="bi my-1 theme-icon-active" width="1em" height="1em">
-        <use href="#circle-half"></use>
-      </svg>
-      <span class="visually-hidden" id="bd-theme-text">Toggle theme</span>
+  <!-- Navigation -->
+  <nav class="site-nav" id="siteNav">
+    <a href="./index.html" class="nav-logo">
+      <img src="https://res.cloudinary.com/df4rizvgx/image/upload/v1777813270/rumbelievable-bronze_lkvsxj.png" alt="">
+      Rumbelievable
+    </a>
+    <button class="nav-toggle" id="navToggle" aria-label="Toggle navigation">
+      <span></span><span></span><span></span>
     </button>
-    <ul class="dropdown-menu dropdown-menu-end shadow" aria-labelledby="bd-theme-text">
-      <li>
-        <button type="button" class="dropdown-item d-flex align-items-center" data-bs-theme-value="light"
-          aria-pressed="false">
-          <svg class="bi me-2 opacity-50" width="1em" height="1em">
-            <use href="#sun-fill"></use>
-          </svg>
-          Light
-          <svg class="bi ms-auto d-none" width="1em" height="1em">
-            <use href="#check2"></use>
-          </svg>
-        </button>
+    <ul class="nav-links" id="navLinks">
+      <li><a href="./index.html" class="active">Home</a></li>
+      <li class="nav-dropdown">
+        <a href="./photography.html">Photography</a>
+        <ul class="nav-dropdown-menu">
+          <li><a href="./pages/albums/landscapes.html">Landscapes</a></li>
+          <li><a href="./pages/albums/mountains.html">Mountains</a></li>
+          <li><a href="./pages/albums/reflections.html">Reflections</a></li>
+          <li><a href="./pages/albums/night-sky.html">Night Sky</a></li>
+          <li><a href="./pages/albums/wildlife.html">Wildlife</a></li>
+          <li><a href="./pages/albums/panoramas.html">Panoramas</a></li>
+        </ul>
       </li>
-      <li>
-        <button type="button" class="dropdown-item d-flex align-items-center" data-bs-theme-value="dark"
-          aria-pressed="false">
-          <svg class="bi me-2 opacity-50" width="1em" height="1em">
-            <use href="#moon-stars-fill"></use>
-          </svg>
-          Dark
-          <svg class="bi ms-auto d-none" width="1em" height="1em">
-            <use href="#check2"></use>
-          </svg>
-        </button>
-      </li>
-      <li>
-        <button type="button" class="dropdown-item d-flex align-items-center active" data-bs-theme-value="auto"
-          aria-pressed="true">
-          <svg class="bi me-2 opacity-50" width="1em" height="1em">
-            <use href="#circle-half"></use>
-          </svg>
-          Auto
-          <svg class="bi ms-auto d-none" width="1em" height="1em">
-            <use href="#check2"></use>
-          </svg>
-        </button>
-      </li>
+      <li><a href="./woodworking.html">Woodworking</a></li>
+      <li><a href="./about-me.html">About</a></li>
+      <li><a href="./contact.html">Contact</a></li>
     </ul>
-  </div>
+  </nav>
 
-
-  <div class="d-flex w-100 h-100 p-3 mx-auto flex-column">
-    <header data-bs-theme="auto" class="mb-5">
-      <ul class="nav nav-pills d-flex gap-2 justify-content-center py-5">
-        <li class="nav-item"><a href="./index.html" class="nav-link active" aria-current="page">Home</a></li>
-        <li class="nav-item dropdown">
-          <a class="nav-link" href="./photography.html" id="navbarDropdown" role="button" aria-expanded="false">
-            Photography <i class="fa-solid fa-angle-down"></i>
-          </a>
-          <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-            <li><a class="dropdown-item" href="./pages/albums/landscapes.html">Landscapes <i
-                  class="fa-solid fa-tree"></i></a></li>
-            <li><a class="dropdown-item" href="./pages/albums/mountains.html">Mountains <i
-                  class="fa-solid fa-mountain"></i></a></li>
-            <li><a class="dropdown-item" href="./pages/albums/night-sky.html">Night Sky <i
-                  class="fa-solid fa-moon"></i></a></li>
-            <li><a class="dropdown-item" href="../pages/albums/panoramas.html">Panoramas <i
-                  class="fa-solid fa-panorama"></i></a></li>
-            <li><a class="dropdown-item" href="./pages/albums/reflections.html">Reflections <i
-                  class="fa-solid fa-gem"></i></a></li>
-            <li><a class="dropdown-item" href="./pages/albums/wildlife.html">Wildlife <i
-                  class="fa-solid fa-crow"></i></a></li>
-          </ul>
-        </li>
-        <li class="nav-item"><a href="./blog.html" class="nav-link" aria-current="page">Blog</a></li>
-        <li class="nav-item"><a href="./about-me.html" class="nav-link">About Me</a></li>
-      </ul>
-      <div class="alert alert-warning alert-dismissible fade show" role="alert">
-        Website is still a work in progress, please excuse the lil bugs <i class="fa-solid fa-bug"></i>
-        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+  <!-- Hero -->
+  <section class="hero">
+    <div class="hero-bg" id="heroBg"></div>
+    <div class="hero-overlay"></div>
+    <div class="hero-content">
+      <p class="hero-eyebrow">Photography &amp; Craft</p>
+      <h1 class="hero-title">Rum<em>believable</em></h1>
+      <p class="hero-desc">A home for photography and woodworking — and whatever else I can come up with. I hope you enjoy.</p>
+      <div class="hero-ctas">
+        <a href="./photography.html" class="btn-primary">
+          View Photography <i class="fa-solid fa-arrow-right" style="font-size:0.75em"></i>
+        </a>
+        <a href="./woodworking.html" class="btn-primary">View Woodworking <i class="fa-solid fa-arrow-right" style="font-size:0.75em"></i></a>
+        <a href="./about-me.html" class="btn-ghost">About Me</a>
       </div>
-    </header>
+    </div>
+    <div class="scroll-hint">
+      <div class="scroll-line"></div>
+      <span>Explore</span>
+    </div>
+  </section>
 
-    <main>
-      <img class="d-block mx-auto mb-4"
-        src="https://res.cloudinary.com/df4rizvgx/image/upload/v1716646449/RUMBELIEVABLE_copy_vk75vr.png" alt=""
-        width="570" height="240">
-      <hr>
-      <p class="lead">Home to my photography, some words, and... anything else I can come up with. I hope you
-        enjoy, and if you don't, please don't tell me – I'm really sensitive.</p>
-
-      <footer class="mt-auto text-white-50">
-        <div class="footer">
-          <a href="https://www.linkedin.com/in/annie-rumbles/"><i
-              class="fa-brands fa-linkedin fa-2xl footer-icons p-2"></i></a>
-          <a href="https://github.com/rumbelievable"><i class="fa-brands fa-github fa-2xl footer-icons p-2"></i></a>
-          <a href="mailto: amrumbles@gmail.com"><i class="fa-solid fa-envelope fa-2xl footer-icons p-2"></i></a>
-        </div>
-        <div class="footer mt-3">
-          <p>&copy; Rumbelievable 2024</p>
-        </div>
-      </footer>
-    </main>
-
-    <script src="./assets/js/bootstrap.bundle.min.js"></script>
+  <!-- Intro -->
+  <div class="intro-strip">
+    <blockquote>"There's so much to capture — may as well try."</blockquote>
+    <p>Based in Denver, Colorado. Born in England. Always scheming.</p>
   </div>
 
-</body>
+  <!-- Section nav -->
+  <section class="section-nav">
+    <p class="section-label">Explore</p>
+    <div class="two-col-nav">
+      <a href="./photography.html" class="nav-card">
+        <img
+          src="https://res.cloudinary.com/df4rizvgx/image/upload/v1714331957/panoramas/_DSC5075-Pano_kqndj7.jpg"
+          alt="Photography" loading="lazy">
+        <div class="nav-card-body">
+          <p class="nav-card-label">Galleries</p>
+          <h2 class="nav-card-title">Photography</h2>
+          <span class="nav-card-link">Browse albums <i class="fa-solid fa-arrow-right" style="font-size:0.7em"></i></span>
+        </div>
+      </a>
+      <a href="./woodworking.html" class="nav-card">
+        <img
+          src="https://res.cloudinary.com/df4rizvgx/image/upload/c_scale,w_800/f_auto/q_auto/v1716000410/blog_images/IMG_3622_lv65cy.jpg"
+          alt="Woodworking" loading="lazy">
+        <div class="nav-card-body">
+          <p class="nav-card-label">Craft</p>
+          <h2 class="nav-card-title">Woodworking</h2>
+          <span class="nav-card-link">View projects <i class="fa-solid fa-arrow-right" style="font-size:0.7em"></i></span>
+        </div>
+      </a>
+      <a href="./about-me.html" class="nav-card">
+        <img
+          src="https://res.cloudinary.com/df4rizvgx/image/upload/v1715014374/IMG_2975_2_plnsud.jpg"
+          alt="About" loading="lazy">
+        <div class="nav-card-body">
+          <p class="nav-card-label">Person</p>
+          <h2 class="nav-card-title">About Me</h2>
+          <span class="nav-card-link">Read more <i class="fa-solid fa-arrow-right" style="font-size:0.7em"></i></span>
+        </div>
+      </a>
+    </div>
+  </section>
 
+  <!-- Footer -->
+  <footer class="site-footer">
+    <div class="footer-links">
+      <a href="https://www.linkedin.com/in/annie-rumbles/" aria-label="LinkedIn"><i class="fa-brands fa-linkedin"></i></a>
+      <a href="https://github.com/rumbelievable" aria-label="GitHub"><i class="fa-brands fa-github"></i></a>
+      <a href="mailto:amrumbles@gmail.com" aria-label="Email"><i class="fa-solid fa-envelope"></i></a>
+    </div>
+    <p class="footer-copy">&copy; Rumbelievable 2026</p>
+  </footer>
+
+  <script>
+    {
+      const nav      = document.getElementById('siteNav');
+      const navLinks = document.getElementById('navLinks');
+      const bg       = document.getElementById('heroBg');
+
+      window.addEventListener('scroll', () => nav.classList.toggle('scrolled', window.scrollY > 40), { passive: true });
+      window.addEventListener('load', () => bg.classList.add('loaded'), { once: true });
+
+      document.getElementById('navToggle').addEventListener('click', () => navLinks.classList.toggle('open'));
+
+      document.addEventListener('click', e => {
+        if (!nav.contains(e.target)) navLinks.classList.remove('open');
+      });
+
+      document.addEventListener('keydown', e => {
+        if (e.key === 'Escape') navLinks.classList.remove('open');
+      });
+    }
+  </script>
+</body>
 </html>
