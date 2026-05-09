@@ -3,8 +3,8 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="Sage Green Bookcase — Woodworking by Annie Rumbles">
-  <title>Sage Green Bookcase — Rumbelievable</title>
+  <meta name="description" content="Patterned Plywood Box — Woodworking by Annie Rumbles">
+  <title>Patterned Plywood Box — Rumbelievable</title>
   <link rel="shortcut icon" type="image/x-icon"
     href="https://res.cloudinary.com/df4rizvgx/image/upload/v1777813270/rumbelievable-bronze_lkvsxj.png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -44,7 +44,6 @@
     }
     .back-link:hover { color: var(--brass); }
 
-    /* Photos */
     .project-photos {
       padding: 3rem clamp(1.5rem, 5vw, 4rem);
       border-bottom: 1px solid rgba(255,255,255,0.06);
@@ -76,7 +75,6 @@
       .project-photo-grid img { height: 220px; }
     }
 
-    /* Two-column details layout */
     .project-details {
       display: grid;
       grid-template-columns: 1fr 300px;
@@ -89,12 +87,10 @@
         grid-template-columns: 1fr;
         gap: 3rem;
       }
-      /* On mobile, specs card appears above narrative */
       .project-details { display: flex; flex-direction: column; }
       .project-specs-card { order: -1; }
     }
 
-    /* Narrative (left column) */
     .narrative-section { margin-bottom: 2.75rem; }
     .narrative-section:last-child { margin-bottom: 0; }
     .narrative-label {
@@ -135,8 +131,15 @@
       margin-bottom: 1rem;
     }
     .project-narrative li { margin-bottom: 0.35rem; }
+    .project-narrative a {
+      color: var(--brass);
+      text-decoration: underline;
+      text-underline-offset: 3px;
+      text-decoration-color: rgba(184,146,74,0.35);
+      transition: text-decoration-color 0.2s;
+    }
+    .project-narrative a:hover { text-decoration-color: var(--brass); }
 
-    /* Specs card (right column) */
     .project-specs-card {
       background: rgba(255,255,255,0.025);
       border: 1px solid rgba(255,255,255,0.07);
@@ -177,8 +180,6 @@
       transition: text-decoration-color 0.2s;
     }
     .spec-value a:hover { text-decoration-color: var(--brass); }
-
-    /* Lightbox styles inherited from rumbelievable.css */
   </style>
 </head>
 <body>
@@ -214,9 +215,9 @@
     <a href="../../woodworking.html" class="back-link">
       <i class="fa-solid fa-arrow-left" style="font-size:0.7em"></i> All Projects
     </a>
-    <p class="eyebrow">Woodworking</p>
-    <h1>Sage Green Bookcase</h1>
-    <p class="subtitle">First project. Built in a weekend class, painted sage green, and still somehow standing.</p>
+    <p class="eyebrow">Woodworking · 2025</p>
+    <h1>Patterned Plywood Box</h1>
+    <p class="subtitle">Well that was satisfying</p>
   </header>
 
   <div class="lightbox" id="lightbox" role="dialog" aria-modal="true" aria-label="Photo lightbox">
@@ -229,9 +230,14 @@
   <section class="project-photos">
     <img
       class="project-photo-main"
-      src="https://res.cloudinary.com/df4rizvgx/image/upload/c_scale,w_1200/f_auto/q_auto/v1716000411/blog_images/IMG_2976_ujavcr.jpg"
-      alt="Sage Green Bookcase" loading="lazy">
-    <!-- Add more photos here as a .project-photo-grid.cols-2 or .cols-3 -->
+      src="https://res.cloudinary.com/df4rizvgx/image/upload/v1778241635/IMG_6559_cwqkvo.png"
+      alt="Patterned Plywood Box" loading="lazy">
+    <div class="project-photo-grid cols-3">
+        <img src="https://res.cloudinary.com/df4rizvgx/image/upload/v1778021156/IMG_6431_f8tq2x.png" alt="" loading="lazy">
+        <img src="https://res.cloudinary.com/df4rizvgx/image/upload/v1778021154/IMG_6445_ql3zvk.png" alt="" loading="lazy">
+        <img src="https://res.cloudinary.com/df4rizvgx/image/upload/v1778021156/IMG_6415_bflyvg.png" alt="" loading="lazy">
+        <img src="https://res.cloudinary.com/df4rizvgx/image/upload/v1778021157/IMG_6414_zohrqv.png" alt="" loading="lazy">
+    </div>
   </section>
 
   <div class="project-details">
@@ -239,22 +245,16 @@
     <div class="project-narrative">
       <h2>About this project</h2>
       <div class="narrative-section">
-        <p>About a year ago I decided I wanted to build something with my hands — for fun, and for when the grid goes down. I found a woodworking class at <a href="https://www.woodworksstudio.com/" target="_blank" rel="noopener">Woodworks Studio</a> and signed up for the bookcase class.</p>
-        <p>I learned more than I expected: how to select lumber (and dodge the dreaded twist), the hierarchy of power tools, the satisfaction of a well-fit dado, and the joy and wonder of a router — which I insisted on calling a beveller for too long.</p>
-        <p>Made of poplar and finished in sage green paint, it lives in our house and I'm unreasonably proud of it.</p>
+        <p>Trying my hand at patterned plywood was a success, and incredibly satisfying.</p>
+        <p>Michael Alm (almfab.com) has been a patterned plywood pioneer and has taught this technique wonderfully. Even just revisiting this project to post on my website makes me want to dive into it again!</p>
+        <p>This box is one of my favorites, and I gifted it to my niece when she was born in June 2025!</p>
       </div>
-
       <div class="narrative-section">
         <p class="narrative-label">Lessons Learned</p>
         <ul>
-          <li>Lumber selection matters more than you'd think — S3S, grain direction, and avoiding the twist</li>
-          <li>The jointer is your best friend for a true straight edge</li>
-          <li>Dados and rabbets: more satisfying to say than to cut (but still satisfying to cut)</li>
-          <li>Pocket holes + wood glue together are an unbeatable joint</li>
-          <li>Never underestimate, or mislabel, a router</li>
+          <li>Patterned plywood is bloody FUN</li>
         </ul>
       </div>
-
       <div class="narrative-section">
         <p class="narrative-label">Favorite Part</p>
         <p><!-- Add your favorite part here --></p>
@@ -265,25 +265,23 @@
       <p class="specs-heading">Project Specs</p>
       <div class="spec-row">
         <span class="spec-label">Wood</span>
-        <span class="spec-value">Poplar (S3S)</span>
+        <span class="spec-value">Walnut, hard maple, and plywood</span>
       </div>
       <div class="spec-row">
         <span class="spec-label">Finish</span>
-        <span class="spec-value">Sage green paint</span>
+        <span class="spec-value">Tried & True Original</span>
       </div>
       <div class="spec-row">
-        <span class="spec-label">Dimensions</span>
-        <span class="spec-value">—</span>
+        <span class="spec-label">Joinery</span>
+        <span class="spec-value">—Miters and splines</span>
       </div>
       <div class="spec-row">
-        <span class="spec-label">Build time</span>
+        <span class="spec-label">Hardware</span>
         <span class="spec-value">—</span>
       </div>
       <div class="spec-row">
         <span class="spec-label">Plan</span>
-        <span class="spec-value">
-          <a href="https://www.woodworksstudio.com/" target="_blank" rel="noopener">Class at Woodworks Studio</a>
-        </span>
+        <span class="spec-value"><a href="https://www.almfab.com/store/p/how-to-pattern-plywood-vol-3-miter-patterns-presale" target="_blank" rel="noopener">Michael Alm-inspired</a></span>
       </div>
     </aside>
 
@@ -317,7 +315,7 @@
       document.querySelectorAll('.project-photo-main, .project-photo-grid img').forEach(img => {
         img.addEventListener('click', () => {
           lastFocus = img;
-          lbImg.src = img.src.replace('/c_scale,w_800/', '/c_scale,w_1600/');
+          lbImg.src = img.src.replace(/c_scale,w_\d+/, 'c_scale,w_1600');
           lbImg.alt = img.alt;
           lightbox.classList.add('open');
           document.body.style.overflow = 'hidden';

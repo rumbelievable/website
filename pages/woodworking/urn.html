@@ -3,8 +3,8 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="Coffee Table — Woodworking by Annie Rumbles">
-  <title>Coffee Table — Rumbelievable</title>
+  <meta name="description" content="Memorial Urn — Woodworking by Annie Rumbles">
+  <title>Memorial Urn — Rumbelievable</title>
   <link rel="shortcut icon" type="image/x-icon"
     href="https://res.cloudinary.com/df4rizvgx/image/upload/v1777813270/rumbelievable-bronze_lkvsxj.png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -44,7 +44,6 @@
     }
     .back-link:hover { color: var(--brass); }
 
-    /* Photos */
     .project-photos {
       padding: 3rem clamp(1.5rem, 5vw, 4rem);
       border-bottom: 1px solid rgba(255,255,255,0.06);
@@ -76,7 +75,6 @@
       .project-photo-grid img { height: 220px; }
     }
 
-    /* Two-column details layout */
     .project-details {
       display: grid;
       grid-template-columns: 1fr 300px;
@@ -85,11 +83,14 @@
       align-items: start;
     }
     @media (max-width: 860px) {
-      .project-details { display: flex; flex-direction: column; gap: 3rem; }
+      .project-details {
+        grid-template-columns: 1fr;
+        gap: 3rem;
+      }
+      .project-details { display: flex; flex-direction: column; }
       .project-specs-card { order: -1; }
     }
 
-    /* Narrative */
     .narrative-section { margin-bottom: 2.75rem; }
     .narrative-section:last-child { margin-bottom: 0; }
     .narrative-label {
@@ -139,7 +140,6 @@
     }
     .project-narrative a:hover { text-decoration-color: var(--brass); }
 
-    /* Specs card */
     .project-specs-card {
       background: rgba(255,255,255,0.025);
       border: 1px solid rgba(255,255,255,0.07);
@@ -180,8 +180,6 @@
       transition: text-decoration-color 0.2s;
     }
     .spec-value a:hover { text-decoration-color: var(--brass); }
-
-    /* Lightbox styles inherited from rumbelievable.css */
   </style>
 </head>
 <body>
@@ -217,9 +215,9 @@
     <a href="../../woodworking.html" class="back-link">
       <i class="fa-solid fa-arrow-left" style="font-size:0.7em"></i> All Projects
     </a>
-    <p class="eyebrow">Woodworking · 2024</p>
-    <h1>Coffee Table</h1>
-    <p class="subtitle">My pride and joy. First independent project — found plans I loved and went for it.</p>
+    <p class="eyebrow">Woodworking · 2025</p>
+    <h1>Memorial Urn</h1>
+    <p class="subtitle">Honoring my grandparents with the very best work I could do</p>
   </header>
 
   <div class="lightbox" id="lightbox" role="dialog" aria-modal="true" aria-label="Photo lightbox">
@@ -232,22 +230,11 @@
   <section class="project-photos">
     <img
       class="project-photo-main"
-      src="https://res.cloudinary.com/df4rizvgx/image/upload/v1777922027/_DSC1719_3_tnf63y.png"
-      alt="Coffee Table — revisited" loading="lazy">
+      src="https://res.cloudinary.com/df4rizvgx/image/upload/v1778021154/IMG_7290_zx9utk.png"
+      alt="Urn" loading="lazy">
     <div class="project-photo-grid cols-2">
-      <img
-        src="https://res.cloudinary.com/df4rizvgx/image/upload/v1777922029/_DSC1700_3_yukbtn.png"
-        alt="Coffee Table — side detail" loading="lazy">
-      <img 
-        src="https://res.cloudinary.com/df4rizvgx/image/upload/v1777922030/_DSC1691_3_rxyrlx.png"
-        alt="Coffee Table — front detail" loading="lazy">
-      <img 
-        src="https://res.cloudinary.com/df4rizvgx/image/upload/v1777851418/_DSC1718_2_nuktpe.png"
-        alt="Coffee Table — loop detail" loading="lazy">
-      <img 
-        src="https://res.cloudinary.com/df4rizvgx/image/upload/v1777922029/_DSC1694_3_zjq8x6.png"
-        alt="Coffee Table — tea detail" loading="lazy">
-      <!-- Add more photos here -->
+        <img src="https://res.cloudinary.com/df4rizvgx/image/upload/v1778021158/IMG_7292_ikkous.png" alt="" loading="lazy">
+        <img src="https://res.cloudinary.com/df4rizvgx/image/upload/v1778021155/IMG_7295_rt4f8f.png" alt="" loading="lazy">
     </div>
   </section>
 
@@ -256,22 +243,14 @@
     <div class="project-narrative">
       <h2>About this project</h2>
       <div class="narrative-section">
-        <p>After my first foray into woodworking, building a simple bookcase, I signed up for the intermediate class and decided to take on a real furniture piece. I found <a href="https://spencleydesignco.com/collections/furniture-plans/products/cody-coffee-table-plans">Spencley Design Co's Cody Coffee Table</a> plans and couldn't resist.</p>
-        <p>I could wax poetic about it forever.</p>
+        <p>When my grandfather passed away, my grandma invested in me and my woodworking and asked for me to build his urn. I built something with the beginner skills I had, I worked so hard on it, but I knew I could do better.</p>
+        <p>When my grandma passed away this past summer, I knew I wanted to put my improved skills to work. So many tears were spilled building this, but I could just feel my grandparents pride in me.</p> 
+        <p>They gave me so much in life, this was the very, very least I could do for them in death.</p> 
+        <p>Onward and upward.</p>
       </div>
-
-      <div class="narrative-section">
-        <p class="narrative-label">Lessons Learned</p>
-        <ul>
-          <li>Wear a mask when sanding!!!</li>
-          <li>Getting a clean glue joint is so critical</li>
-          <li>Don't use oil-based polyurethane for finish</li>
-        </ul>
-      </div>
-
       <div class="narrative-section">
         <p class="narrative-label">Favorite Part</p>
-        <p>I first built this in 2024 and this past winter I was getting twitchy with the fit and finish of the table, so I revisited it. Disassembled, new joinery, resanded, and refinished. Bam.</p>
+        <p>Taking my time to pay tribute to the love I have for my grandparents and put it in a physical object.</p>
       </div>
     </div>
 
@@ -279,25 +258,23 @@
       <p class="specs-heading">Project Specs</p>
       <div class="spec-row">
         <span class="spec-label">Wood</span>
-        <span class="spec-value">Walnut</span>
+        <span class="spec-value">Walnut and hard maple</span>
       </div>
       <div class="spec-row">
         <span class="spec-label">Finish</span>
-        <span class="spec-value">Rubio Monocoat - Pure</span>
+        <span class="spec-value">Tried & True Original</span>
       </div>
       <div class="spec-row">
         <span class="spec-label">Joinery</span>
-        <span class="spec-value">Dominoes</span>
+        <span class="spec-value">Miters and splines</span>
       </div>
       <div class="spec-row">
         <span class="spec-label">Hardware</span>
-        <span class="spec-value">Figure 8 fasteners</span>
+        <span class="spec-value">Brass hinges</span>
       </div>
       <div class="spec-row">
         <span class="spec-label">Plan</span>
-        <span class="spec-value">
-          <a href="https://spencleydesignco.com/collections/furniture-plans/products/cody-coffee-table-plans" target="_blank" rel="noopener">Cody Coffee Table — Spencley Design Co</a>
-        </span>
+        <span class="spec-value">Original design</span>
       </div>
     </aside>
 
@@ -331,7 +308,7 @@
       document.querySelectorAll('.project-photo-main, .project-photo-grid img').forEach(img => {
         img.addEventListener('click', () => {
           lastFocus = img;
-          lbImg.src = img.src.replace('/c_scale,w_800/', '/c_scale,w_1600/');
+          lbImg.src = img.src.replace(/c_scale,w_\d+/, 'c_scale,w_1600');
           lbImg.alt = img.alt;
           lightbox.classList.add('open');
           document.body.style.overflow = 'hidden';
