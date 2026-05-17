@@ -48,32 +48,6 @@
       padding: 3rem clamp(1.5rem, 5vw, 4rem);
       border-bottom: 1px solid rgba(255,255,255,0.06);
     }
-    .project-photo-main {
-      width: 100%;
-      max-height: 580px;
-      object-fit: cover;
-      display: block;
-      cursor: zoom-in;
-    }
-    .project-photo-grid {
-      display: grid;
-      gap: 0.5rem;
-      margin-top: 0.5rem;
-    }
-    .project-photo-grid.cols-2 { grid-template-columns: 1fr 1fr; }
-    .project-photo-grid.cols-3 { grid-template-columns: 1fr 1fr 1fr; }
-    .project-photo-grid img {
-      width: 100%;
-      height: 260px;
-      object-fit: cover;
-      display: block;
-      cursor: zoom-in;
-    }
-    @media (max-width: 560px) {
-      .project-photo-grid.cols-2,
-      .project-photo-grid.cols-3 { grid-template-columns: 1fr; }
-      .project-photo-grid img { height: 220px; }
-    }
 
     .project-details {
       display: grid;
@@ -228,15 +202,20 @@
   </div>
 
   <section class="project-photos">
-    <img
-      class="project-photo-main"
-      src="https://res.cloudinary.com/df4rizvgx/image/upload/v1778021248/0A847897-D36B-4E2E-A097-15AC093CFF46_gvdwaw.jpg"
-      alt="Floating Night Stands" loading="lazy">
-    <div class="project-photo-grid cols-2">
-        <img src="https://res.cloudinary.com/df4rizvgx/image/upload/v1778021249/3CE8B44C-1CFD-4057-9BD0-05B90595CAE4_inni4a.jpg" alt="" loading="lazy">
-        <img src="https://res.cloudinary.com/df4rizvgx/image/upload/v1778021249/2ECF3640-4EFE-47E8-90AB-57FDAF086DD4_nhxadb.jpg" alt="" loading="lazy">
-        <img src="https://res.cloudinary.com/df4rizvgx/image/upload/v1778086480/IMG_7088_ddh0ue_ds6xyi.png" alt="" loading="lazy">
-        <img src="https://res.cloudinary.com/df4rizvgx/image/upload/v1778086479/IMG_7102_nzfpet.png" alt="" loading="lazy">
+    <img class="project-photo-main" src="https://res.cloudinary.com/df4rizvgx/image/upload/v1778021248/0A847897-D36B-4E2E-A097-15AC093CFF46_gvdwaw.jpg" alt="Floating Night Stands" loading="lazy">
+    <div class="masonry-grid">
+      <div class="masonry-item">
+        <img src="https://res.cloudinary.com/df4rizvgx/image/upload/v1778021249/3CE8B44C-1CFD-4057-9BD0-05B90595CAE4_inni4a.jpg" loading="lazy">
+      </div>
+      <div class="masonry-item">
+        <img src="https://res.cloudinary.com/df4rizvgx/image/upload/v1778021249/2ECF3640-4EFE-47E8-90AB-57FDAF086DD4_nhxadb.jpg" loading="lazy">
+      </div>
+      <div class="masonry-item">
+        <img src="https://res.cloudinary.com/df4rizvgx/image/upload/v1778086480/IMG_7088_ddh0ue_ds6xyi.png" loading="lazy">
+      </div>
+      <div class="masonry-item">
+        <img src="https://res.cloudinary.com/df4rizvgx/image/upload/v1778086479/IMG_7102_nzfpet.png" loading="lazy">
+      </div>
     </div>
   </section>
 
@@ -311,7 +290,7 @@
         if (!nav.contains(e.target)) navLinks.classList.remove('open');
       });
 
-      document.querySelectorAll('.project-photo-main, .project-photo-grid img').forEach(img => {
+      document.querySelectorAll('.project-photo-main, .masonry-item img').forEach(img => {
         img.addEventListener('click', () => {
           lastFocus = img;
           lbImg.src = img.src.replace(/c_scale,w_\d+/, 'c_scale,w_1600');

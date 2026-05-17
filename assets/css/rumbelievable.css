@@ -299,6 +299,15 @@ a {
   background: var(--ink);
 }
 
+.project-photo-main {
+  width: 100%;
+  max-height: 580px;
+  object-fit: cover;
+  display: block;
+  cursor: zoom-in;
+  margin-bottom: 0.5rem;
+}
+
 .masonry-grid {
   columns: 3;
   column-gap: 3px;

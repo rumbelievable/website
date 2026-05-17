@@ -49,32 +49,6 @@
       padding: 3rem clamp(1.5rem, 5vw, 4rem);
       border-bottom: 1px solid rgba(255,255,255,0.06);
     }
-    .project-photo-main {
-      width: 100%;
-      max-height: 580px;
-      object-fit: cover;
-      display: block;
-      cursor: zoom-in;
-    }
-    .project-photo-grid {
-      display: grid;
-      gap: 0.5rem;
-      margin-top: 0.5rem;
-    }
-    .project-photo-grid.cols-2 { grid-template-columns: 1fr 1fr; }
-    .project-photo-grid.cols-3 { grid-template-columns: 1fr 1fr 1fr; }
-    .project-photo-grid img {
-      width: 100%;
-      height: 260px;
-      object-fit: cover;
-      display: block;
-      cursor: zoom-in;
-    }
-    @media (max-width: 560px) {
-      .project-photo-grid.cols-2,
-      .project-photo-grid.cols-3 { grid-template-columns: 1fr; }
-      .project-photo-grid img { height: 220px; }
-    }
 
     /* Two-column details layout */
     .project-details {
@@ -230,24 +204,20 @@
   </div>
 
   <section class="project-photos">
-    <img
-      class="project-photo-main"
-      src="https://res.cloudinary.com/df4rizvgx/image/upload/v1777922027/_DSC1719_3_tnf63y.png"
-      alt="Coffee Table — revisited" loading="lazy">
-    <div class="project-photo-grid cols-2">
-      <img
-        src="https://res.cloudinary.com/df4rizvgx/image/upload/v1777922029/_DSC1700_3_yukbtn.png"
-        alt="Coffee Table — side detail" loading="lazy">
-      <img 
-        src="https://res.cloudinary.com/df4rizvgx/image/upload/v1777922030/_DSC1691_3_rxyrlx.png"
-        alt="Coffee Table — front detail" loading="lazy">
-      <img 
-        src="https://res.cloudinary.com/df4rizvgx/image/upload/v1777851418/_DSC1718_2_nuktpe.png"
-        alt="Coffee Table — loop detail" loading="lazy">
-      <img 
-        src="https://res.cloudinary.com/df4rizvgx/image/upload/v1777922029/_DSC1694_3_zjq8x6.png"
-        alt="Coffee Table — tea detail" loading="lazy">
-      <!-- Add more photos here -->
+    <img class="project-photo-main" src="https://res.cloudinary.com/df4rizvgx/image/upload/v1777922027/_DSC1719_3_tnf63y.png" alt="Coffee Table — revisited" loading="lazy">
+    <div class="masonry-grid">
+      <div class="masonry-item">
+        <img src="https://res.cloudinary.com/df4rizvgx/image/upload/v1777922029/_DSC1700_3_yukbtn.png" alt="Coffee Table — side detail" loading="lazy">
+      </div>
+      <div class="masonry-item">
+        <img src="https://res.cloudinary.com/df4rizvgx/image/upload/v1777922030/_DSC1691_3_rxyrlx.png" alt="Coffee Table — front detail" loading="lazy">
+      </div>
+      <div class="masonry-item">
+        <img src="https://res.cloudinary.com/df4rizvgx/image/upload/v1777851418/_DSC1718_2_nuktpe.png" alt="Coffee Table — loop detail" loading="lazy">
+      </div>
+      <div class="masonry-item">
+        <img src="https://res.cloudinary.com/df4rizvgx/image/upload/v1777922029/_DSC1694_3_zjq8x6.png" alt="Coffee Table — tea detail" loading="lazy">
+      </div>
     </div>
   </section>
 
@@ -328,7 +298,7 @@
         if (!nav.contains(e.target)) navLinks.classList.remove('open');
       });
 
-      document.querySelectorAll('.project-photo-main, .project-photo-grid img').forEach(img => {
+      document.querySelectorAll('.project-photo-main, .masonry-item img').forEach(img => {
         img.addEventListener('click', () => {
           lastFocus = img;
           lbImg.src = img.src.replace('/c_scale,w_800/', '/c_scale,w_1600/');

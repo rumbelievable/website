@@ -48,32 +48,6 @@
       padding: 3rem clamp(1.5rem, 5vw, 4rem);
       border-bottom: 1px solid rgba(255,255,255,0.06);
     }
-    .project-photo-main {
-      width: 100%;
-      max-height: 580px;
-      object-fit: cover;
-      display: block;
-      cursor: zoom-in;
-    }
-    .project-photo-grid {
-      display: grid;
-      gap: 0.5rem;
-      margin-top: 0.5rem;
-    }
-    .project-photo-grid.cols-2 { grid-template-columns: 1fr 1fr; }
-    .project-photo-grid.cols-3 { grid-template-columns: 1fr 1fr 1fr; }
-    .project-photo-grid img {
-      width: 100%;
-      height: 260px;
-      object-fit: cover;
-      display: block;
-      cursor: zoom-in;
-    }
-    @media (max-width: 560px) {
-      .project-photo-grid.cols-2,
-      .project-photo-grid.cols-3 { grid-template-columns: 1fr; }
-      .project-photo-grid img { height: 220px; }
-    }
 
     .project-details {
       display: grid;
@@ -228,15 +202,20 @@
   </div>
 
   <section class="project-photos">
-    <img
-      class="project-photo-main"
-      src="https://res.cloudinary.com/df4rizvgx/image/upload/v1778241635/IMG_6559_cwqkvo.png"
-      alt="Patterned Plywood Box" loading="lazy">
-    <div class="project-photo-grid cols-3">
-        <img src="https://res.cloudinary.com/df4rizvgx/image/upload/v1778021156/IMG_6431_f8tq2x.png" alt="" loading="lazy">
-        <img src="https://res.cloudinary.com/df4rizvgx/image/upload/v1778021154/IMG_6445_ql3zvk.png" alt="" loading="lazy">
-        <img src="https://res.cloudinary.com/df4rizvgx/image/upload/v1778021156/IMG_6415_bflyvg.png" alt="" loading="lazy">
-        <img src="https://res.cloudinary.com/df4rizvgx/image/upload/v1778021157/IMG_6414_zohrqv.png" alt="" loading="lazy">
+    <img class="project-photo-main" src="https://res.cloudinary.com/df4rizvgx/image/upload/v1778241635/IMG_6559_cwqkvo.png" alt="Patterned Plywood Box" loading="lazy">
+    <div class="masonry-grid">
+      <div class="masonry-item">
+        <img src="https://res.cloudinary.com/df4rizvgx/image/upload/v1778021156/IMG_6431_f8tq2x.png" loading="lazy">
+      </div>
+      <div class="masonry-item">
+        <img src="https://res.cloudinary.com/df4rizvgx/image/upload/v1778021154/IMG_6445_ql3zvk.png" loading="lazy">
+      </div>
+      <div class="masonry-item">
+        <img src="https://res.cloudinary.com/df4rizvgx/image/upload/v1778021156/IMG_6415_bflyvg.png" loading="lazy">
+      </div>
+      <div class="masonry-item">
+        <img src="https://res.cloudinary.com/df4rizvgx/image/upload/v1778021157/IMG_6414_zohrqv.png" loading="lazy">
+      </div>
     </div>
   </section>
 
@@ -312,7 +291,7 @@
         if (!nav.contains(e.target)) navLinks.classList.remove('open');
       });
 
-      document.querySelectorAll('.project-photo-main, .project-photo-grid img').forEach(img => {
+      document.querySelectorAll('.project-photo-main, .masonry-item img').forEach(img => {
         img.addEventListener('click', () => {
           lastFocus = img;
           lbImg.src = img.src.replace(/c_scale,w_\d+/, 'c_scale,w_1600');
