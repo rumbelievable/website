@@ -46,78 +46,79 @@
     </ul>
   </nav>
 
-  <!-- Page header -->
   <header class="page-hero">
-    <p class="eyebrow">Galleries</p>
+    <p class="eyebrow">Galleries · <span data-count="albums">6</span> albums</p>
     <h1>Photography</h1>
     <p class="subtitle">Landscapes, mountains, wildlife &amp; more — shot mostly in Colorado and beyond.</p>
   </header>
 
-  <!-- Albums grid -->
-  <main>
-    <div class="albums-grid">
-
-      <a href="./pages/albums/landscapes.html" class="album-tile">
-        <img src="https://res.cloudinary.com/df4rizvgx/image/upload/v1714329539/landscapes/_DSC9193_n8yqdq.jpg"
-             alt="Landscapes" loading="lazy">
-        <div class="album-tile-body">
-          
-          <h2 class="album-tile-title">Landscapes</h2>
-          <span class="album-tile-cta">Open album <span aria-hidden="true">→</span></span>
-        </div>
-      </a>
-
-      <a href="./pages/albums/mountains.html" class="album-tile">
-        <img src="https://res.cloudinary.com/df4rizvgx/image/upload/v1714330861/mountains/DSC_6107_uyucta.jpg"
-             alt="Mountains" loading="lazy">
-        <div class="album-tile-body">
-          
-          <h2 class="album-tile-title">Mountains</h2>
-          <span class="album-tile-cta">Open album <span aria-hidden="true">→</span></span>
-        </div>
-      </a>
-
-      <a href="./pages/albums/night-sky.html" class="album-tile">
-        <img src="https://res.cloudinary.com/df4rizvgx/image/upload/v1714331193/night-sky/_DSC5015_ajtnto.jpg"
-             alt="Night Sky" loading="lazy">
-        <div class="album-tile-body">
-          
-          <h2 class="album-tile-title">Night Sky</h2>
-          <span class="album-tile-cta">Open album <span aria-hidden="true">→</span></span>
-        </div>
-      </a>
-
-      <a href="./pages/albums/panoramas.html" class="album-tile">
-        <img src="https://res.cloudinary.com/df4rizvgx/image/upload/v1714331947/panoramas/_DSC9377-Pano_ep1fmh.jpg"
-             alt="Panoramas" loading="lazy">
-        <div class="album-tile-body">
-          
-          <h2 class="album-tile-title">Panoramas</h2>
-          <span class="album-tile-cta">Open album <span aria-hidden="true">→</span></span>
-        </div>
-      </a>
-
-      <a href="./pages/albums/reflections.html" class="album-tile">
-        <img src="https://res.cloudinary.com/df4rizvgx/image/upload/v1714331393/reflections/DSC_4109_sfs2jb.jpg"
-             alt="Reflections" loading="lazy">
-        <div class="album-tile-body">
-          
-          <h2 class="album-tile-title">Reflections</h2>
-          <span class="album-tile-cta">Open album <span aria-hidden="true">→</span></span>
-        </div>
-      </a>
-
-      <a href="./pages/albums/wildlife.html" class="album-tile">
-        <img src="https://res.cloudinary.com/df4rizvgx/image/upload/v1714331446/wildlife/_DSC7784_kpjkt2.jpg"
-             alt="Wildlife" loading="lazy">
-        <div class="album-tile-body">
-          
-          <h2 class="album-tile-title">Wildlife</h2>
-          <span class="album-tile-cta">Open album <span aria-hidden="true">→</span></span>
-        </div>
-      </a>
-
-    </div>
+  <main class="album-index">
+    <figure class="album-preview" aria-hidden="true">
+      <div class="album-preview-stack">
+        <img src="https://res.cloudinary.com/df4rizvgx/image/upload/v1714329539/landscapes/_DSC9193_n8yqdq.jpg" alt="" loading="lazy">
+        <img src="https://res.cloudinary.com/df4rizvgx/image/upload/v1714330861/mountains/DSC_6107_uyucta.jpg" alt="" loading="lazy">
+        <img src="https://res.cloudinary.com/df4rizvgx/image/upload/v1714331193/night-sky/_DSC5015_ajtnto.jpg" alt="" loading="lazy">
+        <img src="https://res.cloudinary.com/df4rizvgx/image/upload/v1714331947/panoramas/_DSC9377-Pano_ep1fmh.jpg" alt="" loading="lazy">
+        <img src="https://res.cloudinary.com/df4rizvgx/image/upload/v1714331393/reflections/DSC_4109_sfs2jb.jpg" alt="" loading="lazy">
+        <img src="https://res.cloudinary.com/df4rizvgx/image/upload/v1714331446/wildlife/_DSC7784_kpjkt2.jpg" alt="" loading="lazy">
+      </div>
+    </figure>
+    <ol class="album-list">
+        <li>
+          <a href="./pages/albums/landscapes.html" class="album-row">
+            <img class="album-row-thumb" src="https://res.cloudinary.com/df4rizvgx/image/upload/v1714329539/landscapes/_DSC9193_n8yqdq.jpg" alt="" loading="lazy">
+            <span class="album-row-no">01</span>
+            <span class="album-row-name">Landscapes</span>
+            <span class="album-row-count">58 figures</span>
+            <span class="album-row-arrow" aria-hidden="true">→</span>
+          </a>
+        </li>
+        <li>
+          <a href="./pages/albums/mountains.html" class="album-row">
+            <img class="album-row-thumb" src="https://res.cloudinary.com/df4rizvgx/image/upload/v1714330861/mountains/DSC_6107_uyucta.jpg" alt="" loading="lazy">
+            <span class="album-row-no">02</span>
+            <span class="album-row-name">Mountains</span>
+            <span class="album-row-count">54 figures</span>
+            <span class="album-row-arrow" aria-hidden="true">→</span>
+          </a>
+        </li>
+        <li>
+          <a href="./pages/albums/night-sky.html" class="album-row">
+            <img class="album-row-thumb" src="https://res.cloudinary.com/df4rizvgx/image/upload/v1714331193/night-sky/_DSC5015_ajtnto.jpg" alt="" loading="lazy">
+            <span class="album-row-no">03</span>
+            <span class="album-row-name">Night Sky</span>
+            <span class="album-row-count">16 figures</span>
+            <span class="album-row-arrow" aria-hidden="true">→</span>
+          </a>
+        </li>
+        <li>
+          <a href="./pages/albums/panoramas.html" class="album-row">
+            <img class="album-row-thumb" src="https://res.cloudinary.com/df4rizvgx/image/upload/v1714331947/panoramas/_DSC9377-Pano_ep1fmh.jpg" alt="" loading="lazy">
+            <span class="album-row-no">04</span>
+            <span class="album-row-name">Panoramas</span>
+            <span class="album-row-count">16 figures</span>
+            <span class="album-row-arrow" aria-hidden="true">→</span>
+          </a>
+        </li>
+        <li>
+          <a href="./pages/albums/reflections.html" class="album-row">
+            <img class="album-row-thumb" src="https://res.cloudinary.com/df4rizvgx/image/upload/v1714331393/reflections/DSC_4109_sfs2jb.jpg" alt="" loading="lazy">
+            <span class="album-row-no">05</span>
+            <span class="album-row-name">Reflections</span>
+            <span class="album-row-count">20 figures</span>
+            <span class="album-row-arrow" aria-hidden="true">→</span>
+          </a>
+        </li>
+        <li>
+          <a href="./pages/albums/wildlife.html" class="album-row">
+            <img class="album-row-thumb" src="https://res.cloudinary.com/df4rizvgx/image/upload/v1714331446/wildlife/_DSC7784_kpjkt2.jpg" alt="" loading="lazy">
+            <span class="album-row-no">06</span>
+            <span class="album-row-name">Wildlife</span>
+            <span class="album-row-count">30 figures</span>
+            <span class="album-row-arrow" aria-hidden="true">→</span>
+          </a>
+        </li>
+    </ol>
   </main>
 
   <!-- Footer -->

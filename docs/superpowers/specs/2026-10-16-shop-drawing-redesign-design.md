@@ -125,7 +125,9 @@ Markup is identical on every page, placed directly after `<body>`:
 
 - `<900px`: album grids and the photography index go 2-column. The project title block drops below the title.
 - `<700px`: the mobile nav replaces the desktop nav, and the sheet becomes an 8px hairline with no labels.
-- `<680px`: the homepage Seam stacks (photo / wordmark on the seam / photo).
+- `<680px`: the homepage Seam stacks: wordmark, photo, horizontal brass seam rule, photo. (The
+  wordmark stays above the photos rather than moving onto the seam; that would need
+  `display: contents`, which drops the section's accessible label.)
 - `<560px`: masonry goes to 1 column.
 
 ## 4. Architecture

@@ -46,70 +46,63 @@
     </ul>
   </nav>
 
-  <!-- Hero -->
-  <section class="hero">
-    <div class="hero-bg" id="heroBg"></div>
-    <div class="hero-overlay"></div>
-    <div class="hero-content">
-      <p class="hero-eyebrow">Photography &amp; Craft</p>
-      <h1 class="hero-title">Rum<em>believable</em></h1>
-      <p class="hero-desc">A home for photography and woodworking — and whatever else I can come up with. I hope you enjoy.</p>
-      <div class="hero-ctas">
-        <a href="./photography.html" class="btn-primary">
-          View Photography <span aria-hidden="true">→</span>
-        </a>
-        <a href="./woodworking.html" class="btn-primary">View Woodworking <span aria-hidden="true">→</span></a>
-        <a href="./about-me.html" class="btn-ghost">About Me</a>
+  <main class="home">
+    <h1 class="wordmark">Rumbelievable</h1>
+
+    <section class="seam" aria-label="Photography and woodworking">
+      <a href="./photography.html" class="seam-half">
+        <figure class="seam-photo">
+          <img src="https://res.cloudinary.com/df4rizvgx/image/upload/c_scale,w_1400/f_auto/q_auto/v1714331252/reflections/_DSC9475_gbbeoj.jpg" alt="A still alpine lake reflecting jagged grey peaks">
+        </figure>
+        <span class="seam-cap"><span>FIG. 1</span><span>Reflections</span></span>
+        <span class="dim"><span class="dim-label"><span data-count="albums">6</span> albums</span></span>
+        <span class="seam-title">
+          <span class="seam-name">Photography</span>
+          <span class="seam-cta">Browse albums <span aria-hidden="true">→</span></span>
+        </span>
+        <span class="seam-sub">Landscapes, mountains, wildlife &amp; more.</span>
+      </a>
+      <span class="seam-line" aria-hidden="true"></span>
+      <a href="./woodworking.html" class="seam-half">
+        <figure class="seam-photo">
+          <img src="https://res.cloudinary.com/df4rizvgx/image/upload/c_scale,w_1400/f_auto/q_auto/v1779834841/_DSC2099_ieyjz2.jpg" alt="End grain of a cutting board, light and dark woods in an interlocking pattern">
+        </figure>
+        <span class="seam-cap"><span>FIG. 2</span><span>End grain</span></span>
+        <span class="dim"><span class="dim-label"><span data-count="projects">13</span> projects</span></span>
+        <span class="seam-title">
+          <span class="seam-name">Woodworking</span>
+          <span class="seam-cta">View projects <span aria-hidden="true">→</span></span>
+        </span>
+        <span class="seam-sub">With my hands, against my better judgment.</span>
+      </a>
+    </section>
+
+    <section class="intro-strip" aria-label="Introduction">
+      <blockquote>“There’s so much to capture — may as well try.”</blockquote>
+      <div class="intro-aside">
+        <p>A home for photography and woodworking — and whatever else I can come up with. I hope you enjoy.</p>
+        <p class="intro-meta">Based in Denver, Colorado. Born in England. Always scheming.</p>
+        <a href="./about-me.html" class="text-link">About me <span aria-hidden="true">→</span></a>
       </div>
-    </div>
-    <div class="scroll-hint">
-      <div class="scroll-line"></div>
-      <span>Explore</span>
-    </div>
-  </section>
+    </section>
 
-  <!-- Intro -->
-  <div class="intro-strip">
-    <blockquote>"There's so much to capture — may as well try."</blockquote>
-    <p>Based in Denver, Colorado. Born in England. Always scheming.</p>
-  </div>
-
-  <!-- Section nav -->
-  <section class="section-nav">
-    <p class="section-label">Explore</p>
-    <div class="two-col-nav">
-      <a href="./photography.html" class="nav-card">
-        <img
-          src="https://res.cloudinary.com/df4rizvgx/image/upload/v1714331957/panoramas/_DSC5075-Pano_kqndj7.jpg"
-          alt="Photography" loading="lazy">
-        <div class="nav-card-body">
-          <p class="nav-card-label">Galleries</p>
-          <h2 class="nav-card-title">Photography</h2>
-          <span class="nav-card-link">Browse albums <span aria-hidden="true">→</span></span>
-        </div>
-      </a>
-      <a href="./woodworking.html" class="nav-card">
-        <img
-          src="https://res.cloudinary.com/df4rizvgx/image/upload/v1777922027/_DSC1719_3_tnf63y.png"
-          alt="Woodworking" loading="lazy">
-        <div class="nav-card-body">
-          <p class="nav-card-label">Craft</p>
-          <h2 class="nav-card-title">Woodworking</h2>
-          <span class="nav-card-link">View projects <span aria-hidden="true">→</span></span>
-        </div>
-      </a>
-      <a href="./about-me.html" class="nav-card">
-        <img
-          src="https://res.cloudinary.com/df4rizvgx/image/upload/v1777816672/IMG_1241_wnfvxn.jpg"
-          alt="About" loading="lazy">
-        <div class="nav-card-body">
-          <p class="nav-card-label">Person</p>
-          <h2 class="nav-card-title">About Me</h2>
-          <span class="nav-card-link">Read more <span aria-hidden="true">→</span></span>
-        </div>
-      </a>
-    </div>
-  </section>
+    <section class="ledger" aria-labelledby="recentWork">
+      <div class="ledger-head">
+        <h2 id="recentWork">Recent work</h2>
+        <p class="ledger-note">Newest first</p>
+      </div>
+      <div class="ledger-cols" aria-hidden="true"><span>No.</span><span>Title</span><span>Wood</span><span>Year</span><span></span></div>
+      <ol class="ledger-rows">
+        <!-- LEDGER:START -->
+        <li><a class="ledger-row" href="./pages/woodworking/full-circle-memorial-urn.html"><span class="ledger-no">013</span><span class="ledger-title">Full Circle Memorial Urn</span><span class="ledger-wood">Tulip Poplar · Walnut</span><span class="ledger-year">2026</span><span class="ledger-arrow" aria-hidden="true">→</span></a></li>
+        <li><a class="ledger-row" href="./pages/woodworking/sapele-squatty-potty.html"><span class="ledger-no">012</span><span class="ledger-title">Sapele Squatty Potty</span><span class="ledger-wood">Sapele</span><span class="ledger-year">2026</span><span class="ledger-arrow" aria-hidden="true">→</span></a></li>
+        <li><a class="ledger-row" href="./pages/woodworking/housewarming-cutting-board.html"><span class="ledger-no">011</span><span class="ledger-title">Housewarming Cutting Board</span><span class="ledger-wood">Walnut · Hard Maple · Cherry</span><span class="ledger-year">2026</span><span class="ledger-arrow" aria-hidden="true">→</span></a></li>
+        <li><a class="ledger-row" href="./pages/woodworking/nuthatch-picture-frame.html"><span class="ledger-no">010</span><span class="ledger-title">Nuthatch Picture Frame</span><span class="ledger-wood">Tulip Poplar</span><span class="ledger-year">2026</span><span class="ledger-arrow" aria-hidden="true">→</span></a></li>
+        <li><a class="ledger-row" href="./pages/woodworking/moon-fry-bed-frame.html"><span class="ledger-no">009</span><span class="ledger-title">Moon Fry Bed Frame</span><span class="ledger-wood">White Oak · Purpleheart</span><span class="ledger-year">2026</span><span class="ledger-arrow" aria-hidden="true">→</span></a></li>
+        <!-- LEDGER:END -->
+      </ol>
+    </section>
+  </main>
 
   <!-- Footer -->
   <footer class="site-footer">
@@ -125,10 +118,8 @@
     {
       const nav      = document.getElementById('siteNav');
       const navLinks = document.getElementById('navLinks');
-      const bg       = document.getElementById('heroBg');
 
       window.addEventListener('scroll', () => nav.classList.toggle('scrolled', window.scrollY > 40), { passive: true });
-      window.addEventListener('load', () => bg.classList.add('loaded'), { once: true });
 
       document.getElementById('navToggle').addEventListener('click', () => navLinks.classList.toggle('open'));
 
