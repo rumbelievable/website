@@ -9,244 +9,108 @@
     href="https://res.cloudinary.com/df4rizvgx/image/upload/v1777813270/rumbelievable-bronze_lkvsxj.png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
-  <link href="../../assets/fontawesome/css/all.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,100..900&family=Martian+Mono:wght@400;600&display=swap" rel="stylesheet">
   <link href="../../assets/css/rumbelievable.css" rel="stylesheet">
-  <style>
-    .page-hero {
-      padding: calc(var(--nav-h) + 4rem) clamp(1.5rem, 5vw, 4rem) 3rem;
-      border-bottom: 1px solid rgba(255,255,255,0.06);
-    }
-    .page-hero .eyebrow {
-      font-size: 0.72rem;
-      letter-spacing: 0.22em;
-      text-transform: uppercase;
-      color: var(--brass);
-      margin-bottom: 0.8rem;
-    }
-    .page-hero h1 { font-size: clamp(2rem, 4.5vw, 3.4rem); margin-bottom: 0.5rem; }
-    .page-hero .subtitle {
-      font-family: 'Cormorant Garamond', serif;
-      font-style: italic;
-      font-size: 1.05rem;
-      color: var(--stone);
-    }
-    .back-link {
-      display: inline-flex;
-      align-items: center;
-      gap: 0.5rem;
-      font-size: 0.72rem;
-      letter-spacing: 0.12em;
-      text-transform: uppercase;
-      color: var(--stone);
-      margin-bottom: 2rem;
-      transition: color 0.2s;
-    }
-    .back-link:hover { color: var(--brass); }
-
-    .project-photos {
-      padding: 3rem clamp(1.5rem, 5vw, 4rem);
-      border-bottom: 1px solid rgba(255,255,255,0.06);
-    }
-    .project-photo-main {
-      width: 100%;
-      max-height: 580px;
-      object-fit: cover;
-      display: block;
-      cursor: zoom-in;
-    }
-    .project-photo-grid {
-      display: grid;
-      gap: 0.5rem;
-      margin-top: 0.5rem;
-    }
-    .project-photo-grid.cols-2 { grid-template-columns: 1fr 1fr; }
-    .project-photo-grid.cols-3 { grid-template-columns: 1fr 1fr 1fr; }
-    .project-photo-grid img {
-      width: 100%;
-      height: 260px;
-      object-fit: cover;
-      display: block;
-      cursor: zoom-in;
-    }
-    @media (max-width: 560px) {
-      .project-photo-grid.cols-2,
-      .project-photo-grid.cols-3 { grid-template-columns: 1fr; }
-      .project-photo-grid img { height: 220px; }
-    }
-
-    .project-details {
-      display: grid;
-      grid-template-columns: 1fr 300px;
-      gap: 4rem;
-      padding: 4rem clamp(1.5rem, 5vw, 4rem) 6rem;
-      align-items: start;
-    }
-    @media (max-width: 860px) {
-      .project-details {
-        grid-template-columns: 1fr;
-        gap: 3rem;
-      }
-      .project-details { display: flex; flex-direction: column; }
-      .project-specs-card { order: -1; }
-    }
-
-    .narrative-section { margin-bottom: 2.75rem; }
-    .narrative-section:last-child { margin-bottom: 0; }
-    .narrative-label {
-      font-size: 0.68rem;
-      letter-spacing: 0.22em;
-      text-transform: uppercase;
-      color: var(--brass);
-      margin-bottom: 0.65rem;
-      display: flex;
-      align-items: center;
-      gap: 0.75rem;
-    }
-    .narrative-label::after {
-      content: '';
-      flex: 1;
-      height: 1px;
-      background: rgba(255,255,255,0.06);
-      max-width: 80px;
-    }
-    .project-narrative h2 {
-      font-family: 'Cormorant Garamond', serif;
-      font-size: clamp(1.6rem, 3vw, 2.2rem);
-      font-weight: 300;
-      color: var(--cream);
-      margin-bottom: 1.25rem;
-    }
-    .project-narrative p {
-      font-size: 0.95rem;
-      color: var(--fog);
-      line-height: 1.85;
-      margin-bottom: 1rem;
-    }
-    .project-narrative ul {
-      color: var(--fog);
-      font-size: 0.95rem;
-      line-height: 1.85;
-      padding-left: 1.25rem;
-      margin-bottom: 1rem;
-    }
-    .project-narrative li { margin-bottom: 0.35rem; }
-    .project-narrative a {
-      color: var(--brass);
-      text-decoration: underline;
-      text-underline-offset: 3px;
-      text-decoration-color: rgba(184,146,74,0.35);
-      transition: text-decoration-color 0.2s;
-    }
-    .project-narrative a:hover { text-decoration-color: var(--brass); }
-
-    .project-specs-card {
-      background: rgba(255,255,255,0.025);
-      border: 1px solid rgba(255,255,255,0.07);
-      padding: 1.75rem;
-      position: sticky;
-      top: calc(var(--nav-h) + 2rem);
-    }
-    .specs-heading {
-      font-size: 0.68rem;
-      letter-spacing: 0.22em;
-      text-transform: uppercase;
-      color: var(--brass);
-      margin-bottom: 1.25rem;
-      padding-bottom: 0.75rem;
-      border-bottom: 1px solid rgba(255,255,255,0.06);
-    }
-    .spec-row {
-      display: flex;
-      gap: 1rem;
-      padding: 0.65rem 0;
-      border-bottom: 1px solid rgba(255,255,255,0.04);
-      font-size: 0.85rem;
-    }
-    .spec-row:last-child { border-bottom: none; }
-    .spec-label {
-      color: var(--stone);
-      min-width: 90px;
-      flex-shrink: 0;
-      font-size: 0.78rem;
-      letter-spacing: 0.05em;
-    }
-    .spec-value { color: var(--fog); }
-    .spec-value a {
-      color: var(--brass);
-      text-decoration: underline;
-      text-underline-offset: 3px;
-      text-decoration-color: rgba(184,146,74,0.35);
-      transition: text-decoration-color 0.2s;
-    }
-    .spec-value a:hover { text-decoration-color: var(--brass); }
-  </style>
 </head>
-<body>
+<body class="page-project" data-project-no="012">
+  <div class="sheet" aria-hidden="true">
+    <div class="sheet-zones sheet-zones--x"><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span></div>
+    <div class="sheet-zones sheet-zones--y sheet-zones--left"><span>A</span><span>B</span><span>C</span><span>D</span><span>E</span><span>F</span></div>
+    <div class="sheet-zones sheet-zones--y sheet-zones--right"><span>A</span><span>B</span><span>C</span><span>D</span><span>E</span><span>F</span></div>
+  </div>
 
-  <nav class="site-nav scrolled" id="siteNav">
+  <nav class="site-nav" id="siteNav" aria-label="Main">
     <a href="../../index.html" class="nav-logo">
-      <img src="https://res.cloudinary.com/df4rizvgx/image/upload/v1777813270/rumbelievable-bronze_lkvsxj.png" alt="">
+      <img src="https://res.cloudinary.com/df4rizvgx/image/upload/v1778030772/IMG_0093_jsfvjp.png" alt="" width="24" height="24">
       Rumbelievable
     </a>
     <button class="nav-toggle" id="navToggle" aria-label="Toggle navigation">
       <span></span><span></span><span></span>
     </button>
     <ul class="nav-links" id="navLinks">
-      <li><a href="../../index.html">Home</a></li>
       <li class="nav-dropdown">
         <a href="../../photography.html">Photography</a>
         <ul class="nav-dropdown-menu">
           <li><a href="../../pages/albums/landscapes.html">Landscapes</a></li>
           <li><a href="../../pages/albums/mountains.html">Mountains</a></li>
-          <li><a href="../../pages/albums/reflections.html">Reflections</a></li>
           <li><a href="../../pages/albums/night-sky.html">Night Sky</a></li>
-          <li><a href="../../pages/albums/wildlife.html">Wildlife</a></li>
           <li><a href="../../pages/albums/panoramas.html">Panoramas</a></li>
+          <li><a href="../../pages/albums/reflections.html">Reflections</a></li>
+          <li><a href="../../pages/albums/wildlife.html">Wildlife</a></li>
         </ul>
       </li>
       <li><a href="../../woodworking.html" class="active">Woodworking</a></li>
       <li><a href="../../about-me.html">About</a></li>
-      <li><a href="../../contact.html">Contact</a></li>
+      <li><a href="../../contact.html" class="nav-contact">Contact</a></li>
     </ul>
   </nav>
 
-  <header class="page-hero">
-    <a href="../../woodworking.html" class="back-link">
-      <i class="fa-solid fa-arrow-left" style="font-size:0.7em"></i> All Projects
-    </a>
-    <p class="eyebrow">Woodworking · 2026</p>
-    <h1>Sapele Squatty Potty</h1>
-    <p class="subtitle">Everybody poops ¯\_(ツ)_/¯</p>
-  </header>
-
-  <div class="lightbox" id="lightbox" role="dialog" aria-modal="true" aria-label="Photo lightbox">
-    <button class="lightbox-close" id="lightboxClose" aria-label="Close">
-      <i class="fa-solid fa-xmark"></i>
-    </button>
+  <div class="lightbox" id="lightbox" role="dialog" aria-modal="true" aria-labelledby="lightboxCount">
+    <p class="lightbox-count" id="lightboxCount" aria-live="polite"></p>
+    <button class="lightbox-close" id="lightboxClose" aria-label="Close">✕</button>
+    <button class="lightbox-step lightbox-prev" id="lightboxPrev" aria-label="Previous photo">‹</button>
     <img id="lightboxImg" src="" alt="">
+    <button class="lightbox-step lightbox-next" id="lightboxNext" aria-label="Next photo">›</button>
   </div>
 
-  <section class="project-photos">
-    <img
-      class="project-photo-main"
-      src="https://res.cloudinary.com/df4rizvgx/image/upload/v1782088152/_DSC2167_juh1qq.jpg"
-      alt="Sapele Squatty Potty" loading="lazy">
-    <div class="project-photo-grid cols-3">
-        <img src="https://res.cloudinary.com/df4rizvgx/image/upload/v1782088151/_DSC2133_pxpmhr.jpg" alt="" loading="lazy">
-        <img src="https://res.cloudinary.com/df4rizvgx/image/upload/v1782088152/_DSC2152_d4lxll.jpg" alt="" loading="lazy">
-        <img src="https://res.cloudinary.com/df4rizvgx/image/upload/v1782088152/_DSC2141_czibd0.jpg" alt="" loading="lazy">
-        <img src="https://res.cloudinary.com/df4rizvgx/image/upload/v1782088151/_DSC2139_u4yudx.jpg" alt="" loading="lazy">
-        <img src="https://res.cloudinary.com/df4rizvgx/image/upload/v1782088151/_DSC2121_jqocmh.jpg" alt="" loading="lazy">
+  <main class="project">
+    <a href="../../woodworking.html" class="back-link">
+      <span aria-hidden="true">←</span> All projects
+    </a>
+
+    <figure class="project-hero">
+      <img class="project-photo-main" src="https://res.cloudinary.com/df4rizvgx/image/upload/v1782088152/_DSC2167_juh1qq.jpg" alt="Sapele Squatty Potty">
+    </figure>
+
+    <div class="project-head">
+      <div class="project-title">
+        <p class="eyebrow">No. 012 · Woodworking · 2026</p>
+        <h1>Sapele Squatty Potty</h1>
+        <p class="subtitle">Everybody poops ¯\_(ツ)_/¯</p>
+      </div>
+      <aside class="title-block" aria-label="Project specs">
+        <div class="title-block-head">
+          <div><span class="spec-label">No.</span>012</div>
+          <div><span class="spec-label">Scale</span>NTS</div>
+          <div><span class="spec-label">Drawn</span>A.R.</div>
+        </div>
+        <div class="spec-row">
+          <span class="spec-label">Wood</span>
+          <span class="spec-value">Sapele // White Oak</span>
+        </div>
+        <div class="spec-row">
+          <span class="spec-label">Finish</span>
+          <span class="spec-value">Danish Oil</span>
+        </div>
+        <div class="spec-row">
+          <span class="spec-label">Joinery</span>
+          <span class="spec-value">Wedged mortise and tenon, screws and plugs</span>
+        </div>
+        <div class="spec-row">
+          <span class="spec-label">Hardware</span>
+          <span class="spec-value">—</span>
+        </div>
+        <div class="spec-row">
+          <span class="spec-label">Plan</span>
+          <span class="spec-value">Rumbelievable Original Design</span>
+        </div>
+        <div class="spec-row">
+          <span class="spec-label">Year</span>
+          <span class="spec-value">2026</span>
+        </div>
+        <p class="title-block-name">Sapele Squatty Potty</p>
+      </aside>
     </div>
-  </section>
 
-  <div class="project-details">
-
-    <div class="project-narrative">
+    <article class="project-narrative">
       <h2>About this project</h2>
       <div class="narrative-section">
         <p>I wanted to practice some mortise and tenon joinery, so naturally I chose some of the bougie-est wood I had and built a stool that helps ... well. Look it up.</p>
+      </div>
+      <div class="project-photo-grid">
+        <figure class="fig"><img src="https://res.cloudinary.com/df4rizvgx/image/upload/v1782088151/_DSC2133_pxpmhr.jpg" alt="Sapele Squatty Potty, figure 02" loading="lazy"></figure>
+        <figure class="fig"><img src="https://res.cloudinary.com/df4rizvgx/image/upload/v1782088152/_DSC2152_d4lxll.jpg" alt="Sapele Squatty Potty, figure 03" loading="lazy"></figure>
+        <figure class="fig"><img src="https://res.cloudinary.com/df4rizvgx/image/upload/v1782088152/_DSC2141_czibd0.jpg" alt="Sapele Squatty Potty, figure 04" loading="lazy"></figure>
       </div>
       <div class="narrative-section">
         <p class="narrative-label">Lessons Learned</p>
@@ -254,39 +118,23 @@
           <li>Wedged mortise and tenoon</li>
         </ul>
       </div>
-    </div>
+      <div class="project-photo-grid">
+        <figure class="fig"><img src="https://res.cloudinary.com/df4rizvgx/image/upload/v1782088151/_DSC2139_u4yudx.jpg" alt="Sapele Squatty Potty, figure 05" loading="lazy"></figure>
+        <figure class="fig"><img src="https://res.cloudinary.com/df4rizvgx/image/upload/v1782088151/_DSC2121_jqocmh.jpg" alt="Sapele Squatty Potty, figure 06" loading="lazy"></figure>
+      </div>
+    </article>
 
-    <aside class="project-specs-card">
-      <p class="specs-heading">Project Specs</p>
-      <div class="spec-row">
-        <span class="spec-label">Wood</span>
-        <span class="spec-value">Sapele // White Oak</span>
-      </div>
-      <div class="spec-row">
-        <span class="spec-label">Finish</span>
-        <span class="spec-value">Danish Oil</span>
-      </div>
-      <div class="spec-row">
-        <span class="spec-label">Joinery</span>
-        <span class="spec-value">Wedged mortise and tenon, screws and plugs</span>
-      </div>
-      <div class="spec-row">
-        <span class="spec-label">Hardware</span>
-        <span class="spec-value">—</span>
-      </div>
-      <div class="spec-row">
-        <span class="spec-label">Plan</span>
-        <span class="spec-value">Rumbelievable Original Design</span>
-      </div>
-    </aside>
-
-  </div>
+    <nav class="pager" aria-label="Projects">
+      <a href="./housewarming-cutting-board.html" class="pager-prev"><span aria-hidden="true">←</span> 011 Housewarming Cutting Board</a>
+      <a href="./full-circle-memorial-urn.html" class="pager-next">013 Full Circle Memorial Urn <span aria-hidden="true">→</span></a>
+    </nav>
+  </main>
 
   <footer class="site-footer">
     <div class="footer-links">
-      <a href="https://www.linkedin.com/in/annie-rumbles/" aria-label="LinkedIn"><i class="fa-brands fa-linkedin"></i></a>
-      <a href="https://github.com/rumbelievable" aria-label="GitHub"><i class="fa-brands fa-github"></i></a>
-      <a href="mailto:amrumbles@gmail.com" aria-label="Email"><i class="fa-solid fa-envelope"></i></a>
+      <a href="https://www.linkedin.com/in/annie-rumbles/">LinkedIn</a>
+      <a href="https://github.com/rumbelievable">GitHub</a>
+      <a href="mailto:amrumbles@gmail.com">Email</a>
     </div>
     <p class="footer-copy">&copy; Rumbelievable 2026</p>
   </footer>
@@ -297,6 +145,16 @@
       const navLinks = document.getElementById('navLinks');
       const lightbox = document.getElementById('lightbox');
       const lbImg    = document.getElementById('lightboxImg');
+      const lbCount  = document.getElementById('lightboxCount');
+      const lbClose  = document.getElementById('lightboxClose');
+      const lbPrev   = document.getElementById('lightboxPrev');
+      const lbNext   = document.getElementById('lightboxNext');
+      const figs     = [...document.querySelectorAll('.masonry-item img, .project-photo-main, .project-photo-grid img')];
+      const title    = document.querySelector('h1').textContent.trim();
+      const hiWidth  = document.body.classList.contains('page-album') ? 'c_scale,w_1400' : 'c_scale,w_1600';
+      const hiRes    = img => img.src.replace(/c_scale,w_\d+/, hiWidth);
+      const pad      = n => String(n).padStart(2, '0');
+      let   current  = 0;
       let   lastFocus = null;
 
       window.addEventListener('scroll', () => nav.classList.toggle('scrolled', window.scrollY > 40), { passive: true });
@@ -307,29 +165,60 @@
         if (!nav.contains(e.target)) navLinks.classList.remove('open');
       });
 
-      document.querySelectorAll('.project-photo-main, .project-photo-grid img').forEach(img => {
-        img.addEventListener('click', () => {
-          lastFocus = img;
-          lbImg.src = img.src.replace(/c_scale,w_\d+/, 'c_scale,w_1600');
-          lbImg.alt = img.alt;
-          lightbox.classList.add('open');
-          document.body.style.overflow = 'hidden';
-          document.getElementById('lightboxClose').focus();
-        });
-      });
+      const isOpen = () => lightbox.classList.contains('open');
+
+      const show = i => {
+        current = (i + figs.length) % figs.length;
+        lbImg.src = hiRes(figs[current]);
+        lbImg.alt = figs[current].alt;
+        lbCount.textContent = `Fig. ${pad(current + 1)} / ${pad(figs.length)} · ${title}`;
+        new Image().src = hiRes(figs[(current + 1) % figs.length]);
+      };
+
+      const openLightbox = i => {
+        lastFocus = figs[i];
+        show(i);
+        lightbox.classList.add('open');
+        document.body.classList.add('lightbox-open');
+        lbClose.focus();
+      };
 
       const closeLightbox = () => {
         lightbox.classList.remove('open');
-        document.body.style.overflow = '';
+        document.body.classList.remove('lightbox-open');
         if (lastFocus) lastFocus.focus();
       };
 
-      document.getElementById('lightboxClose').addEventListener('click', closeLightbox);
+      figs.forEach((img, i) => {
+        img.tabIndex = 0;
+        img.setAttribute('role', 'button');
+        img.addEventListener('click', () => openLightbox(i));
+      });
+
+      lbPrev.hidden = lbNext.hidden = figs.length < 2;
+      lbClose.addEventListener('click', closeLightbox);
+      lbPrev.addEventListener('click', () => show(current - 1));
+      lbNext.addEventListener('click', () => show(current + 1));
       lightbox.addEventListener('click', e => { if (e.target === lightbox) closeLightbox(); });
+
       document.addEventListener('keydown', e => {
-        if (e.key === 'Escape') {
-          if (lightbox.classList.contains('open')) closeLightbox();
-          else navLinks.classList.remove('open');
+        if (!isOpen()) {
+          if (e.key === 'Escape') navLinks.classList.remove('open');
+          else if ((e.key === 'Enter' || e.key === ' ') && figs.includes(e.target)) {
+            e.preventDefault();
+            openLightbox(figs.indexOf(e.target));
+          }
+          return;
+        }
+        if (e.key === 'Escape') closeLightbox();
+        else if (e.key === 'ArrowLeft') show(current - 1);
+        else if (e.key === 'ArrowRight') show(current + 1);
+        else if (e.key === 'Tab') {
+          // keep focus on the lightbox controls while it's open
+          e.preventDefault();
+          const controls = [lbClose, lbPrev, lbNext].filter(b => !b.hidden);
+          const at = controls.indexOf(document.activeElement);
+          controls[(at + (e.shiftKey ? -1 : 1) + controls.length) % controls.length].focus();
         }
       });
     }
