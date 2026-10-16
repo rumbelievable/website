@@ -9,81 +9,47 @@
     href="https://res.cloudinary.com/df4rizvgx/image/upload/v1778030772/IMG_0093_jsfvjp.png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
-  <link href="../../assets/fontawesome/css/all.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,100..900&family=Martian+Mono:wght@400;600&display=swap" rel="stylesheet">
   <link href="../../assets/css/rumbelievable.css" rel="stylesheet">
-  <style>
-    .page-hero {
-      padding: calc(var(--nav-h) + 4rem) clamp(1.5rem, 5vw, 4rem) 3rem;
-      border-bottom: 1px solid rgba(255,255,255,0.06);
-    }
-
-    .page-hero .eyebrow {
-      font-size: 0.72rem;
-      letter-spacing: 0.22em;
-      text-transform: uppercase;
-      color: var(--brass);
-      margin-bottom: 0.8rem;
-    }
-
-    .page-hero h1 { font-size: clamp(2.2rem, 5vw, 3.8rem); margin-bottom: 0.5rem; }
-
-    .page-hero .subtitle {
-      font-family: 'Cormorant Garamond', serif;
-      font-style: italic;
-      font-size: 1rem;
-      color: var(--stone);
-    }
-
-    .back-link {
-      display: inline-flex;
-      align-items: center;
-      gap: 0.5rem;
-      font-size: 0.72rem;
-      letter-spacing: 0.12em;
-      text-transform: uppercase;
-      color: var(--stone);
-      margin-bottom: 2rem;
-      transition: color 0.2s;
-    }
-
-    .back-link:hover { color: var(--brass); }
-  </style>
 </head>
-<body>
+<body class="page-album">
+  <div class="sheet" aria-hidden="true">
+    <div class="sheet-zones sheet-zones--x"><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span></div>
+    <div class="sheet-zones sheet-zones--y sheet-zones--left"><span>A</span><span>B</span><span>C</span><span>D</span><span>E</span><span>F</span></div>
+    <div class="sheet-zones sheet-zones--y sheet-zones--right"><span>A</span><span>B</span><span>C</span><span>D</span><span>E</span><span>F</span></div>
+  </div>
 
   <!-- Navigation -->
-  <nav class="site-nav scrolled" id="siteNav">
+  <nav class="site-nav" id="siteNav" aria-label="Main">
     <a href="../../index.html" class="nav-logo">
-      <img src="https://res.cloudinary.com/df4rizvgx/image/upload/v1778030772/IMG_0093_jsfvjp.png" alt="">
+      <img src="https://res.cloudinary.com/df4rizvgx/image/upload/v1778030772/IMG_0093_jsfvjp.png" alt="" width="24" height="24">
       Rumbelievable
     </a>
     <button class="nav-toggle" id="navToggle" aria-label="Toggle navigation">
       <span></span><span></span><span></span>
     </button>
     <ul class="nav-links" id="navLinks">
-      <li><a href="../../index.html">Home</a></li>
       <li class="nav-dropdown">
         <a href="../../photography.html" class="active">Photography</a>
         <ul class="nav-dropdown-menu">
           <li><a href="../../pages/albums/landscapes.html">Landscapes</a></li>
           <li><a href="../../pages/albums/mountains.html">Mountains</a></li>
-          <li><a href="../../pages/albums/reflections.html">Reflections</a></li>
           <li><a href="../../pages/albums/night-sky.html">Night Sky</a></li>
+          <li><a href="../../pages/albums/panoramas.html" aria-current="page">Panoramas</a></li>
+          <li><a href="../../pages/albums/reflections.html">Reflections</a></li>
           <li><a href="../../pages/albums/wildlife.html">Wildlife</a></li>
-          <li><a href="../../pages/albums/panoramas.html">Panoramas</a></li>
         </ul>
       </li>
       <li><a href="../../woodworking.html">Woodworking</a></li>
       <li><a href="../../about-me.html">About</a></li>
-      <li><a href="../../contact.html">Contact</a></li>
+      <li><a href="../../contact.html" class="nav-contact">Contact</a></li>
     </ul>
   </nav>
 
   <!-- Page header -->
   <header class="page-hero">
     <a href="../../photography.html" class="back-link">
-      <i class="fa-solid fa-arrow-left" style="font-size:0.7em"></i> All Albums
+      <span aria-hidden="true">←</span> All Albums
     </a>
     <p class="eyebrow">Photography</p>
     <h1>Panoramas</h1>
@@ -93,7 +59,7 @@
   <!-- Lightbox -->
   <div class="lightbox" id="lightbox" role="dialog" aria-modal="true" aria-label="Photo lightbox">
     <button class="lightbox-close" id="lightboxClose" aria-label="Close">
-      <i class="fa-solid fa-xmark"></i>
+      ✕
     </button>
     <img id="lightboxImg" src="" alt="">
   </div>
@@ -175,9 +141,9 @@
   <!-- Footer -->
   <footer class="site-footer">
     <div class="footer-links">
-      <a href="https://www.linkedin.com/in/annie-rumbles/" aria-label="LinkedIn"><i class="fa-brands fa-linkedin"></i></a>
-      <a href="https://github.com/rumbelievable" aria-label="GitHub"><i class="fa-brands fa-github"></i></a>
-      <a href="mailto:amrumbles@gmail.com" aria-label="Email"><i class="fa-solid fa-envelope"></i></a>
+      <a href="https://www.linkedin.com/in/annie-rumbles/">LinkedIn</a>
+      <a href="https://github.com/rumbelievable">GitHub</a>
+      <a href="mailto:amrumbles@gmail.com">Email</a>
     </div>
     <p class="footer-copy">&copy; Rumbelievable 2026</p>
   </footer>
