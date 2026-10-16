@@ -1330,21 +1330,42 @@ a {
   transition: opacity 0.3s var(--ease), visibility 0.3s;
 }
 
+/* Visibility flips at once on open so focus() can land on the close button;
+   on close it waits for the fade. */
 .lightbox.open {
   opacity: 1;
   visibility: visible;
+  transition: opacity 0.3s var(--ease), visibility 0s;
 }
 
+body.lightbox-open { overflow: hidden; }
+
 .lightbox img {
-  max-width: 92vw;
-  max-height: 88vh;
+  max-width: calc(100vw - 10rem);
+  max-height: calc(100vh - 8rem);
+  max-height: calc(100dvh - 8rem);
   object-fit: contain;
   border: 1px solid rgba(239, 233, 220, 0.18);
 }
 
-.lightbox-close {
+.lightbox-count {
   position: absolute;
-  top: 1.25rem; right: 1.25rem;
+  top: 1.25rem; left: 1.25rem;
+  right: calc(1.25rem + 44px + 1rem);
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+  margin: 0;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--paper);
+}
+
+.lightbox-close,
+.lightbox-step {
+  position: absolute;
   width: 44px;
   height: 44px;
   display: flex;
@@ -1359,9 +1380,39 @@ a {
   transition: border-color 0.2s;
 }
 
-.lightbox-close:hover { border-color: var(--paper); }
+.lightbox-close { top: 1.25rem; right: 1.25rem; }
 
-.lightbox-close:focus-visible { outline-color: var(--paper); }
+.lightbox-step {
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 22px;
+}
+
+.lightbox-prev { left: 1.25rem; }
+.lightbox-next { right: 1.25rem; }
+
+.lightbox-step[hidden] { display: none; }
+
+.lightbox-close:hover,
+.lightbox-step:hover { border-color: var(--paper); }
+
+.lightbox-close:focus-visible,
+.lightbox-step:focus-visible { outline-color: var(--paper); }
+
+/* Phones: the image takes the width, the steppers move to the bottom corners. */
+@media (max-width: 700px) {
+  .lightbox img {
+    max-width: calc(100vw - 2rem);
+    max-height: calc(100vh - 9rem);
+    max-height: calc(100dvh - 9rem);
+  }
+
+  .lightbox-step {
+    top: auto;
+    bottom: 1.25rem;
+    transform: none;
+  }
+}
 
 /* ── Footer ───────────────────────────────────────────────── */
 .site-footer {
