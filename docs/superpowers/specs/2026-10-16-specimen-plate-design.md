@@ -24,7 +24,7 @@ Success:
 | Photo | One photo per plate, chosen per project from existing shots. Any Cloudinary URL; swapping later means changing one `src`. |
 | Label content | Common name (required) and Latin name (optional). No part names, no notes. |
 | Placement | Last section inside `.project-narrative`, after the story, before the pager. The title block's `Wood` row links to it. |
-| Rollout | Optional per project. Annie makes plates herself with the editor; no pin positions are invented. |
+| Rollout | Every project with more than one species gets a plate now (the 9 in § 5). Single-species projects get none unless Annie adds one later. Claude drafts each plate (photo choice and pin positions, from looking at the photos); Annie reviews and adjusts each in the editor before it is committed. The plate stays optional in the markup and the generator. |
 | Rendering | CSS only. Pins positioned by inline `--x` / `--y` custom properties, horizontal leaders. No JS on the page. |
 | Small screens | Under 700px, leaders and margin labels hide; pins show their number only. The key shows at every size. |
 | Lightbox | The plate photo is not in the lightbox (it could not show the leaders). |
@@ -44,24 +44,26 @@ The editor (§ 4) produces this block; it is pasted as the last child of `<artic
     <p class="plate-tag">Plate I · No. 009 · Moon Fry Bed Frame</p>
     <div class="plate-stage">
       <img class="plate-photo" src="https://res.cloudinary.com/df4rizvgx/image/upload/c_scale,w_1200/f_auto/q_auto/…" alt="Moon Fry Bed Frame, specimen plate" loading="lazy">
-      <span class="plate-pin" data-n="1" data-side="left" style="--x:48%; --y:22%" aria-hidden="true">
-        <span class="plate-label">Purpleheart <i>Peltogyne</i> spp.</span>
+      <span class="plate-pin" data-side="left" style="--x:48%; --y:22%" aria-hidden="true">
+        <span class="plate-dot">1</span>
+        <span class="plate-label">Purpleheart <span class="plate-latin"><i>Peltogyne</i> spp.</span></span>
       </span>
-      <span class="plate-pin" data-n="2" data-side="right" style="--x:63%; --y:55%" aria-hidden="true">
-        <span class="plate-label">White Oak <i>Quercus alba</i></span>
+      <span class="plate-pin" data-side="right" style="--x:63%; --y:55%" aria-hidden="true">
+        <span class="plate-dot">2</span>
+        <span class="plate-label">White Oak <span class="plate-latin"><i>Quercus alba</i></span></span>
       </span>
     </div>
   </figure>
   <ol class="plate-key">
-    <li><span class="plate-key-name">Purpleheart</span> <i lang="la">Peltogyne</i> spp.</li>
-    <li><span class="plate-key-name">White Oak</span> <i lang="la">Quercus alba</i></li>
+    <li><span class="plate-key-name">Purpleheart</span> <span class="plate-latin" lang="la"><i>Peltogyne</i> spp.</span></li>
+    <li><span class="plate-key-name">White Oak</span> <span class="plate-latin" lang="la"><i>Quercus alba</i></span></li>
   </ol>
 </section>
 ```
 
 Rules:
-- Pins are numbered top to bottom by `--y`. `data-n` on each pin matches its `<li>` position in the key.
-- A pin with no Latin name has no `<i>` in its label or its key entry.
+- Pins are numbered top to bottom by `--y`. Each pin's `.plate-dot` holds its number, which matches its `<li>` position in the key.
+- A pin with no Latin name has no `.plate-latin` in its label or its key entry.
 - Botanical convention: a trailing `spp.` or `sp.` sits outside the italics
   (`<i>Peltogyne</i> spp.`). The editor splits it off when it writes the markup.
 - `data-caption` reads `Specimen plate · N species` (`1 species` when there is one).
@@ -86,14 +88,20 @@ Rules:
 
 - `.plate-figure` spans the content column. `.plate-stage` is `position: relative`, centred, 60% of the
   figure's width, leaving about 20% each side for labels. The photo has the standard 1px ink hairline.
-- `.plate-pin`: absolutely positioned at `left: var(--x); top: var(--y)`, centred on that point. A 10px
-  brass ring with an ink centre dot, and a small mono number (`attr(data-n)`) beside it.
-- Leader: a `::before` on the pin, a 1px `--ink` hairline at the pin's height, running horizontally from
-  the pin to the stage edge and on into the margin. For `data-side="left"` it runs leftward from the pin
-  (width `var(--x)` + margin offset); for `right`, rightward (width `100% - var(--x)` + margin offset).
-- `.plate-label`: in the margin at the end of the leader, vertically centred on it. Common name in Martian
-  Mono 10px uppercase, `--ink`; Latin name on the next line in Archivo italic 12px, `--ink-2`. Left labels
-  are right-aligned to the leader end; right labels are left-aligned.
+- `.plate-pin`: an absolutely positioned **zero-height row the full width of the stage** at
+  `top: var(--y)`, so that percentages on its children and pseudo-elements are percentages of the photo's
+  width.
+- `.plate-dot`: at `left: var(--x)`, centred on the point. A 10px brass ring with an ink centre; the
+  number inside it is visually hidden on desktop and shown on small screens.
+- Leader: the pin's `::before`, a 1px `--ink` hairline at the row's height. For `data-side="left"` it
+  runs from `-8px` (just past the stage's left edge) to `var(--x)`; for `right`, from `var(--x)` to
+  `calc(100% + 8px)`.
+- `.plate-label`: in the margin at the leader's end, vertically centred on the row, width
+  `calc(33.333% - 20px)` (the 20% figure margin is 33.333% of the 60% stage). Left labels sit at
+  `right: calc(100% + 12px)`, right-aligned; right labels at `left: calc(100% + 12px)`, left-aligned.
+  Common name in Martian Mono 10px uppercase, `--ink`; `.plate-latin` is a block on the next line in
+  Archivo italic 12px, `--ink-2`, not uppercased. Long names wrap inside the margin.
+- The stage has no `overflow: hidden`, so leaders and labels can extend into the margins.
 - `.plate-tag`: a boxed mono 10px uppercase tag (1px ink border, `--paper-2` fill) above the stage,
   aligned with the stage's left edge.
 - `.plate-key`: below the figure, a numbered list in mono with the Latin names in italic, the numbers
@@ -103,7 +111,7 @@ Rules:
 ### Small screens (< 700px)
 
 - `.plate-stage` widens to 100%. The leaders and `.plate-label` are `display: none`.
-- Pins show the ring with the number inside it (the number is what links pin to key).
+- `.plate-dot` grows to an 18px ring with its number showing inside (the number links pin to key).
 - Nothing changes in the key.
 
 ### The `Wood` row link
@@ -173,16 +181,34 @@ Unknown species simply get a blank Latin field.
 - **Italic axis:** the Google Fonts URL on all 13 project pages and in the template becomes
   `family=Archivo:ital,wdth,wght@0,62..125,100..900;1,62..125,100..900&family=Martian+Mono:wght@400;600`.
   Other pages are unchanged (they have no Latin names).
-- No plates are added to existing pages in this work, except the first one Annie makes as the acceptance
-  test (§ 7).
+- **Plates for the 9 multi-species projects**, with the common names as they appear in each `Wood` row:
+
+  | Page | Species |
+  |---|---|
+  | `moon-fry-bed-frame.html` | White Oak, Purpleheart |
+  | `housewarming-cutting-board.html` | Walnut, Hard Maple, Cherry |
+  | `floating-night-stands.html` | White Oak, Walnut |
+  | `little-free-library.html` | Leftover siding (no Latin name), White Oak |
+  | `full-circle-memorial-urn.html` | Tulip Poplar, Walnut |
+  | `patterned-plywood-box.html` | Walnut, Hard Maple, Baltic Birch Plywood |
+  | `simple-coasters.html` | Walnut, Maple, Alder |
+  | `sapele-squatty-potty.html` | Sapele, White Oak |
+  | `urn.html` | Walnut, Hard Maple |
+
+  The photo for each is chosen from that page's existing photos: the one where every species is visible.
+  If no single photo shows every species, the plate pins the ones it can, and the key still lists only
+  the pinned species (the `Wood` row stays the full record). Each plate's "See plate →" link is added to
+  its `Wood` row.
+- The editor is reachable on the live site at `/tools/plate-editor.html`, because Pages deploys the repo
+  root, but nothing links to it. That's acceptable: it has no secrets and writes nothing.
 
 ## 6. Generator (`tools/new_project.py`)
 
 - **Prompt**, after lessons learned: `Specimen plate: paste the block from tools/plate-editor.html,
-  then a blank line (or Enter to skip):`. Lines are read until a blank line, like `collect_narrative`.
+  then a blank line (or Enter to skip):`. Lines are read until a blank line, like `collect_narrative`, keeping their indentation.
 - **Validation:** the joined paste must start with `<section class="plate"` and end with `</section>`;
   otherwise the generator prints why and asks again. An immediate blank line skips.
-- **Rendering:** with a plate, the block is re-indented to the article's level and appended as the last
+- **Rendering:** with a plate, the block is dedented and re-indented to the article's level (6 spaces) and appended as the last
   part of `article_html`, and the `Wood` row gets the `See plate →` link. Without a plate, output is
   byte-for-byte what the current template produces apart from the § 5 changes.
 - **Template:** `Scale NTS` cell removed; italic font URL.
@@ -208,8 +234,10 @@ and the labels clear the photo; the phone layout has numbered pins and no horizo
 the same images as before; the title block header shows `No.` / `Drawn` only; italic Latin is a real
 italic.
 
-**Acceptance:** Annie makes the Moon Fry Bed Frame plate (purpleheart strip, white oak) in the editor;
-it is pasted into `pages/woodworking/moon-fry-bed-frame.html` and checked at both widths.
+**Acceptance:** the Moon Fry Bed Frame plate (purpleheart strip, white oak) goes first, end to end:
+Claude drafts it, Annie adjusts it in the editor, it is pasted into
+`pages/woodworking/moon-fry-bed-frame.html` and checked at both widths. Only then are the other 8 drafted,
+and Annie reviews them as a batch.
 
 ## 8. Docs
 
@@ -220,5 +248,5 @@ it is pasted into `pages/woodworking/moon-fry-bed-frame.html` and checked at bot
 ## 9. Out of scope
 
 Angled or dog-leg leaders, label positions independent of the pin height, part names or notes on labels,
-more than one plate per project, plates on album pages, a scale bar, and adding plates to existing
-projects (other than the acceptance plate).
+more than one plate per project, plates on album pages, a scale bar, and plates for single-species
+projects.
