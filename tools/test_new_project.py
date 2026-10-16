@@ -5,12 +5,15 @@ site files the generator touches, so the real site is never written.
 Run from the site root: python3 -m unittest tools/test_new_project.py
 """
 
+import contextlib
+import io
 import re
 import shutil
 import sys
 import tempfile
 import unittest
 from pathlib import Path
+from unittest import mock
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 import new_project as np  # noqa: E402
@@ -182,6 +185,39 @@ class GeneratorTest(unittest.TestCase):
     def test_missing_latest_marker(self):
         self.assert_nothing_written(f"pages/woodworking/{self.prev[1]}.html", np.LATEST_MARKER)
 
+
+
+class PlatePromptTest(unittest.TestCase):
+    """collect_plate reads a pasted block up to a blank line."""
+
+    def run_prompt(self, lines):
+        feed = iter(lines)
+
+        def fake_input(prompt=""):
+            try:
+                return next(feed)
+            except StopIteration:
+                raise EOFError from None
+
+        out = io.StringIO()
+        with mock.patch("builtins.input", fake_input), contextlib.redirect_stdout(out):
+            result = np.collect_plate()
+        return result, out.getvalue()
+
+    def test_collect_plate_returns_pasted_block(self):
+        result, _ = self.run_prompt(PLATE.split("\n") + [""])
+        self.assertEqual(result, PLATE)
+
+    def test_collect_plate_blank_line_in_paste_keeps_nothing_and_says_so(self):
+        head, tail = PLATE.split("\n")[:2], PLATE.split("\n")[2:]
+        result, out = self.run_prompt(head + [""] + tail + ["", ""])
+        self.assertEqual(result, "")
+        self.assertIn("No plate added", out)
+
+    def test_collect_plate_end_of_input_skips(self):
+        result, out = self.run_prompt(["<div>half"])
+        self.assertEqual(result, "")
+        self.assertIn("No plate added", out)
 
 if __name__ == "__main__":
     unittest.main()

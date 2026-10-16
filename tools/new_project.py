@@ -254,20 +254,29 @@ def validate_plate(text):
 def collect_plate():
     print("  Specimen plate: paste the block from tools/plate-editor.html,")
     print("  then a blank line (or Enter to skip):")
+    failed = False
     while True:
-        lines = []
+        lines, ended = [], False
         while True:
-            line = input("    > ").rstrip()
+            try:
+                line = input("    > ").rstrip()
+            except EOFError:
+                ended = True
+                break
             if not line:
                 break
             lines.append(line)
-        if not lines:
+        if lines:
+            reason = validate_plate("\n".join(lines))
+            if reason is None:
+                return "\n".join(lines)
+            failed = True
+            print(f"    → not a plate block: {reason}.")
+        if not lines or ended:
+            if failed or ended:
+                print("    → No plate added. To add one later, see Specimen plates in tools/README.md.")
             return ""
-        block = "\n".join(lines)
-        reason = validate_plate(block)
-        if reason is None:
-            return block
-        print(f"    → not a plate block: {reason}. Paste again, or Enter to skip.")
+        print("    → Paste again, or Enter to skip.")
 
 
 # ── Data collection ───────────────────────────────────────────────────────────
