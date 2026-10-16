@@ -629,13 +629,17 @@ a {
   color: var(--ink-2);
 }
 
-/* Hovering or focusing a half widens it and quiets the other. */
-.seam:has(.seam-half:focus-visible) .seam-half { opacity: 0.6; }
-.seam .seam-half:focus-visible { flex-grow: 1.5; opacity: 1; }
+/* Hovering or focusing a half widens it and quiets the other. Only the other
+   half is dimmed: :has() carries its argument's specificity, so a blanket dim
+   would outrank the hovered half's own rule. Side-by-side layout only. */
+@media (min-width: 681px) {
+  .seam:has(.seam-half:focus-visible) .seam-half:not(:focus-visible) { opacity: 0.6; }
+  .seam-half:focus-visible { flex-grow: 1.5; }
+}
 
-@media (hover: hover) {
-  .seam:has(.seam-half:hover) .seam-half { opacity: 0.6; }
-  .seam .seam-half:hover { flex-grow: 1.5; opacity: 1; }
+@media (min-width: 681px) and (hover: hover) {
+  .seam:has(.seam-half:hover) .seam-half:not(:hover) { opacity: 0.6; }
+  .seam-half:hover { flex-grow: 1.5; }
 }
 
 .intro-strip {
@@ -757,7 +761,6 @@ a {
 @media (max-width: 680px) {
   .seam { flex-direction: column; }
   .seam-line { width: auto; height: 2px; margin: 1.5rem 0; }
-  .seam .seam-half { opacity: 1; flex-grow: 1; }
   .intro-strip { grid-template-columns: 1fr; padding-top: 3.5rem; }
   .ledger-cols { display: none; }
   .ledger-row { grid-template-columns: 44px minmax(0, 1fr) 16px; gap: 10px; }
