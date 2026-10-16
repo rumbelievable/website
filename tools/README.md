@@ -44,6 +44,19 @@ Every edit is planned before anything is written. If a marker it relies on is mi
 | Plan URL | Optional link for the Plan row — only asked if you entered a plan name |
 | Narrative | The project write-up; one paragraph per line, blank line to finish |
 | Lessons learned | Optional — comma-separated items; generates a bulleted list |
+| Specimen plate | Optional — paste the block copied from `tools/plate-editor.html`, then a blank line; Enter alone skips. See [Specimen plates](#specimen-plates) |
+
+## Specimen plates
+
+A specimen plate is one project photo drawn up like a natural-history plate: pins on the parts, hairline leaders out to labels naming each wood (common and Latin name), and a numbered key underneath. It goes at the end of the project's article, and the Wood row gets a "See plate →" link to it.
+
+**Generator:** at the plate prompt, paste the whole `<section class="plate">…</section>` block, then press Enter on an empty line. The paste ends at the first blank line, so the block must not contain one (the editor never writes one). If what you pasted doesn't start with `<section class="plate"` and end with `</section>`, it says why and asks again.
+
+**Existing page:** paste the block as the last thing inside `<article class="project-narrative">`, and add this to the end of the Wood row's `spec-value`:
+
+```html
+<a href="#plate" class="plate-link">See plate <span aria-hidden="true">→</span></a>
+```
 
 ## After running
 

@@ -35,7 +35,12 @@ PROJECT = {
     "plan_url":   "",
     "narrative":  ["First paragraph.", "Second paragraph."],
     "lessons":    ["Measure twice"],
+    "plate":      "",
 }
+
+PLATE = ('<section class="plate" id="plate" aria-labelledby="plate-title">\n'
+         '  <h2 id="plate-title">Specimen Plate</h2>\n'
+         '</section>')
 
 
 class GeneratorTest(unittest.TestCase):
@@ -92,6 +97,32 @@ class GeneratorTest(unittest.TestCase):
         np.generate(PROJECT, self.root)
         self.assertIn("family=Archivo:ital,wdth,wght@0,62..125,100..900;1,62..125,100..900",
                       self.read("pages/woodworking/test-bench.html"))
+
+    # ── Specimen plate ──
+
+    def test_page_without_plate_has_no_plate(self):
+        np.generate(PROJECT, self.root)
+        page = self.read("pages/woodworking/test-bench.html")
+        self.assertNotIn('class="plate"', page)
+        self.assertNotIn('href="#plate"', page)
+
+    def test_page_with_plate_ends_article_and_links_wood(self):
+        np.generate({**PROJECT, "plate": PLATE}, self.root)
+        page = self.read("pages/woodworking/test-bench.html")
+        article = page[page.index('<article class="project-narrative">'):page.index("</article>")]
+        self.assertTrue(article.rstrip().endswith("      </section>"))
+        self.assertIn('      <section class="plate"', article)
+        wood = page[page.index('<span class="spec-label">Wood</span>'):]
+        self.assertLess(wood.index('href="#plate"'), wood.index("</div>"))
+
+    def test_validate_plate_accepts_block(self):
+        self.assertIsNone(np.validate_plate(PLATE))
+
+    def test_validate_plate_rejects_non_plate(self):
+        self.assertIsNotNone(np.validate_plate("<div>nope</div>"))
+
+    def test_validate_plate_rejects_truncated_block(self):
+        self.assertIsNotNone(np.validate_plate(PLATE.split("\n")[0]))
 
     def test_card_prepended_and_counts_bumped(self):
         before = int(self.counts("woodworking.html")[0])
