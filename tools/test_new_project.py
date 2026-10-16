@@ -84,6 +84,15 @@ class GeneratorTest(unittest.TestCase):
         self.assertIn(np.LATEST_MARKER, page)
         self.assertNotIn("@@", page)
 
+    def test_new_page_has_no_nts(self):
+        np.generate(PROJECT, self.root)
+        self.assertNotIn("NTS", self.read("pages/woodworking/test-bench.html"))
+
+    def test_new_page_loads_archivo_italic(self):
+        np.generate(PROJECT, self.root)
+        self.assertIn("family=Archivo:ital,wdth,wght@0,62..125,100..900;1,62..125,100..900",
+                      self.read("pages/woodworking/test-bench.html"))
+
     def test_card_prepended_and_counts_bumped(self):
         before = int(self.counts("woodworking.html")[0])
         np.generate(PROJECT, self.root)
