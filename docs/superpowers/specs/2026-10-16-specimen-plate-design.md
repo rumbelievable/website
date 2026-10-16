@@ -185,7 +185,7 @@ Unknown species simply get a blank Latin field.
 
   | Page | Species |
   |---|---|
-  | `moon-fry-bed-frame.html` | White Oak, Purpleheart |
+  | `moon-fry-bed-frame.html` | White Oak, Purpleheart (pinned where it is hidden behind the duvet: a deliberate joke), and Lupine the dog, *Canis lupinus familiaris* (Annie's request) |
   | `housewarming-cutting-board.html` | Walnut, Hard Maple, Cherry |
   | `floating-night-stands.html` | White Oak, Walnut |
   | `little-free-library.html` | Leftover siding (no Latin name), White Oak |
