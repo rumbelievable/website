@@ -1,0 +1,451 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex">
+  <title>Plate Editor — Rumbelievable</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Archivo:ital,wdth,wght@0,62..125,100..900;1,62..125,100..900&family=Martian+Mono:wght@400;600&display=swap" rel="stylesheet">
+  <link href="../assets/css/rumbelievable.css" rel="stylesheet">
+  <!-- A dev tool, not a site page: its own layout lives here. The plate itself uses only rumbelievable.css. -->
+  <style>
+    body.plate-editor { padding: 24px; }
+
+    .editor {
+      display: grid;
+      grid-template-columns: 380px minmax(0, 1fr);
+      gap: 2rem;
+      align-items: start;
+    }
+
+    .editor-controls {
+      display: flex;
+      flex-direction: column;
+      gap: 1.25rem;
+      position: sticky;
+      top: 24px;
+      max-height: calc(100vh - 48px);
+      overflow-y: auto;
+      padding-right: 6px;
+    }
+
+    .editor h1 { font-size: 1.6rem; }
+
+    .editor-note {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      line-height: 1.6;
+      color: var(--ink-2);
+    }
+
+    .editor .form-group { margin: 0; }
+
+    .editor-pins { display: flex; flex-direction: column; gap: 10px; list-style: none; }
+
+    .editor-pin {
+      display: grid;
+      grid-template-columns: 24px minmax(0, 1fr) minmax(0, 1fr) auto auto;
+      gap: 6px;
+      align-items: center;
+      font-family: var(--font-mono);
+      font-size: 11px;
+    }
+
+    .editor-pin input {
+      width: 100%;
+      padding: 6px 8px;
+      border: 1px solid var(--ink);
+      background: var(--paper);
+      font: inherit;
+      color: var(--ink);
+    }
+
+    .editor-pin button,
+    .editor-small {
+      padding: 6px 8px;
+      border: 1px solid var(--ink);
+      background: var(--paper-2);
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: var(--ink);
+      cursor: pointer;
+    }
+
+    .editor-warn {
+      grid-column: 2 / -1;
+      color: #8a2f2f;
+    }
+
+    .editor-actions { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+
+    .form-group .editor-output {
+      width: 100%;
+      min-height: 140px;
+      padding: 8px;
+      border: 1px solid var(--ink);
+      background: var(--paper-2);
+      font-family: var(--font-mono);
+      font-size: 10px;
+      white-space: pre;
+    }
+
+    .editor-preview .plate-photo { cursor: crosshair; }
+    .editor-preview .plate-dot { cursor: grab; touch-action: none; }
+    .editor-preview .plate-dot::after { content: ""; position: absolute; inset: -9px; }   /* a bigger grab target */
+
+    .editor-phone {
+      display: block;
+      width: 390px;
+      height: 900px;
+      margin-inline: auto;
+      border: 1px solid var(--ink);
+      background: var(--paper);
+    }
+
+    .editor [hidden] { display: none; }
+
+    .editor-empty {
+      padding: 4rem 1rem;
+      border: 1px dashed var(--hairline);
+      font-family: var(--font-mono);
+      font-size: 11px;
+      text-align: center;
+      color: var(--ink-2);
+    }
+  </style>
+</head>
+<body class="plate-editor">
+  <div class="editor">
+    <section class="editor-controls" aria-label="Plate settings">
+      <h1>Plate Editor</h1>
+      <p class="editor-note">Click the photo to drop a pin, drag a pin to move it. Copy the block into the project page (or paste it at the <code>make project</code> plate prompt).</p>
+
+      <div class="form-group">
+        <label for="url">Photo URL</label>
+        <input id="url" type="url" placeholder="https://res.cloudinary.com/…">
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label for="no">Project No.</label>
+          <input id="no" placeholder="009">
+        </div>
+        <div class="form-group">
+          <label for="title">Title</label>
+          <input id="title" placeholder="Moon Fry Bed Frame">
+        </div>
+      </div>
+
+      <div>
+        <p class="editor-note">Pins, top to bottom</p>
+        <ol class="editor-pins" id="pins"></ol>
+      </div>
+
+      <div class="editor-actions">
+        <button class="form-submit" id="copy" type="button">Copy plate</button>
+        <button class="editor-small" id="phone" type="button" aria-pressed="false">Phone preview</button>
+        <span class="editor-note" id="status" aria-live="polite"></span>
+      </div>
+
+      <div class="form-group">
+        <label for="output">Plate markup</label>
+        <textarea class="editor-output" id="output" readonly></textarea>
+      </div>
+
+      <div class="form-group">
+        <label for="import">Edit an existing plate: paste its block</label>
+        <textarea class="editor-output" id="import"></textarea>
+      </div>
+      <div class="editor-actions">
+        <button class="editor-small" id="load" type="button">Load plate</button>
+      </div>
+    </section>
+
+    <section aria-label="Preview">
+      <div class="project editor-preview">
+        <article class="project-narrative" id="preview"></article>
+      </div>
+      <iframe class="editor-phone" id="phoneFrame" title="Phone preview" hidden></iframe>
+    </section>
+  </div>
+
+  <script>
+    {
+      const SPECIES = {
+        'walnut':               'Juglans nigra',
+        'hard maple':           'Acer saccharum',
+        'maple':                'Acer saccharum',
+        'cherry':               'Prunus serotina',
+        'white oak':            'Quercus alba',
+        'red oak':              'Quercus rubra',
+        'purpleheart':          'Peltogyne spp.',
+        'sapele':               'Entandrophragma cylindricum',
+        'tulip poplar':         'Liriodendron tulipifera',
+        'poplar':               'Liriodendron tulipifera',
+        'alder':                'Alnus rubra',
+        'baltic birch':         'Betula pendula',
+        'baltic birch plywood': 'Betula pendula',
+        'ash':                  'Fraxinus americana',
+        'hickory':              'Carya spp.',
+        'mahogany':             'Swietenia macrophylla',
+        'padauk':               'Pterocarpus soyauxii',
+        'wenge':                'Millettia laurentii',
+        'zebrawood':            'Microberlinia brazzavillensis',
+        'bubinga':              'Guibourtia spp.',
+        'teak':                 'Tectona grandis',
+        'cedar':                'Thuja plicata',
+        'pine':                 'Pinus spp.',
+        'douglas fir':          'Pseudotsuga menziesii',
+        'beech':                'Fagus grandifolia',
+        'birch':                'Betula alleghaniensis',
+        'bloodwood':            'Brosimum rubescens',
+        'canary wood':          'Centrolobium spp.',
+      };
+
+      const $       = id => document.getElementById(id);
+      const preview = $('preview');
+      const state   = { url: '', no: '', title: '', pins: [] };
+      let   nextId  = 1;
+
+      const esc = s => String(s)
+        .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+
+      const clamp = n => Math.min(99, Math.max(1, Math.round(n * 10) / 10));
+
+      const normaliseUrl = url => {
+        url = url.trim();
+        if (!url) return url;
+        if (/c_scale,w_\d+/.test(url)) return url.replace(/c_scale,w_\d+/, 'c_scale,w_1200');
+        return url.replace('/upload/', '/upload/c_scale,w_1200/f_auto/q_auto/');
+      };
+
+      const latinFor = common => SPECIES[common.trim().toLowerCase()] || '';
+
+      // Botanical convention: a trailing "spp." or "sp." is set upright.
+      const latinHtml = latin => {
+        const m = latin.trim().match(/^(.*?)\s+(spp?\.)$/);
+        return m ? `<i>${esc(m[1])}</i> ${m[2]}` : `<i>${esc(latin.trim())}</i>`;
+      };
+
+      const sorted  = () => [...state.pins].sort((a, b) => a.y - b.y);
+      const named   = () => sorted().filter(p => p.common.trim());
+
+      const collisions = pins => {
+        const hit = new Set();
+        pins.forEach(a => pins.forEach(b => {
+          if (a !== b && a.side === b.side && Math.abs(a.y - b.y) < 6) hit.add(a.id);
+        }));
+        return hit;
+      };
+
+      const plateMarkup = s => {
+        const pins  = s.pins.filter(p => p.common.trim()).sort((a, b) => a.y - b.y);
+        const n     = pins.length;
+        const latin = p => p.latin.trim();
+        const lines = [
+          '<section class="plate" id="plate" aria-labelledby="plate-title">',
+          '  <h2 id="plate-title">Specimen Plate</h2>',
+          `  <figure class="fig plate-figure" data-caption="Specimen plate · ${n} species">`,
+          `    <p class="plate-tag">Plate I · No. ${esc(s.no.trim())} · ${esc(s.title.trim())}</p>`,
+          '    <div class="plate-stage">',
+          `      <img class="plate-photo" src="${esc(s.url)}" alt="${esc(s.title.trim())}, specimen plate" loading="lazy">`,
+        ];
+        pins.forEach((p, i) => {
+          const lat = latin(p) ? ` <span class="plate-latin">${latinHtml(latin(p))}</span>` : '';
+          lines.push(
+            `      <span class="plate-pin" data-side="${p.side}" style="--x:${p.x.toFixed(1)}%; --y:${p.y.toFixed(1)}%" aria-hidden="true">`,
+            `        <span class="plate-dot">${i + 1}</span>`,
+            `        <span class="plate-label">${esc(p.common.trim())}${lat}</span>`,
+            '      </span>',
+          );
+        });
+        lines.push('    </div>', '  </figure>', '  <ol class="plate-key">');
+        pins.forEach(p => {
+          const lat = latin(p) ? ` <span class="plate-latin" lang="la">${latinHtml(latin(p))}</span>` : '';
+          lines.push(`    <li><span class="plate-key-name">${esc(p.common.trim())}</span>${lat}</li>`);
+        });
+        lines.push('  </ol>', '</section>');
+        return lines.join('\n');
+      };
+
+      const parsePlate = html => {
+        const doc = new DOMParser().parseFromString(html, 'text/html');
+        const img = doc.querySelector('.plate-photo');
+        if (!img) throw new Error('no .plate-photo in that block');
+        const tag   = (doc.querySelector('.plate-tag')?.textContent || '').split(' · ');
+        const style = (el, prop) => parseFloat((el.getAttribute('style') || '').match(new RegExp(`--${prop}:\\s*([\\d.]+)%`))?.[1] || 50);
+        return {
+          url:   img.getAttribute('src') || '',
+          no:    (tag[1] || '').replace(/^No\.\s*/, ''),
+          title: tag.slice(2).join(' · '),
+          pins:  [...doc.querySelectorAll('.plate-pin')].map(pin => {
+            const label = pin.querySelector('.plate-label').cloneNode(true);
+            const lat   = label.querySelector('.plate-latin');
+            if (lat) lat.remove();
+            return {
+              id: nextId++, x: style(pin, 'x'), y: style(pin, 'y'),
+              side: pin.dataset.side === 'right' ? 'right' : 'left',
+              common: label.textContent.trim(),
+              latin: lat ? lat.textContent.trim() : '',
+              latinAuto: false,
+            };
+          }),
+        };
+      };
+
+      // ── Rendering ──
+
+      const renderPreview = () => {
+        const markup = plateMarkup(state);
+        $('output').value = markup;
+        if (!state.url) {
+          preview.innerHTML = '<p class="editor-empty">Paste a photo URL to start.</p>';
+        } else {
+          preview.innerHTML = markup;
+          // Unnamed pins are left out of the markup; show them in the preview anyway so they can be placed.
+          const stage = preview.querySelector('.plate-stage');
+          state.pins.filter(p => !p.common.trim()).forEach(p => {
+            stage.insertAdjacentHTML('beforeend',
+              `<span class="plate-pin" data-side="${p.side}" style="--x:${p.x}%; --y:${p.y}%"><span class="plate-dot">?</span><span class="plate-label">(name me)</span></span>`);
+          });
+          // Tag each pin with its id so a drag knows which one it is.
+          const order = [...named(), ...state.pins.filter(p => !p.common.trim())];
+          preview.querySelectorAll('.plate-pin').forEach((el, i) => { el.dataset.id = order[i].id; });
+        }
+        if (!$('phoneFrame').hidden) renderPhone(markup);
+      };
+
+      const renderPhone = markup => {
+        const css = new URL('../assets/css/rumbelievable.css', location.href).href;
+        const fonts = document.querySelector('link[href*="fonts.googleapis.com/css2"]').href;
+        $('phoneFrame').srcdoc = `<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">`
+          + `<link href="${fonts}" rel="stylesheet"><link href="${css}" rel="stylesheet"></head>`
+          + `<body class="page-project" style="padding:16px"><main class="project"><article class="project-narrative">${markup}</article></main></body></html>`;
+      };
+
+      const renderPins = () => {
+        const hits = collisions(state.pins);
+        const list = $('pins');
+        list.innerHTML = '';
+        let n = 0;
+        sorted().forEach(p => {
+          const li = document.createElement('li');
+          li.className = 'editor-pin';
+          li.innerHTML = `
+            <span>${p.common.trim() ? ++n : '?'}</span>
+            <input aria-label="Common name" placeholder="Common name" value="${esc(p.common)}" data-field="common">
+            <input aria-label="Latin name" placeholder="Latin name" value="${esc(p.latin)}" data-field="latin">
+            <button type="button" data-act="flip" aria-label="Move label to the ${p.side === 'left' ? 'right' : 'left'}">${p.side === 'left' ? '◀' : '▶'}</button>
+            <button type="button" data-act="del" aria-label="Delete pin">✕</button>`;
+          if (hits.has(p.id)) {
+            li.insertAdjacentHTML('beforeend', '<span class="editor-warn">Labels may collide: flip one to the other side.</span>');
+          }
+          const [common, latin] = li.querySelectorAll('input');
+          common.addEventListener('input', () => {
+            p.common = common.value;
+            if (p.latinAuto || !p.latin) { p.latin = latinFor(p.common); p.latinAuto = true; latin.value = p.latin; }
+            renderPreview();
+          });
+          common.addEventListener('change', renderPins);   // renumber once typing is done
+          latin.addEventListener('input', () => { p.latin = latin.value; p.latinAuto = false; renderPreview(); });
+          li.querySelector('[data-act="flip"]').addEventListener('click', () => {
+            p.side = p.side === 'left' ? 'right' : 'left';
+            renderAll();
+          });
+          li.querySelector('[data-act="del"]').addEventListener('click', () => {
+            state.pins = state.pins.filter(q => q !== p);
+            renderAll();
+          });
+          list.append(li);
+        });
+      };
+
+      const renderAll = () => { renderPins(); renderPreview(); };
+
+      const syncFields = () => {
+        $('url').value = state.url;
+        $('no').value = state.no;
+        $('title').value = state.title;
+      };
+
+      // ── Placing and dragging ──
+
+      const pointAt = (e, stage) => {
+        const r = stage.getBoundingClientRect();
+        return { x: clamp((e.clientX - r.left) / r.width * 100), y: clamp((e.clientY - r.top) / r.height * 100) };
+      };
+
+      preview.addEventListener('click', e => {
+        if (!e.target.classList.contains('plate-photo')) return;
+        const { x, y } = pointAt(e, e.target.closest('.plate-stage'));
+        const pin = { id: nextId++, x, y, side: x < 50 ? 'left' : 'right', common: '', latin: '', latinAuto: true };
+        state.pins.push(pin);
+        renderAll();
+        const row = [...$('pins').children][sorted().indexOf(pin)];
+        if (row) row.querySelector('input').focus();
+      });
+
+      preview.addEventListener('pointerdown', e => {
+        const dot = e.target.closest('.plate-dot');
+        if (!dot) return;
+        const el    = dot.closest('.plate-pin');
+        const pin   = state.pins.find(p => String(p.id) === el.dataset.id);
+        const stage = el.closest('.plate-stage');
+        if (!pin) return;
+        e.preventDefault();
+        const move = ev => {
+          Object.assign(pin, pointAt(ev, stage));
+          el.style.setProperty('--x', pin.x + '%');
+          el.style.setProperty('--y', pin.y + '%');
+        };
+        const up = () => {
+          window.removeEventListener('pointermove', move);
+          window.removeEventListener('pointerup', up);
+          renderAll();
+        };
+        window.addEventListener('pointermove', move);
+        window.addEventListener('pointerup', up);
+      });
+
+      // ── Setup fields, copy, import ──
+
+      $('url').addEventListener('change', () => { state.url = normaliseUrl($('url').value); syncFields(); renderPreview(); });
+      $('no').addEventListener('input', () => { state.no = $('no').value; renderPreview(); });
+      $('title').addEventListener('input', () => { state.title = $('title').value; renderPreview(); });
+
+      $('copy').addEventListener('click', async () => {
+        const unnamed = state.pins.some(p => !p.common.trim());
+        try {
+          await navigator.clipboard.writeText(plateMarkup(state));
+          $('status').textContent = unnamed ? 'Copied (pins without a name were left out)' : 'Copied';
+        } catch {
+          $('output').select();
+          $('status').textContent = 'Clipboard blocked: the markup is selected below, copy it from there';
+        }
+      });
+
+      $('phone').addEventListener('click', () => {
+        const on = $('phoneFrame').hidden;
+        $('phoneFrame').hidden = !on;
+        preview.parentElement.hidden = on;
+        $('phone').setAttribute('aria-pressed', String(on));
+        renderPreview();
+      });
+
+      $('load').addEventListener('click', () => {
+        try {
+          Object.assign(state, parsePlate($('import').value));
+          syncFields();
+          renderAll();
+          $('status').textContent = `Loaded ${state.pins.length} pin${state.pins.length === 1 ? '' : 's'}`;
+        } catch (err) {
+          $('status').textContent = `Couldn't load that: ${err.message}`;
+        }
+      });
+
+      renderAll();
+    }
+  </script>
+</body>
+</html>

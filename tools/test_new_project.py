@@ -5,12 +5,15 @@ site files the generator touches, so the real site is never written.
 Run from the site root: python3 -m unittest tools/test_new_project.py
 """
 
+import contextlib
+import io
 import re
 import shutil
 import sys
 import tempfile
 import unittest
 from pathlib import Path
+from unittest import mock
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 import new_project as np  # noqa: E402
@@ -35,7 +38,12 @@ PROJECT = {
     "plan_url":   "",
     "narrative":  ["First paragraph.", "Second paragraph."],
     "lessons":    ["Measure twice"],
+    "plate":      "",
 }
+
+PLATE = ('<section class="plate" id="plate" aria-labelledby="plate-title">\n'
+         '  <h2 id="plate-title">Specimen Plate</h2>\n'
+         '</section>')
 
 
 class GeneratorTest(unittest.TestCase):
@@ -83,6 +91,41 @@ class GeneratorTest(unittest.TestCase):
         self.assertIn(f'<a href="./{self.prev[1]}.html" class="pager-prev">', page)
         self.assertIn(np.LATEST_MARKER, page)
         self.assertNotIn("@@", page)
+
+    def test_new_page_has_no_nts(self):
+        np.generate(PROJECT, self.root)
+        self.assertNotIn("NTS", self.read("pages/woodworking/test-bench.html"))
+
+    def test_new_page_loads_archivo_italic(self):
+        np.generate(PROJECT, self.root)
+        self.assertIn("family=Archivo:ital,wdth,wght@0,62..125,100..900;1,62..125,100..900",
+                      self.read("pages/woodworking/test-bench.html"))
+
+    # ── Specimen plate ──
+
+    def test_page_without_plate_has_no_plate(self):
+        np.generate(PROJECT, self.root)
+        page = self.read("pages/woodworking/test-bench.html")
+        self.assertNotIn('class="plate"', page)
+        self.assertNotIn('href="#plate"', page)
+
+    def test_page_with_plate_ends_article_and_links_wood(self):
+        np.generate({**PROJECT, "plate": PLATE}, self.root)
+        page = self.read("pages/woodworking/test-bench.html")
+        article = page[page.index('<article class="project-narrative">'):page.index("</article>")]
+        self.assertTrue(article.rstrip().endswith("      </section>"))
+        self.assertIn('      <section class="plate"', article)
+        wood = page[page.index('<span class="spec-label">Wood</span>'):]
+        self.assertLess(wood.index('href="#plate"'), wood.index("</div>"))
+
+    def test_validate_plate_accepts_block(self):
+        self.assertIsNone(np.validate_plate(PLATE))
+
+    def test_validate_plate_rejects_non_plate(self):
+        self.assertIsNotNone(np.validate_plate("<div>nope</div>"))
+
+    def test_validate_plate_rejects_truncated_block(self):
+        self.assertIsNotNone(np.validate_plate(PLATE.split("\n")[0]))
 
     def test_card_prepended_and_counts_bumped(self):
         before = int(self.counts("woodworking.html")[0])
@@ -142,6 +185,39 @@ class GeneratorTest(unittest.TestCase):
     def test_missing_latest_marker(self):
         self.assert_nothing_written(f"pages/woodworking/{self.prev[1]}.html", np.LATEST_MARKER)
 
+
+
+class PlatePromptTest(unittest.TestCase):
+    """collect_plate reads a pasted block up to a blank line."""
+
+    def run_prompt(self, lines):
+        feed = iter(lines)
+
+        def fake_input(prompt=""):
+            try:
+                return next(feed)
+            except StopIteration:
+                raise EOFError from None
+
+        out = io.StringIO()
+        with mock.patch("builtins.input", fake_input), contextlib.redirect_stdout(out):
+            result = np.collect_plate()
+        return result, out.getvalue()
+
+    def test_collect_plate_returns_pasted_block(self):
+        result, _ = self.run_prompt(PLATE.split("\n") + [""])
+        self.assertEqual(result, PLATE)
+
+    def test_collect_plate_blank_line_in_paste_keeps_nothing_and_says_so(self):
+        head, tail = PLATE.split("\n")[:2], PLATE.split("\n")[2:]
+        result, out = self.run_prompt(head + [""] + tail + ["", ""])
+        self.assertEqual(result, "")
+        self.assertIn("No plate added", out)
+
+    def test_collect_plate_end_of_input_skips(self):
+        result, out = self.run_prompt(["<div>half"])
+        self.assertEqual(result, "")
+        self.assertIn("No plate added", out)
 
 if __name__ == "__main__":
     unittest.main()

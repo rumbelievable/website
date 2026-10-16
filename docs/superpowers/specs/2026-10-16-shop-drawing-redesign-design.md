@@ -206,6 +206,7 @@ The mockup's "A, revised" screens are the reference for Home, Album, Project and
   - `<nav aria-label="Projects">` with `← 0xx Title` and `0xx Title →`. The newest page shows
     "Latest project" in place of the next link.
   - `<body data-project-no="013">` carries the number.
+  - Optional specimen plate as the last article section: see `2026-10-16-specimen-plate-design.md`.
 - **About**
   - Portrait figure (`FIG. 1 · THE MAKER`), eyebrow, `h1` Annie Rumbles, a personal title block
     (Born England · Raised Boulder, Colorado · Based Denver, Colorado · Day job Data engineer ·

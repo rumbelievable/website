@@ -442,7 +442,7 @@ a {
 
 .title-block-head {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   border-bottom: var(--sheet-line) solid var(--ink);
 }
 
@@ -484,6 +484,8 @@ a {
   text-decoration: underline;
   text-underline-offset: 3px;
 }
+
+.spec-value .plate-link { display: block; margin-top: 4px; }
 
 .title-block-name {
   padding: 10px;
@@ -1107,6 +1109,163 @@ a {
 
 @media (max-width: 560px) {
   .project-photo-grid { grid-template-columns: 1fr; }
+}
+
+/* ── Specimen plate ───────────────────────────────────────── */
+/* One photo drawn up like a natural-history plate. Each pin is a
+   zero-height row the full width of the stage at --y, so its leader
+   and label are sized in percentages of the photo's width. The
+   inline --x / --y on each pin are positions, not visual state. */
+.plate {
+  display: flex;
+  flex-direction: column;
+  gap: 1.75rem;
+}
+
+.plate-tag {
+  width: fit-content;
+  margin: 0 0 14px 20%;
+  padding: 5px 8px;
+  border: 1px solid var(--ink);
+  background: var(--paper-2);
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.plate-stage {
+  position: relative;
+  width: 60%;
+  margin-inline: auto;
+}
+
+.plate-figure .plate-photo { display: block; width: 100%; }
+
+.plate-figure::after {
+  content: "FIG. " counter(fig, decimal-leading-zero) " · " attr(data-caption);
+  width: 60%;
+  margin-inline: auto;
+  text-transform: uppercase;
+}
+
+.plate-pin {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: var(--y);
+  height: 0;
+}
+
+/* The leader. A faint paper edge keeps it readable over dark wood. */
+.plate-pin::before {
+  content: "";
+  position: absolute;
+  top: -0.5px;
+  border-top: 1px solid var(--ink);
+  box-shadow: 0 0 0 1px rgba(239, 233, 220, 0.55);
+}
+
+.plate-pin[data-side="left"]::before  { left: -8px; width: calc(var(--x) + 8px); }
+.plate-pin[data-side="right"]::before { left: var(--x); right: -8px; }
+
+.plate-dot {
+  position: absolute;
+  z-index: 1;
+  left: var(--x);
+  top: 0;
+  width: 10px;
+  height: 10px;
+  transform: translate(-50%, -50%);
+  border: 1.5px solid var(--brass);
+  border-radius: 50%;
+  background: radial-gradient(circle, var(--ink) 0 2px, var(--paper) 2.5px);
+  font-size: 0;   /* the number shows on small screens only */
+}
+
+/* Label width: the 20% figure margin is 33.333% of the 60% stage. */
+.plate-label {
+  position: absolute;
+  top: 0;
+  width: calc(33.333% - 20px);
+  transform: translateY(-0.7em);   /* centre the first line on the leader */
+  font-family: var(--font-mono);
+  font-size: 10px;
+  line-height: 1.4;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.plate-pin[data-side="left"] .plate-label  { right: calc(100% + 12px); text-align: right; }
+.plate-pin[data-side="right"] .plate-label { left: calc(100% + 12px); }
+
+.plate-latin {
+  display: block;
+  margin-top: 2px;
+  font-family: var(--font-body);
+  font-size: 12px;
+  letter-spacing: 0;
+  text-transform: none;
+  color: var(--ink-2);
+}
+
+.plate-key {
+  list-style: none;
+  counter-reset: plate;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 10px 2rem;
+  width: 60%;
+  margin-inline: auto;
+}
+
+.plate-key li {
+  counter-increment: plate;
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 4px 10px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.plate-key li::before {
+  content: counter(plate);
+  align-self: center;
+  display: grid;
+  place-items: center;
+  width: 18px;
+  height: 18px;
+  border: 1px solid var(--ink);
+  font-size: 9px;
+  letter-spacing: 0;
+}
+
+.plate-key .plate-latin { display: inline; margin: 0; }
+
+@media (max-width: 700px) {
+  .plate-stage,
+  .plate-key,
+  .plate-figure::after { width: 100%; }
+
+  .plate-tag { margin-left: 0; }
+
+  .plate-pin::before,
+  .plate-label { display: none; }
+
+  .plate-dot {
+    display: grid;
+    place-items: center;
+    width: 18px;
+    height: 18px;
+    background: var(--paper);
+    font-family: var(--font-mono);
+    font-size: 9px;
+    line-height: 1;
+    color: var(--ink);
+  }
 }
 
 /* ── About ────────────────────────────────────────────────── */

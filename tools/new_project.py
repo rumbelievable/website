@@ -6,10 +6,13 @@ Run from the site root: python3 tools/new_project.py
 
 import re
 import sys
+import textwrap
 from datetime import date
 from pathlib import Path
 
 SITE_ROOT = Path(__file__).resolve().parent.parent
+
+PLATE_LINK = '<a href="#plate" class="plate-link">See plate <span aria-hidden="true">→</span></a>'
 
 # ── HTML template ─────────────────────────────────────────────────────────────
 # Placeholders: @@NO@@, @@TITLE@@, @@SUBTITLE@@, @@YEAR@@, @@HERO_URL@@,
@@ -27,7 +30,7 @@ PAGE_TEMPLATE = """\
     href="https://res.cloudinary.com/df4rizvgx/image/upload/v1777813270/rumbelievable-bronze_lkvsxj.png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,100..900&family=Martian+Mono:wght@400;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Archivo:ital,wdth,wght@0,62..125,100..900;1,62..125,100..900&family=Martian+Mono:wght@400;600&display=swap" rel="stylesheet">
   <link href="../../assets/css/rumbelievable.css" rel="stylesheet">
 </head>
 <body class="page-project" data-project-no="@@NO@@">
@@ -89,7 +92,6 @@ PAGE_TEMPLATE = """\
       <aside class="title-block" aria-label="Project specs">
         <div class="title-block-head">
           <div><span class="spec-label">No.</span>@@NO@@</div>
-          <div><span class="spec-label">Scale</span>NTS</div>
           <div><span class="spec-label">Drawn</span>A.R.</div>
         </div>
 @@SPEC_ROWS@@
@@ -239,6 +241,44 @@ def collect_narrative():
     return paragraphs
 
 
+def validate_plate(text):
+    """None if text is a whole plate block from tools/plate-editor.html, else why not."""
+    text = text.strip()
+    if not text.startswith('<section class="plate"'):
+        return 'it should start with <section class="plate"'
+    if not text.endswith("</section>"):
+        return "it should end with </section> (a blank line inside the block ends the paste early)"
+    return None
+
+
+def collect_plate():
+    print("  Specimen plate: paste the block from tools/plate-editor.html,")
+    print("  then a blank line (or Enter to skip):")
+    failed = False
+    while True:
+        lines, ended = [], False
+        while True:
+            try:
+                line = input("    > ").rstrip()
+            except EOFError:
+                ended = True
+                break
+            if not line:
+                break
+            lines.append(line)
+        if lines:
+            reason = validate_plate("\n".join(lines))
+            if reason is None:
+                return "\n".join(lines)
+            failed = True
+            print(f"    → not a plate block: {reason}.")
+        if not lines or ended:
+            if failed or ended:
+                print("    → No plate added. To add one later, see Specimen plates in tools/README.md.")
+            return ""
+        print("    → Paste again, or Enter to skip.")
+
+
 # ── Data collection ───────────────────────────────────────────────────────────
 
 def collect():
@@ -279,6 +319,9 @@ def collect():
     lessons_raw = ask("Lessons learned  (comma-separated, or Enter to skip)", default="", required=False)
     lessons = [l.strip() for l in lessons_raw.split(",") if l.strip()]
 
+    print()
+    plate = collect_plate()
+
     return {
         "no":         no,
         "title":      title,
@@ -297,12 +340,13 @@ def collect():
         "plan_url":   plan_url,
         "narrative":  narrative,
         "lessons":    lessons,
+        "plate":      plate,
     }
 
 
 # ── HTML builders ─────────────────────────────────────────────────────────────
 
-def spec_row_html(label, value, url=None):
+def spec_row_html(label, value, url=None, extra=""):
     if value and url:
         val = f'<a href="{url}" target="_blank" rel="noopener">{value}</a>'
     else:
@@ -310,7 +354,7 @@ def spec_row_html(label, value, url=None):
     return (
         f'        <div class="spec-row">\n'
         f'          <span class="spec-label">{label}</span>\n'
-        f'          <span class="spec-value">{val}</span>\n'
+        f'          <span class="spec-value">{val}{extra}</span>\n'
         f'        </div>'
     )
 
@@ -326,8 +370,13 @@ def figures_html(urls, title, start):
     return f'      <div class="project-photo-grid">\n{figs}\n      </div>'
 
 
+def plate_html(block):
+    """The pasted plate block, indented to sit inside the article."""
+    return textwrap.indent(textwrap.dedent(block).strip("\n"), "      ")
+
+
 def article_html(d):
-    """First section, up to three photos, then Lessons Learned and any remaining photos."""
+    """First section, up to three photos, Lessons Learned, any remaining photos, then the plate."""
     paras = "\n".join(f"        <p>{p}</p>" for p in d["narrative"])
     parts = [f'      <div class="narrative-section">\n{paras}\n      </div>']
     first, rest = d["extra_urls"][:3], d["extra_urls"][3:]
@@ -343,6 +392,8 @@ def article_html(d):
             '      </div>'
         )
     parts.append(figures_html(rest, d["title"], 2 + len(first)))
+    if d["plate"]:
+        parts.append(plate_html(d["plate"]))
     return "\n".join(p for p in parts if p)
 
 
@@ -374,7 +425,7 @@ def parse_card_meta(meta):
 
 def render_page(d, prev):
     spec_rows = "\n".join([
-        spec_row_html("Wood",       d["wood"]),
+        spec_row_html("Wood",       d["wood"], extra=PLATE_LINK if d["plate"] else ""),
         spec_row_html("Finish",     d["finish"]),
         spec_row_html("Joinery",  d["joinery"]),
         spec_row_html("Hardware", d["hardware"]),
