@@ -96,6 +96,11 @@
       PS.setPaper('a4'); eq([Math.round(r().width), Math.round(r().height)], [1123, 794]);
       ok(doc.getElementById('page-size').textContent.includes('A4 landscape')); });
 
+    test('render: paper query', async () => { const {doc, PS} = await load(SAMPLE + '&paper=a4');
+      eq(doc.body.dataset.paper, 'a4');
+      ok(doc.getElementById('page-size').textContent.includes('A4 landscape'));
+      eq(PS.state.dirty, false); });
+
     // ── Task 3: cut list and build step ──
     test('cutlist: letters continue across sheets', async () => { const {doc} = await load(SAMPLE);
       const letters = i => [...doc.querySelectorAll(`[data-i="${i}"] .part-letter`)].map(td => td.textContent);

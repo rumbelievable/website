@@ -79,7 +79,7 @@
     .sheet-body { grid-area: 1 / 1 / 2 / 3; min-height: 0; padding: 0.3in; overflow: hidden; }
     .sheet-foot { grid-area: 2 / 1 / 3 / 2; min-width: 0; padding: 0.12in 0.3in 0.14in; }
     .sheet-foot:has(.list-block) { border-top: 1px solid var(--hairline); }
-    @media print { .sheet-foot:not(:has(li)) { border-top: none; } }
+    @media print { .sheet-frame .sheet-foot:not(:has(li)) { border-top: none; } }
 
     /* Title block, bottom right */
     .tb { grid-area: 2 / 2 / 3 / 3; border-top: 1.5px solid var(--ink); border-left: 1.5px solid var(--ink); font-family: var(--font-mono); font-size: 8.5pt; line-height: 1.35; }
@@ -933,7 +933,8 @@
     };
 
     (async () => {
-      const planPath = new URLSearchParams(location.search).get('plan');
+      const params = new URLSearchParams(location.search);
+      const planPath = params.get('plan');
       if (planPath) {
         const base = planPath.endsWith('/') ? planPath : planPath + '/';
         try {
@@ -942,6 +943,8 @@
           const parsed = parsePlan(await res.text());
           if (!parsed.ok) throw new Error(parsed.error);
           await load(parsed.plan, { mode: 'http', base });
+          // &paper=a4 shows (and prints) the viewed plan at another size without changing it.
+          if (params.get('paper')) { applyPaper(params.get('paper')); checkOverflow(); updateStatus(); }
         } catch (err) { render(); setStatus(err.message, 'error'); }
       } else render();
       markReady();
