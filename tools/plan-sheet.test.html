@@ -110,6 +110,70 @@
       const c = doc.querySelector('[data-i="5"] .callout');
       ok(c === null || c.hidden, 'empty callout should be hidden'); });
 
+    // ── Task 4: editing ──
+    const input = (el, text) => { el.textContent = text; el.dispatchEvent(new Event('input', { bubbles: true })); };
+    test('edit: typing updates model and every bound copy', async () => { const {doc, PS} = await load(SAMPLE);
+      const el = doc.querySelector('[data-i="1"] [data-bind="plan.name"]');
+      el.focus(); input(el, 'Night Stand');
+      eq(PS.state.plan.plan.name, 'Night Stand');
+      eq([...doc.querySelectorAll('[data-bind="plan.name"]')].every(e => e.textContent === 'Night Stand'), true);
+      eq(PS.state.dirty, true); });
+    test('edit: notes and lists render as items', async () => { const {doc} = await load(SAMPLE);
+      eq(doc.querySelectorAll('[data-i="0"] .notes li').length, 4);
+      eq(doc.querySelectorAll('[data-i="1"] .sheet-foot .notes li').length, 2);
+      eq(doc.querySelectorAll('[data-i="3"] .plain-list li').length, 6);
+      ok(!doc.getElementById('desk').textContent.includes('[object'), 'no stringified elements'); });
+    test('edit: sheet title updates the cover index', async () => { const {doc} = await load(SAMPLE);
+      input(doc.querySelector('[data-i="2"] [data-bind="sheets.2.title"]'), 'All views');
+      eq(doc.querySelector('.sheet-index li:nth-child(3)').textContent, 'S-03 · All views'); });
+    test('edit: pasted text round-trips', async () => { const {doc, PS} = await load(SAMPLE);
+      const el = doc.querySelector('[data-bind="sheets.3.parts.0.notes"]');
+      input(el, '3/4" × 10 — ¾ "quoted"');
+      eq(PS.parsePlan(PS.serializePlan(PS.state.plan)).plan.sheets[3].parts[0].notes, '3/4" × 10 — ¾ "quoted"');
+      eq(el.getAttribute('contenteditable'), 'plaintext-only'); });
+    test('edit: pasted line breaks flatten in single-line fields', async () => { const {doc, PS} = await load(SAMPLE);
+      input(doc.querySelector('[data-i="1"] [data-bind="sheets.1.title"]'), 'Front\nelevation');
+      eq(PS.state.plan.sheets[1].title, 'Front elevation'); });
+    test('edit: Enter in a title does not add a newline', async () => { const {doc, win} = await load(SAMPLE);
+      const el = doc.querySelector('[data-bind="sheets.1.title"]'); el.focus();
+      const ev = new win.KeyboardEvent('keydown', { key: 'Enter', bubbles: true, cancelable: true });
+      el.dispatchEvent(ev); eq(ev.defaultPrevented, true); });
+    test('edit: Enter in a step adds the next step', async () => { const {doc, win, PS} = await load(SAMPLE);
+      const el = doc.querySelector('[data-bind="sheets.5.steps.1"]'); el.focus();
+      el.dispatchEvent(new win.KeyboardEvent('keydown', { key: 'Enter', bubbles: true, cancelable: true }));
+      eq(PS.state.plan.sheets[5].steps.length, 5); eq(PS.state.plan.sheets[5].steps[2], '');
+      eq(doc.activeElement.dataset.bind, 'sheets.5.steps.2'); });
+    test('edit: add, move and delete sheets renumber', async () => { const {doc, PS} = await load(SAMPLE);
+      PS.addSheet('drawing'); eq(doc.querySelectorAll('.sheet-page').length, 7);
+      eq(doc.querySelector('[data-i="6"] .tb-sheet').textContent, '07 / 07');
+      PS.moveSheet(6, -1); eq(PS.state.plan.sheets[5].layout, 'drawing');
+      eq(doc.querySelector('.sheet-index li:nth-child(6)').textContent, 'S-06 · Drawing');
+      PS.deleteSheet(5); eq(doc.querySelector('[data-i="0"] .tb-sheet').textContent, '01 / 06'); });
+    test('edit: slot switch keeps views', async () => { const {doc, PS} = await load(SAMPLE);
+      PS.setSlots(2, 1); eq(doc.querySelectorAll('[data-i="2"] .slot').length, 1);
+      eq(PS.state.plan.sheets[2].views.length, 4); PS.setSlots(2, 4);
+      eq(doc.querySelectorAll('[data-i="2"] .slot').length, 4); });
+    test('edit: list actions and part letters', async () => { const {doc, PS} = await load(SAMPLE);
+      PS.listAction('sheets.3.parts', 'remove', 0);
+      eq(doc.querySelector('[data-i="3"] .part-letter').textContent, 'A');
+      eq(doc.querySelector('[data-i="4"] .part-letter').textContent, 'H'); });
+    test('edit: delete last sheet', async () => { const {doc, PS} = await load(SAMPLE);
+      while (PS.state.plan.sheets.length) PS.deleteSheet(0);
+      ok(doc.querySelector('.desk-empty')); ok(PS.serializePlan(PS.state.plan).includes('"sheets": []')); });
+    test('edit: overflow warning', async () => { const {doc, PS} = await load(SAMPLE);
+      for (let i = 0; i < 30; i++) PS.listAction('sheets.4.parts', 'add', 0);
+      eq(PS.checkOverflow(), [4]);
+      ok(doc.querySelector('.status').textContent.includes('Sheet S-05: content runs past the sheet'));
+      ok(doc.querySelector('[data-i="4"]').classList.contains('is-overflowing')); });
+    test('edit: A4 switch re-checks overflow', async () => { const {PS} = await load(SAMPLE);
+      // Fill sheet 5 (index 4) with rows until it overflows, back off one, then top up with
+      // material lines, which are shorter than A4's 0.23in shortfall, until it just fits Letter.
+      let n = 0; while (PS.checkOverflow().length === 0 && n < 60) { PS.listAction('sheets.4.parts', 'add', 0); n++; }
+      PS.listAction('sheets.4.parts', 'remove', 0);
+      n = 0; while (PS.checkOverflow().length === 0 && n < 20) { PS.listAction('sheets.4.materials', 'add', 0); n++; }
+      PS.listAction('sheets.4.materials', 'remove', 0); eq(PS.checkOverflow(), []);
+      PS.setPaper('a4'); eq(PS.checkOverflow(), [4]); });
+
     // ── Runner ──
     (async () => {
       const only = new URLSearchParams(location.search).get('only');

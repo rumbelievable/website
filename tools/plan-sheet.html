@@ -58,8 +58,9 @@
     /* ── The sheet: one printed page ── */
     body[data-paper="letter"] { --sheet-w: 11in; --sheet-h: 8.5in; }
     body[data-paper="a4"] { --sheet-w: 297mm; --sheet-h: 210mm; }
+    .sheet-wrap { width: var(--sheet-w); margin: 0 auto 0.5in; }
     .sheet-page {
-      position: relative; width: var(--sheet-w); height: var(--sheet-h); margin: 0 auto 0.5in;
+      position: relative; width: var(--sheet-w); height: var(--sheet-h);
       background: #fff; box-shadow: 0 1px 2px rgba(34, 39, 44, 0.12), 0 6px 24px rgba(34, 39, 44, 0.1);
       break-after: page; overflow: hidden;
     }
@@ -77,7 +78,8 @@
     }
     .sheet-body { grid-area: 1 / 1 / 2 / 3; min-height: 0; padding: 0.3in; overflow: hidden; }
     .sheet-foot { grid-area: 2 / 1 / 3 / 2; min-width: 0; padding: 0.12in 0.3in 0.14in; }
-    .sheet-foot:not(:empty) { border-top: 1px solid var(--hairline); }
+    .sheet-foot:has(.list-block) { border-top: 1px solid var(--hairline); }
+    @media print { .sheet-foot:not(:has(li)) { border-top: none; } }
 
     /* Title block, bottom right */
     .tb { grid-area: 2 / 2 / 3 / 3; border-top: 1.5px solid var(--ink); border-left: 1.5px solid var(--ink); font-family: var(--font-mono); font-size: 8.5pt; line-height: 1.35; }
@@ -145,6 +147,43 @@
     .callout-kind { display: block; margin-bottom: 2pt; font-family: var(--font-mono); font-size: 8pt; letter-spacing: 0.14em; color: var(--cyan); }
     .step-images { display: grid; gap: 0.25in; grid-template-rows: repeat(var(--n, 1), minmax(0, 1fr)); height: 100%; min-height: 0; }
 
+    /* ── Editing controls (screen only) ── */
+    [contenteditable] { outline: none; border-radius: 1px; }
+    [contenteditable]:hover { background: rgba(47, 93, 138, 0.06); }
+    [contenteditable]:focus { background: rgba(47, 93, 138, 0.1); box-shadow: 0 0 0 1px rgba(47, 93, 138, 0.5); }
+    .sheet-controls {
+      display: flex; align-items: center; gap: 10px; min-height: 34px; padding-bottom: 6px;
+      font-family: var(--font-mono); font-size: 11px; color: var(--ink-2);
+    }
+    .sc-name { letter-spacing: 0.08em; text-transform: uppercase; }
+    .sc-warn { flex: 1; color: #a3262a; }
+    .sc-buttons { display: inline-flex; gap: 4px; margin-left: auto; }
+    .sheet-controls button, .item-controls button, .list-add, .callout-tools button {
+      font-family: var(--font-mono); font-size: 10.5px; background: #fff; color: var(--ink);
+      border: 1px solid var(--hairline); cursor: pointer;
+    }
+    .sheet-controls button { min-width: 26px; height: 24px; padding: 0 7px; }
+    .sheet-controls button:hover, .item-controls button:hover, .list-add:hover, .callout-tools button:hover { border-color: var(--cyan); color: var(--cyan); }
+    .sheet-controls button[data-armed] { background: #a3262a; border-color: #a3262a; color: #fff; }
+    .seg-mini { display: inline-flex; align-items: center; gap: 0; }
+    .seg-mini > span { margin-right: 6px; }
+    .seg-mini button + button { border-left: none; }
+    .seg-mini button[aria-pressed="true"] { background: var(--ink); border-color: var(--ink); color: #fff; }
+    .sheet-page.is-overflowing { box-shadow: 0 0 0 3px #a3262a; }
+    .item { position: relative; }
+    .item-controls { position: absolute; right: 0; top: -2px; display: none; gap: 2px; padding-left: 4px; background: #fff; z-index: 2; }
+    .item:hover > .item-controls, .item:focus-within > .item-controls,
+    .item-row:hover .item-controls, .item-row:focus-within .item-controls { display: inline-flex; }
+    .item-controls button { width: 20px; height: 20px; padding: 0; line-height: 1; }
+    .item-cell { position: relative; width: 0; padding: 0 !important; border-bottom: none !important; }
+    .item-cell .item-controls { top: 2px; }
+    .list-add { display: inline-block; align-self: flex-start; margin-top: 4pt; padding: 3px 9px; border-style: dashed; color: var(--cyan); }
+    .callout-tools { display: inline-flex; gap: 4px; }
+    .callout-tools button { padding: 2px 8px; color: var(--cyan); }
+    .callout .callout-tools { position: absolute; right: 0; top: 0; display: none; }
+    .callout { position: relative; }
+    .callout:hover .callout-tools, .callout:focus-within .callout-tools { display: inline-flex; }
+
     @media screen {
       [data-bind]:empty::before { content: attr(data-placeholder); color: #a3a7aa; }
     }
@@ -153,9 +192,12 @@
       body { background: #fff; }
       .toolbar { display: none; }
       #desk { padding: 0; }
-      .sheet-page { margin: 0; box-shadow: none; }
-      .sheet-page:last-child { break-after: auto; }
-      .tb-scale-cell:has(> [data-bind]:empty), .cover-built:has(> [data-bind]:empty), .step-parts:has(> [data-bind]:empty) { display: none; }
+      .sheet-wrap { width: auto; margin: 0; }
+      .sheet-page, .sheet-page.is-overflowing { box-shadow: none; }
+      .sheet-wrap:last-child .sheet-page { break-after: auto; }
+      .sheet-controls, .item-controls, .item-cell, .list-add, .callout-tools { display: none !important; }
+      .tb-scale-cell:has(> [data-bind]:empty), .cover-built:has(> [data-bind]:empty), .step-parts:has(> [data-bind]:empty),
+      .callout:has([data-bind]:empty), .list-block:not(:has(li)) { display: none; }
       .tb-row:has(.tb-scale-cell > [data-bind]:empty) { --cells: 1; }
     }
   </style>
@@ -273,11 +315,43 @@
     const insertItem = (arr, i, item) => { arr.splice(Math.max(0, Math.min(i, arr.length)), 0, item); };
 
     // ── State ──
-    const state = { plan: null, mode: 'empty', base: '', dir: null, images: new Map(), dirty: false };
+    const state = {
+      plan: null, mode: 'empty', base: '', dir: null, images: new Map(), dirty: false,
+      overflow: [], error: null, notice: null,
+    };
     const desk = document.getElementById('desk');
     const statusEl = document.querySelector('.status');
+    const btnSave = document.getElementById('btn-save');
 
-    const setStatus = (text, kind = 'info') => { statusEl.textContent = text; statusEl.dataset.kind = kind; };
+    // Status line priority: error > overflow > missing images > unsaved > last notice > where we are.
+    const statusLabel = () => {
+      if (state.mode === 'http') return `Viewing ${state.base} (read-only)`;
+      if (state.mode === 'folder') return `Folder: ${state.dir ? state.dir.name : ''}`;
+      return 'Open a plan folder to start.';
+    };
+    const updateStatus = () => {
+      let text, kind = 'info';
+      const missing = new Set([...desk.querySelectorAll('.slot-missing[data-missing]')].map(el => el.dataset.missing)).size;
+      if (state.error) { text = state.error; kind = 'error'; }
+      else if (state.overflow.length) {
+        const list = state.overflow.map(sheetNo).join(', ');
+        text = state.overflow.length === 1
+          ? `Sheet ${list}: content runs past the sheet. Split it.`
+          : `Sheets ${list}: content runs past the sheet. Split them.`;
+        kind = 'warn';
+      }
+      else if (missing) { text = `${missing} image${missing === 1 ? '' : 's'} missing`; kind = 'warn'; }
+      else if (state.dirty) text = 'Unsaved changes';
+      else if (state.notice) text = state.notice;
+      else text = statusLabel();
+      statusEl.textContent = text;
+      statusEl.dataset.kind = kind;
+      btnSave.textContent = state.dirty ? 'Save •' : 'Save';
+    };
+    const setStatus = (text, kind = 'info') => {
+      if (kind === 'error') state.error = text; else state.notice = text;
+      updateStatus();
+    };
 
     // Every image src the plan refers to, shown or not.
     const planImageSrcs = plan => {
@@ -311,7 +385,7 @@
     };
     const setPaper = paper => {
       const p = applyPaper(paper);
-      if (state.plan) { state.plan.plan.paper = p; state.dirty = true; }
+      if (state.plan) { state.plan.plan.paper = p; changed(); }
     };
 
     // ── Rendering ──
@@ -323,13 +397,17 @@
         else if (k === 'dataset') Object.assign(el.dataset, v);
         else el.setAttribute(k, v);
       }
-      el.append(...children.flat().filter(c => c != null && c !== false));
+      el.append(...children.flat(Infinity).filter(c => c != null && c !== false));
       return el;
     };
 
     // An editable text field bound to a path in the plan.
     const field = (tag, cls, path, placeholder = '') =>
-      h(tag, { class: cls, 'data-bind': path, 'data-placeholder': placeholder }, String(getPath(state.plan, path) ?? ''));
+      h(tag, { class: cls, 'data-bind': path, 'data-placeholder': placeholder, contenteditable: 'plaintext-only', spellcheck: 'true' },
+        String(getPath(state.plan, path) ?? ''));
+
+    const button = (text, label, data, cls) =>
+      h('button', { type: 'button', class: cls, 'aria-label': label, title: label, dataset: data }, text);
 
     const slot = (path, captionPlaceholder) => {
       const img = getPath(state.plan, path) || emptyImage();
@@ -337,15 +415,43 @@
       if (!img.src) inner = h('div', { class: 'slot-missing' }, 'No image');
       else {
         const url = state.images.get(img.src);
-        inner = url ? h('img', { src: url, alt: img.caption || img.src }) : h('div', { class: 'slot-missing' }, `${img.src} not found`);
+        inner = url
+          ? h('img', { src: url, alt: img.caption || img.src })
+          : h('div', { class: 'slot-missing', dataset: { missing: img.src } }, `${img.src} not found`);
       }
       return h('figure', { class: 'slot', dataset: { path } },
         h('div', { class: 'slot-img' }, inner),
         field('figcaption', '', `${path}.caption`, captionPlaceholder));
     };
 
-    const notesList = (path, placeholder) =>
-      h('ol', { class: 'notes' }, (getPath(state.plan, path) || []).map((_, j) => field('li', '', `${path}.${j}`, placeholder)));
+    // Editable lists: notes, steps, materials, hardware, cut-list parts.
+    const NOUNS = { notes: 'note', steps: 'step', materials: 'material', hardware: 'hardware line', parts: 'part' };
+    const nounFor = listPath => NOUNS[listPath.split('.').pop()] || 'item';
+    const itemControls = (listPath, j) => {
+      const noun = nounFor(listPath), d = act => ({ list: listPath, act, j: String(j) });
+      return h('span', { class: 'item-controls' },
+        button('+', `Add ${noun} after this`, d('add')), button('↑', `Move ${noun} up`, d('up')),
+        button('↓', `Move ${noun} down`, d('down')), button('✕', `Delete ${noun}`, d('remove')));
+    };
+    const addButton = listPath => {
+      const n = (getPath(state.plan, listPath) || []).length;
+      return h('button', { type: 'button', class: 'list-add', dataset: { list: listPath, act: 'add', j: String(n - 1) } }, `+ Add ${nounFor(listPath)}`);
+    };
+    const editableList = (tag, cls, listPath, placeholder) => {
+      const items = getPath(state.plan, listPath) || [];
+      return [
+        items.length ? h(tag, { class: cls }, items.map((_, j) =>
+          h('li', { class: 'item' }, field('span', 'item-text', `${listPath}.${j}`, placeholder), itemControls(listPath, j)))) : null,
+        addButton(listPath),
+      ];
+    };
+    const listBlock = (heading, ...content) => h('div', { class: 'list-block' }, h('p', { class: 'label-h' }, heading), content);
+    const notesList = (path, placeholder) => editableList('ol', 'notes', path, placeholder);
+
+    // Callouts opened with "+ Tip" but not typed in yet stay visible until the next load.
+    const openCallouts = new WeakSet();
+    const stepSlots = sheet => (sheet.slots === 1 || sheet.slots === 2 ? sheet.slots : Math.min(Math.max((sheet.images || []).length, 1), 2));
+    const LAYOUT_NAMES = { cover: 'Cover', drawing: 'Drawing', cutlist: 'Cut list', step: 'Build step' };
 
     const titleBlock = (i, num) => {
       const p = `sheets.${i}`;
@@ -375,7 +481,7 @@
             h('p', { class: 'cover-built' }, 'Built: ', field('span', '', 'plan.built', 'No. 0nn, year')),
             h('div', {}, h('p', { class: 'label-h' }, 'Sheets'),
               h('ol', { class: 'sheet-index' }, state.plan.sheets.map((s, k) => h('li', {}, `${nums[k].sheetNo} · ${s.title}`)))),
-            (sheet.notes || []).length ? h('div', {}, h('p', { class: 'label-h' }, 'General notes'), notesList(`${p}.notes`, 'Note')) : null),
+            listBlock('General notes', notesList(`${p}.notes`, 'Note'))),
           slot(`${p}.image`, 'Caption'));
         return { body };
       },
@@ -385,8 +491,7 @@
         const views = sheet.views || (sheet.views = []);
         while (views.length < n) views.push(emptyImage());
         const body = h('div', { class: `slots slots-${n}` }, views.slice(0, n).map((_, j) => slot(`${p}.views.${j}`, 'View caption')));
-        const foot = (sheet.notes || []).length ? [h('p', { class: 'label-h' }, 'Notes'), notesList(`${p}.notes`, 'Note')] : [];
-        return { body, foot };
+        return { body, foot: listBlock('Notes', notesList(`${p}.notes`, 'Note')) };
       },
       cutlist(sheet, i, nums) {
         const p = `sheets.${i}`;
@@ -394,38 +499,42 @@
         const cell = (j, key, placeholder, cls = '') => h('td', { class: cls }, field('span', '', `${p}.parts.${j}.${key}`, placeholder));
         const table = h('table', { class: 'parts' },
           h('thead', {}, h('tr', {}, ['Part', 'Name', 'Qty', 'T × W × L', 'Material', 'Notes'].map(t => h('th', { scope: 'col' }, t)))),
-          h('tbody', {}, parts.map((_, j) => h('tr', {},
+          h('tbody', {}, parts.map((_, j) => h('tr', { class: 'item-row' },
             h('td', { class: 'part-letter' }, partLetter(nums[i].firstPart + j)),
             cell(j, 'name', 'Name'), cell(j, 'qty', '0', 'qty'),
             h('td', { class: 'dims' },
               field('span', '', `${p}.parts.${j}.t`, 'T'), ' × ',
               field('span', '', `${p}.parts.${j}.w`, 'W'), ' × ',
               field('span', '', `${p}.parts.${j}.l`, 'L')),
-            cell(j, 'material', 'Material'), cell(j, 'notes', '')))));
-        const list = (key, heading, placeholder) => (sheet[key] || []).length
-          ? h('div', {}, h('p', { class: 'label-h' }, heading),
-              h('ul', { class: 'plain-list' }, sheet[key].map((_, j) => field('li', '', `${p}.${key}.${j}`, placeholder))))
-          : null;
-        const lists = [list('materials', 'Materials', 'Material'), list('hardware', 'Hardware', 'Hardware')].filter(Boolean);
-        return { body: h('div', {}, table, lists.length ? h('div', { class: 'cut-lists' }, lists) : null) };
+            cell(j, 'material', 'Material'), cell(j, 'notes', ''),
+            h('td', { class: 'item-cell' }, itemControls(`${p}.parts`, j))))));
+        const list = (key, heading, placeholder) => listBlock(heading, editableList('ul', 'plain-list', `${p}.${key}`, placeholder));
+        return { body: h('div', {}, table, addButton(`${p}.parts`),
+          h('div', { class: 'cut-lists' }, list('materials', 'Materials', 'Material'), list('hardware', 'Hardware', 'Hardware'))) };
       },
       step(sheet, i, nums) {
         const p = `sheets.${i}`;
         const images = sheet.images || (sheet.images = []);
         // Stored slots (set by the 1/2 switch) wins; otherwise as many images as there are, 1 or 2.
-        const n = sheet.slots === 1 || sheet.slots === 2 ? sheet.slots : Math.min(Math.max(images.length, 1), 2);
+        const n = stepSlots(sheet);
         while (images.length < n) images.push(emptyImage());
         const callout = sheet.callout || (sheet.callout = { kind: 'tip', text: '' });
         const kind = callout.kind === 'caution' ? 'caution' : 'tip';
+        const showCallout = Boolean(callout.text) || openCallouts.has(sheet);
         const body = h('div', { class: 'step-body' },
           h('div', { class: 'step-text' },
             h('p', { class: 'eyebrow step-no' }, `STEP ${String(nums[i].stepNo).padStart(2, '0')}`),
             field('h2', 'step-title', `${p}.title`, 'Step title'),
-            h('ol', { class: 'steps' }, (sheet.steps || []).map((_, j) => field('li', '', `${p}.steps.${j}`, 'Instruction'))),
+            editableList('ol', 'steps', `${p}.steps`, 'Instruction'),
             h('p', { class: 'step-parts' }, 'Parts: ', field('span', '', `${p}.parts`, 'A, B')),
-            h('div', { class: 'callout', dataset: { kind }, hidden: !callout.text },
+            h('div', { class: 'callout', dataset: { kind }, hidden: !showCallout },
               h('span', { class: 'callout-kind' }, kind === 'caution' ? 'CAUTION' : 'TIP'),
-              field('span', '', `${p}.callout.text`, 'Tip'))),
+              field('span', '', `${p}.callout.text`, kind === 'caution' ? 'Caution' : 'Tip'),
+              h('span', { class: 'callout-tools' },
+                button(kind === 'caution' ? 'Make it a tip' : 'Make it a caution', 'Switch tip and caution', { calloutKind: String(i) }))),
+            showCallout ? null : h('span', { class: 'callout-tools' },
+              button('+ Tip', 'Add a tip', { calloutOpen: String(i), kind: 'tip' }),
+              button('+ Caution', 'Add a caution', { calloutOpen: String(i), kind: 'caution' }))),
           h('div', { class: 'step-images', style: `--n: ${n}` }, images.slice(0, n).map((_, j) => slot(`${p}.images.${j}`, 'Caption'))));
         return { body };
       },
@@ -437,32 +546,192 @@
         : { body: h('p', { class: 'desk-empty' }, `Unknown layout "${sheet.layout}"`) };
       const zones = (side, labels) => h('div', { class: `sheet-zones sheet-zones--${side}`, 'aria-hidden': 'true' }, labels.map(l => h('span', {}, l)));
       const nums18 = ['1', '2', '3', '4', '5', '6', '7', '8'], aToF = ['A', 'B', 'C', 'D', 'E', 'F'];
-      return h('article', { class: 'sheet-page', dataset: { i: String(i), layout: sheet.layout }, 'aria-label': `${nums[i].sheetNo} ${sheet.title || ''}` },
+      const page = h('article', { class: 'sheet-page', dataset: { i: String(i), layout: sheet.layout }, 'aria-label': `${nums[i].sheetNo} ${sheet.title || ''}` },
         zones('top', nums18), zones('bottom', nums18), zones('left', aToF), zones('right', aToF),
         h('div', { class: 'sheet-frame' },
           h('div', { class: 'sheet-body' }, r.body),
           h('div', { class: 'sheet-foot' }, r.foot || []),
           titleBlock(i, nums[i])));
+      return h('section', { class: 'sheet-wrap' }, sheetControls(sheet, i, nums), page);
+    };
+
+    const sheetControls = (sheet, i, nums) => {
+      const d = act => ({ sheet: String(i), sheetAct: act });
+      const choices = sheet.layout === 'drawing' ? [1, 2, 4] : sheet.layout === 'step' ? [1, 2] : null;
+      const current = sheet.layout === 'drawing' ? ([1, 2, 4].includes(sheet.slots) ? sheet.slots : 1) : stepSlots(sheet);
+      return h('div', { class: 'sheet-controls' },
+        h('span', { class: 'sc-name' }, `${nums[i].sheetNo} · ${LAYOUT_NAMES[sheet.layout] || sheet.layout}`),
+        choices ? h('span', { class: 'seg-mini', role: 'group', 'aria-label': 'Images on this sheet' },
+          h('span', {}, 'Images'),
+          choices.map(n => h('button', { type: 'button', 'aria-pressed': String(n === current), dataset: { sheet: String(i), slots: String(n) } }, String(n)))) : null,
+        h('span', { class: 'sc-warn' }),
+        h('span', { class: 'sc-buttons' },
+          button('↑', 'Move sheet up', d('up')), button('↓', 'Move sheet down', d('down')), button('✕', 'Delete sheet', d('delete'))));
+    };
+
+    // Marks sheets whose content runs past the border; returns their indices.
+    const checkOverflow = () => {
+      const over = [];
+      desk.querySelectorAll('.sheet-page').forEach(page => {
+        const body = page.querySelector('.sheet-body'), frame = page.querySelector('.sheet-frame');
+        const isOver = body.scrollHeight > body.clientHeight + 1 || body.scrollWidth > body.clientWidth + 1
+          || frame.scrollHeight > frame.clientHeight + 1;
+        page.classList.toggle('is-overflowing', isOver);
+        const warn = page.parentElement.querySelector('.sc-warn');
+        if (warn) warn.textContent = isOver ? 'Content runs past the sheet: split it' : '';
+        if (isOver) over.push(Number(page.dataset.i));
+      });
+      state.overflow = over;
+      return over;
     };
 
     const render = () => {
       desk.replaceChildren();
-      if (!state.plan) { desk.append(h('p', { class: 'desk-empty' }, 'Open a plan folder to start.')); return; }
-      if (!state.plan.sheets.length) { desk.append(h('p', { class: 'desk-empty' }, 'No sheets yet. Add one from the toolbar.')); return; }
-      const nums = numberPlan(state.plan);
-      desk.append(...state.plan.sheets.map((s, i) => renderSheet(s, i, nums)));
+      if (!state.plan) desk.append(h('p', { class: 'desk-empty' }, 'Open a plan folder to start.'));
+      else if (!state.plan.sheets.length) desk.append(h('p', { class: 'desk-empty' }, 'No sheets yet. Add one from the toolbar.'));
+      else {
+        const nums = numberPlan(state.plan);
+        desk.append(...state.plan.sheets.map((s, i) => renderSheet(s, i, nums)));
+      }
+      checkOverflow();
+      updateStatus();
     };
 
+    // Derived text that depends on what's typed: the cover's sheet index and the sheets' labels.
+    const refreshDerived = () => {
+      const nums = numberPlan(state.plan);
+      desk.querySelectorAll('.sheet-index').forEach(ol => ol.querySelectorAll('li').forEach((li, k) => {
+        if (state.plan.sheets[k]) li.textContent = `${nums[k].sheetNo} · ${state.plan.sheets[k].title}`;
+      }));
+      desk.querySelectorAll('.sheet-page').forEach(page => {
+        const k = Number(page.dataset.i);
+        page.setAttribute('aria-label', `${nums[k].sheetNo} ${state.plan.sheets[k].title || ''}`);
+      });
+    };
+
+    const changed = () => { state.dirty = true; state.notice = null; checkOverflow(); updateStatus(); };
+    const rerender = () => { render(); changed(); };
+
     const load = async (plan, { mode = 'http', base = '', dir = null } = {}) => {
-      Object.assign(state, { plan, mode, base, dir });
+      Object.assign(state, { plan, mode, base, dir, error: null, notice: null });
       applyPaper(plan.plan && plan.plan.paper);
       await resolveImages();
-      render();
       state.dirty = false;
+      render();
     };
+
+    // ── Editing operations ──
+    const blankFor = listPath => {
+      const key = listPath.split('.').pop();
+      if (key === 'parts') return emptyPart();
+      if (key === 'views' || key === 'images') return emptyImage();
+      return '';
+    };
+
+    const listAction = (listPath, action, i) => {
+      let arr = getPath(state.plan, listPath);
+      if (!Array.isArray(arr)) { arr = []; setPath(state.plan, listPath, arr); }
+      if (action === 'add') insertItem(arr, i + 1, blankFor(listPath));
+      else if (action === 'remove') removeItem(arr, i);
+      else if (action === 'up') moveItem(arr, i, -1);
+      else if (action === 'down') moveItem(arr, i, 1);
+      rerender();
+    };
+
+    const addSheet = layout => {
+      state.plan.sheets.push(newSheet(layout));
+      rerender();
+      const last = desk.querySelector('.sheet-wrap:last-child');
+      if (last) last.scrollIntoView({ block: 'start' });
+    };
+    const moveSheet = (i, dir) => { moveItem(state.plan.sheets, i, dir); rerender(); };
+    const deleteSheet = i => { removeItem(state.plan.sheets, i); rerender(); };
+    const setSlots = (i, n) => {
+      const sheet = state.plan.sheets[i];
+      sheet.slots = n;
+      const key = sheet.layout === 'step' ? 'images' : 'views';
+      const arr = sheet[key] || (sheet[key] = []);
+      while (arr.length < n) arr.push(emptyImage());
+      rerender();
+    };
+
+    const focusBind = path => {
+      const el = desk.querySelector(`[data-bind="${CSS.escape(path)}"]`);
+      if (!el) return;
+      el.focus();
+      const range = document.createRange(); range.selectNodeContents(el); range.collapse(false);
+      const sel = getSelection(); sel.removeAllRanges(); sel.addRange(range);
+    };
+
+    // ── Listeners ──
+    desk.addEventListener('input', e => {
+      const el = e.target.closest('[data-bind]');
+      if (!el || !state.plan) return;
+      let value = el.textContent;
+      if (/[\r\n]/.test(value)) {
+        // Every field is one line; pasted line breaks become spaces.
+        value = value.replace(/\s*[\r\n]+\s*/g, ' ');
+        el.textContent = value;
+        if (document.activeElement === el) focusBind(el.dataset.bind);
+      }
+      setPath(state.plan, el.dataset.bind, value);
+      desk.querySelectorAll(`[data-bind="${CSS.escape(el.dataset.bind)}"]`).forEach(other => { if (other !== el) other.textContent = value; });
+      refreshDerived();
+      changed();
+    });
+
+    desk.addEventListener('click', e => {
+      const b = e.target.closest('button');
+      if (!b || !state.plan) return;
+      const d = b.dataset;
+      if (d.list) listAction(d.list, d.act, Number(d.j));
+      else if (d.slots) setSlots(Number(d.sheet), Number(d.slots));
+      else if (d.sheetAct === 'up') moveSheet(Number(d.sheet), -1);
+      else if (d.sheetAct === 'down') moveSheet(Number(d.sheet), 1);
+      else if (d.sheetAct === 'delete') {
+        // Two clicks: the first arms the button, the second deletes.
+        if (d.armed) deleteSheet(Number(d.sheet));
+        else {
+          d.armed = '1'; b.textContent = 'Delete sheet?';
+          b.addEventListener('blur', () => { delete d.armed; b.textContent = '✕'; }, { once: true });
+        }
+      }
+      else if (d.calloutOpen) {
+        const sheet = state.plan.sheets[Number(d.calloutOpen)];
+        sheet.callout = { ...(sheet.callout || {}), kind: d.kind, text: (sheet.callout && sheet.callout.text) || '' };
+        openCallouts.add(sheet);
+        rerender();
+        focusBind(`sheets.${d.calloutOpen}.callout.text`);
+      }
+      else if (d.calloutKind) {
+        const c = state.plan.sheets[Number(d.calloutKind)].callout;
+        c.kind = c.kind === 'caution' ? 'tip' : 'caution';
+        rerender();
+      }
+    });
+    desk.addEventListener('load', e => { if (e.target.tagName === 'IMG') { checkOverflow(); updateStatus(); } }, true);
+
+    // The page's one keydown listener.
+    document.addEventListener('keydown', e => {
+      const el = e.target.closest && e.target.closest('[data-bind]');
+      if (e.key === 'Enter' && el) {
+        e.preventDefault();
+        // In a list item, Enter starts the next item; anywhere else it just finishes the field.
+        const m = el.dataset.bind.match(/^(.*\.(?:notes|steps|materials|hardware))\.(\d+)$/);
+        if (m) { const j = Number(m[2]); listAction(m[1], 'add', j); focusBind(`${m[1]}.${j + 1}`); }
+        else el.blur();
+      }
+    });
+
+    window.addEventListener('beforeunload', e => { if (state.dirty) e.preventDefault(); });
 
     // ── Toolbar ──
     document.querySelectorAll('.seg [data-paper]').forEach(b => b.addEventListener('click', () => setPaper(b.dataset.paper)));
+    document.querySelectorAll('[data-add]').forEach(b => b.addEventListener('click', () => {
+      b.closest('details').open = false;
+      if (!state.plan) { setStatus('Open a plan folder first.'); return; }
+      addSheet(b.dataset.add);
+    }));
     document.getElementById('btn-print').addEventListener('click', () => window.print());
 
     // ── Boot ──
@@ -473,6 +742,7 @@
       LAYOUTS, newPlan, newSheet, parsePlan, serializePlan, sheetNo, partLetter, numberPlan,
       getPath, setPath, moveItem, removeItem, insertItem, ready,
       state, load, render, setPaper, setStatus,
+      addSheet, moveSheet, deleteSheet, setSlots, listAction, checkOverflow,
     };
 
     (async () => {
@@ -485,7 +755,6 @@
           const parsed = parsePlan(await res.text());
           if (!parsed.ok) throw new Error(parsed.error);
           await load(parsed.plan, { mode: 'http', base });
-          setStatus(`Viewing ${base} (read-only)`);
         } catch (err) { render(); setStatus(err.message, 'error'); }
       } else render();
       markReady();
