@@ -104,9 +104,12 @@ of the `.skp` and keep it with your plans.
 ## Start a new plan
 
 1. Open `plan-starter.skp` and **Save as** `p-0nn-<slug>.skp` (for example `p-003-floating-night-stands.skp`).
-2. Make a plan folder **outside this repo**, for example `~/Dropbox/plans/p-003-floating-night-stands/`,
-   with a `views/` folder inside. GitHub Pages publishes everything in the repo, and these are
-   drawings you sell.
+2. In the site folder, run `make plan` and type the project's number. It makes the plan folder
+   **outside this repo**, at `~/Desktop/plans/p-003-floating-night-stands/`, with an empty `views/`
+   folder and a starter `plan.json`: the title block filled in from the project page, plus a cover,
+   drawing, cut list and build step sheet. Use `make plan PLANS_DIR=~/somewhere` to put it elsewhere.
+   GitHub Pages publishes everything in the repo, and these are drawings you sell, so `make plan`
+   refuses a folder inside it. It never overwrites an existing `plan.json`.
 3. Model the piece.
 
 ## Export the views
