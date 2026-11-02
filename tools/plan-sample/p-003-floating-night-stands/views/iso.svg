@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 240" width="1000" height="600">
+  <!-- Sample isometric view of the night stand case (placeholder proportions, 20 × 7 × 10 in).
+       Stands in for a SketchUp PNG export. -->
+  <style>
+    .top { fill: #efe9dc; stroke: #22272c; stroke-width: 1.5; stroke-linejoin: round; }
+    .side { fill: #e6dfd0; stroke: #22272c; stroke-width: 1.5; stroke-linejoin: round; }
+    .front { fill: #fff; stroke: #22272c; stroke-width: 1.5; stroke-linejoin: round; }
+    .ln-thin { fill: none; stroke: #22272c; stroke-width: 1; }
+    .brass { fill: #b8924a; stroke: #22272c; stroke-width: 0.75; }
+  </style>
+  <!-- 30° axes: x = (cos30, sin30), z (depth) = (-cos30, sin30) scaled by 0.6 -->
+  <polygon class="top" points="60,90 260,90 336,46 136,46"/>
+  <polygon class="side" points="260,90 336,46 336,116 260,160"/>
+  <polygon class="front" points="60,90 260,90 260,160 60,160"/>
+  <rect class="ln-thin" x="74" y="102" width="172" height="46"/>
+  <rect class="brass" x="140" y="110" width="40" height="4"/>
+  <path class="ln-thin" d="M60 90 74 102 M260 90 246 102 M60 160 74 148 M260 160 246 148"/>
+</svg>

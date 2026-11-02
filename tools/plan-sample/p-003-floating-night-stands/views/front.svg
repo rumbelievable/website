@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 30 490 250" width="980" height="500">
+  <!-- Sample view, drawn from mockups/plan-package/v2-r1.html. Stands in for a SketchUp PNG export. -->
+  <style>
+    .ln { fill: none; stroke: #22272c; stroke-width: 1.5; }
+    .ln-thin { fill: none; stroke: #22272c; stroke-width: 1; }
+    .face { fill: #e6dfd0; stroke: #22272c; stroke-width: 1; }
+    .brass { fill: #b8924a; stroke: #22272c; stroke-width: 0.75; }
+    .dim { fill: none; stroke: #2f5d8a; stroke-width: 1; }
+    .chain { fill: none; stroke: #2f5d8a; stroke-width: 1; stroke-dasharray: 10 3 2 3; }
+    .leader { fill: none; stroke: #22272c; stroke-width: 0.75; }
+    .dot { fill: #22272c; }
+    .t-dim { font-family: ui-monospace, Menlo, monospace; font-size: 11px; fill: #2f5d8a; }
+    .t { font-family: ui-monospace, Menlo, monospace; font-size: 10px; letter-spacing: 0.08em; fill: #555b61; }
+  </style>
+  <rect class="face" x="77" y="97" width="366" height="106"/>
+  <rect class="ln" x="60" y="80" width="400" height="140"/>
+  <path class="ln-thin" d="M60 80 75 95 M460 80 445 95 M60 220 75 205 M460 220 445 205"/>
+  <rect class="ln-thin" x="75" y="95" width="370" height="110"/>
+  <rect class="brass" x="220" y="112" width="80" height="6"/>
+  <path class="chain" d="M380 70 V230"/>
+  <text class="t-dim" x="380" y="66" text-anchor="middle">A</text>
+  <text class="t-dim" x="380" y="242" text-anchor="middle">A</text>
+  <path class="dim" d="M60 76 V44 M460 76 V44 M60 50 H238 M282 50 H460 M56 54 64 46 M456 54 464 46"/>
+  <text class="t-dim" x="260" y="54" text-anchor="middle">20"</text>
+  <path class="dim" d="M56 80 H22 M56 220 H22 M30 80 V134 M30 166 V220 M26 84 34 76 M26 224 34 216"/>
+  <text class="t-dim" transform="translate(34 150) rotate(-90)" text-anchor="middle">7"</text>
+  <circle class="dot" cx="296" cy="115" r="2"/><path class="leader" d="M296 115 V240"/>
+  <text class="t" x="296" y="252" text-anchor="middle">BRASS PULL</text>
+  <circle class="dot" cx="110" cy="190" r="2"/><path class="leader" d="M110 190 V256"/>
+  <text class="t" x="110" y="268">WALNUT DRAWER FRONT</text>
+</svg>

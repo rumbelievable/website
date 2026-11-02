@@ -1,0 +1,54 @@
+{
+  "version": 1,
+  "plan": {
+    "no": "P-003",
+    "name": "Floating Night Stands",
+    "drawn": "A.R.",
+    "units": "Inches",
+    "rev": "A",
+    "date": "2026-11-02",
+    "built": "No. 003, 2025",
+    "paper": "letter"
+  },
+  "sheets": [
+    {
+      "layout": "cover",
+      "title": "Cover",
+      "scale": "Not to scale",
+      "image": { "src": "views/iso.svg", "caption": "Case, isometric" },
+      "notes": [
+        "Sample plan. Dimensions, parts and hardware are placeholders, not measured from the real piece.",
+        "Dimensions in inches.",
+        "Case is 3/4\" white oak, mitered at all four corners.",
+        "Find the studs first. Lath and plaster gets its own sheet."
+      ]
+    },
+    {
+      "layout": "drawing",
+      "title": "Front elevation and section A–A",
+      "scale": "1:4",
+      "slots": 2,
+      "views": [
+        { "src": "views/front.svg", "caption": "Front elevation" },
+        { "src": "views/section-a-a.svg", "caption": "Section A–A" }
+      ],
+      "notes": [
+        "Check your slides' clearance before cutting the drawer box.",
+        "The cleat bevel is 45°; cut both halves from one board."
+      ]
+    },
+    {
+      "layout": "drawing",
+      "title": "Views",
+      "scale": "Not to scale",
+      "slots": 4,
+      "views": [
+        { "src": "views/front.svg", "caption": "Front" },
+        { "src": "views/section-a-a.svg", "caption": "Section A–A" },
+        { "src": "views/iso.svg", "caption": "Iso" },
+        { "src": "views/exploded.svg", "caption": "Exploded" }
+      ],
+      "notes": []
+    }
+  ]
+}

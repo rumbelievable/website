@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="-4 -4 268 168" width="804" height="504">
+  <!-- Sample view, drawn from mockups/plan-package/v2-r1.html (sheet S-06). Stands in for a SketchUp PNG export. -->
+  <style>
+    .face { fill: #e6dfd0; stroke: #22272c; stroke-width: 1; }
+    .ln-thin { fill: none; stroke: #22272c; stroke-width: 1; }
+    .brass { fill: #b8924a; stroke: #22272c; stroke-width: 0.75; }
+    .guide { fill: none; stroke: #2f5d8a; stroke-width: 0.75; stroke-dasharray: 3 3; }
+    .tag { fill: #fff; stroke: #22272c; stroke-width: 0.75; }
+    .t-tag { font-family: ui-monospace, Menlo, monospace; font-size: 9px; fill: #22272c; }
+  </style>
+  <polygon class="face" points="40,14 220,14 205,26 55,26"/>
+  <polygon class="face" points="18,42 30,54 30,104 18,116"/>
+  <polygon class="face" points="242,42 230,54 230,104 242,116"/>
+  <polygon class="face" points="55,132 205,132 220,144 40,144"/>
+  <rect class="ln-thin" x="70" y="58" width="120" height="44" stroke-dasharray="4 2"/>
+  <rect class="brass" x="115" y="64" width="30" height="3"/>
+  <path class="guide" d="M40 14 L18 42 M220 14 L242 42 M18 116 L40 144 M242 116 L220 144"/>
+  <circle class="tag" cx="130" cy="6" r="6"/><text class="t-tag" x="130" y="9" text-anchor="middle">A</text>
+  <circle class="tag" cx="8" cy="79" r="6"/><text class="t-tag" x="8" y="82" text-anchor="middle">C</text>
+  <circle class="tag" cx="130" cy="154" r="6"/><text class="t-tag" x="130" y="157" text-anchor="middle">B</text>
+  <circle class="tag" cx="130" cy="80" r="6"/><text class="t-tag" x="130" y="83" text-anchor="middle">D</text>
+</svg>
