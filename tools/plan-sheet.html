@@ -122,6 +122,29 @@
     .slots-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
     .slots-4 { grid-template-columns: repeat(2, minmax(0, 1fr)); grid-template-rows: repeat(2, minmax(0, 1fr)); }
 
+    /* Cut list */
+    .parts { width: 100%; border-collapse: collapse; font-family: var(--font-mono); font-size: 8.5pt; line-height: 1.35; }
+    .parts th { padding: 0 6pt 5pt; border-bottom: 1.5px solid var(--ink); font-size: 8pt; font-weight: 400; letter-spacing: 0.12em; text-transform: uppercase; color: var(--cyan); text-align: left; white-space: nowrap; }
+    .parts td { padding: 4pt 6pt; border-bottom: 1px solid var(--hairline); vertical-align: top; }
+    .parts .part-letter { width: 3.2em; font-weight: 600; }
+    .parts .qty { width: 3.2em; }
+    .parts .dims { white-space: nowrap; }
+    .cut-lists { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0.35in; margin-top: 0.25in; }
+    .plain-list { list-style: none; font-family: var(--font-mono); font-size: 8.5pt; line-height: 1.6; }
+    .plain-list li::before { content: "–  "; color: var(--ink-2); }
+
+    /* Build step */
+    .step-body { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.25fr); gap: 0.35in; height: 100%; }
+    .step-text { display: flex; flex-direction: column; gap: 0.16in; min-height: 0; }
+    .step-title { font-weight: 800; font-stretch: 125%; font-size: 18pt; line-height: 1.05; text-transform: uppercase; text-wrap: balance; }
+    .steps { padding-left: 1.5em; font-size: 10.5pt; line-height: 1.5; }
+    .steps li { padding-left: 0.2em; margin-bottom: 4pt; }
+    .steps li::marker { font-family: var(--font-mono); font-size: 9pt; font-weight: 600; color: var(--cyan); }
+    .step-parts { font-family: var(--font-mono); font-size: 8.5pt; color: var(--ink-2); }
+    .callout { padding: 2pt 0 2pt 10pt; border-left: 3px solid var(--cyan); font-size: 9.5pt; line-height: 1.45; }
+    .callout-kind { display: block; margin-bottom: 2pt; font-family: var(--font-mono); font-size: 8pt; letter-spacing: 0.14em; color: var(--cyan); }
+    .step-images { display: grid; gap: 0.25in; grid-template-rows: repeat(var(--n, 1), minmax(0, 1fr)); height: 100%; min-height: 0; }
+
     @media screen {
       [data-bind]:empty::before { content: attr(data-placeholder); color: #a3a7aa; }
     }
@@ -132,7 +155,7 @@
       #desk { padding: 0; }
       .sheet-page { margin: 0; box-shadow: none; }
       .sheet-page:last-child { break-after: auto; }
-      .tb-scale-cell:has(> [data-bind]:empty), .cover-built:has(> [data-bind]:empty) { display: none; }
+      .tb-scale-cell:has(> [data-bind]:empty), .cover-built:has(> [data-bind]:empty), .step-parts:has(> [data-bind]:empty) { display: none; }
       .tb-row:has(.tb-scale-cell > [data-bind]:empty) { --cells: 1; }
     }
   </style>
@@ -364,6 +387,47 @@
         const body = h('div', { class: `slots slots-${n}` }, views.slice(0, n).map((_, j) => slot(`${p}.views.${j}`, 'View caption')));
         const foot = (sheet.notes || []).length ? [h('p', { class: 'label-h' }, 'Notes'), notesList(`${p}.notes`, 'Note')] : [];
         return { body, foot };
+      },
+      cutlist(sheet, i, nums) {
+        const p = `sheets.${i}`;
+        const parts = sheet.parts || (sheet.parts = []);
+        const cell = (j, key, placeholder, cls = '') => h('td', { class: cls }, field('span', '', `${p}.parts.${j}.${key}`, placeholder));
+        const table = h('table', { class: 'parts' },
+          h('thead', {}, h('tr', {}, ['Part', 'Name', 'Qty', 'T × W × L', 'Material', 'Notes'].map(t => h('th', { scope: 'col' }, t)))),
+          h('tbody', {}, parts.map((_, j) => h('tr', {},
+            h('td', { class: 'part-letter' }, partLetter(nums[i].firstPart + j)),
+            cell(j, 'name', 'Name'), cell(j, 'qty', '0', 'qty'),
+            h('td', { class: 'dims' },
+              field('span', '', `${p}.parts.${j}.t`, 'T'), ' × ',
+              field('span', '', `${p}.parts.${j}.w`, 'W'), ' × ',
+              field('span', '', `${p}.parts.${j}.l`, 'L')),
+            cell(j, 'material', 'Material'), cell(j, 'notes', '')))));
+        const list = (key, heading, placeholder) => (sheet[key] || []).length
+          ? h('div', {}, h('p', { class: 'label-h' }, heading),
+              h('ul', { class: 'plain-list' }, sheet[key].map((_, j) => field('li', '', `${p}.${key}.${j}`, placeholder))))
+          : null;
+        const lists = [list('materials', 'Materials', 'Material'), list('hardware', 'Hardware', 'Hardware')].filter(Boolean);
+        return { body: h('div', {}, table, lists.length ? h('div', { class: 'cut-lists' }, lists) : null) };
+      },
+      step(sheet, i, nums) {
+        const p = `sheets.${i}`;
+        const images = sheet.images || (sheet.images = []);
+        // Stored slots (set by the 1/2 switch) wins; otherwise as many images as there are, 1 or 2.
+        const n = sheet.slots === 1 || sheet.slots === 2 ? sheet.slots : Math.min(Math.max(images.length, 1), 2);
+        while (images.length < n) images.push(emptyImage());
+        const callout = sheet.callout || (sheet.callout = { kind: 'tip', text: '' });
+        const kind = callout.kind === 'caution' ? 'caution' : 'tip';
+        const body = h('div', { class: 'step-body' },
+          h('div', { class: 'step-text' },
+            h('p', { class: 'eyebrow step-no' }, `STEP ${String(nums[i].stepNo).padStart(2, '0')}`),
+            field('h2', 'step-title', `${p}.title`, 'Step title'),
+            h('ol', { class: 'steps' }, (sheet.steps || []).map((_, j) => field('li', '', `${p}.steps.${j}`, 'Instruction'))),
+            h('p', { class: 'step-parts' }, 'Parts: ', field('span', '', `${p}.parts`, 'A, B')),
+            h('div', { class: 'callout', dataset: { kind }, hidden: !callout.text },
+              h('span', { class: 'callout-kind' }, kind === 'caution' ? 'CAUTION' : 'TIP'),
+              field('span', '', `${p}.callout.text`, 'Tip'))),
+          h('div', { class: 'step-images', style: `--n: ${n}` }, images.slice(0, n).map((_, j) => slot(`${p}.images.${j}`, 'Caption'))));
+        return { body };
       },
     };
 

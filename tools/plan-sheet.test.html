@@ -77,8 +77,8 @@
     const SAMPLE = '?plan=plan-sample/p-003-floating-night-stands/';
     test('render: sample sheets and title blocks', async () => { const {doc} = await load(SAMPLE);
       const pages = [...doc.querySelectorAll('.sheet-page')];
-      eq(pages.length, 3);
-      eq(pages.map(p => p.querySelector('.tb-sheet').textContent), ['01 / 03', '02 / 03', '03 / 03']);
+      eq(pages.length, 6);
+      eq(pages.map(p => p.querySelector('.tb-sheet').textContent), ['01 / 06', '02 / 06', '03 / 06', '04 / 06', '05 / 06', '06 / 06']);
       eq(pages[0].querySelector('.tb-no').textContent, 'P-003'); });
     test('render: cover index lists every sheet', async () => { const {doc, PS} = await load(SAMPLE);
       eq([...doc.querySelectorAll('.sheet-index li')].map(li => li.textContent),
@@ -95,6 +95,20 @@
       eq([Math.round(r().width), Math.round(r().height)], [1056, 816]);
       PS.setPaper('a4'); eq([Math.round(r().width), Math.round(r().height)], [1123, 794]);
       ok(doc.getElementById('page-size').textContent.includes('A4 landscape')); });
+
+    // ── Task 3: cut list and build step ──
+    test('cutlist: letters continue across sheets', async () => { const {doc} = await load(SAMPLE);
+      const letters = i => [...doc.querySelectorAll(`[data-i="${i}"] .part-letter`)].map(td => td.textContent);
+      eq(letters(3), ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H']); eq(letters(4), ['I', 'J']); });
+    test('step: number, parts and callout', async () => { const {doc, PS} = await load(SAMPLE);
+      const s = doc.querySelector('[data-i="5"]');
+      eq(s.querySelector('.step-no').textContent, 'STEP 01');
+      eq(s.querySelector('.step-parts').textContent, 'Parts: D, E, F');
+      eq(s.querySelector('.callout').dataset.kind, 'tip');
+      eq(s.querySelectorAll('.steps li').length, 4);
+      PS.state.plan.sheets[5].callout.text = ''; PS.render();
+      const c = doc.querySelector('[data-i="5"] .callout');
+      ok(c === null || c.hidden, 'empty callout should be hidden'); });
 
     // ── Runner ──
     (async () => {
