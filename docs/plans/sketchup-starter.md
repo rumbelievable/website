@@ -124,6 +124,15 @@ For each scene: select it, then **Download → PNG**.
 
 Shop photos go in `views/` too (`.jpg` works).
 
+**Crop the margin.** Exports are usually the shape of your screen, with the model small in the
+middle, and the sheet fits the whole image into each slot. After exporting, run `make trim-views`
+in the site folder and type the project's number (or `make trim-views PLAN=3`). It crops the white
+or transparent margin off every PNG in `views/`, keeping the same filenames, and moves the untouched
+exports to the plan's `originals/` folder. Then click **Reload images** in the editor. Running it
+again is safe: images already cropped are left alone, and a re-exported image replaces its older
+copy in `originals/`. JPGs and SVGs aren't touched. It needs macOS with the Xcode command line tools
+(`xcode-select --install`).
+
 **About scale:** a PNG isn't to scale. A view's printed size depends on the sheet, not the model.
 Leave the sheet's Scale at **Not to scale** and let the dimensions carry the sizes. Only write a
 scale like 1:4 if you've measured the printed sheet against it.
