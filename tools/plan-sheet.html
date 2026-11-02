@@ -182,6 +182,19 @@
     .callout-tools button { padding: 2px 8px; color: var(--cyan); }
     .callout .callout-tools { position: absolute; right: 0; top: 0; display: none; }
     .callout { position: relative; }
+    .slot-img { cursor: pointer; }
+    .slot-img:hover .slot-missing, .slot-img:focus-visible .slot-missing { border-color: var(--cyan); color: var(--cyan); }
+    .picker {
+      position: absolute; z-index: 20; min-width: 220px; max-height: 320px; overflow-y: auto; padding: 4px 0;
+      background: #fff; border: 1px solid var(--ink); box-shadow: 0 6px 24px rgba(34, 39, 44, 0.18);
+      font-family: var(--font-mono); font-size: 11px;
+    }
+    .picker [role="option"] { padding: 6px 12px; cursor: pointer; }
+    .picker [role="option"]:hover, .picker [role="option"]:focus { background: rgba(47, 93, 138, 0.1); outline: none; }
+    .picker [role="option"][aria-selected="true"] { font-weight: 600; }
+    .picker [role="option"]:last-child { border-top: 1px solid var(--hairline); color: var(--ink-2); }
+    .picker-note { padding: 6px 12px; color: var(--ink-2); max-width: 280px; }
+    @media print { .picker { display: none; } }
     .callout:hover .callout-tools, .callout:focus-within .callout-tools { display: inline-flex; }
 
     @media screen {
@@ -317,7 +330,7 @@
     // ── State ──
     const state = {
       plan: null, mode: 'empty', base: '', dir: null, images: new Map(), dirty: false,
-      overflow: [], error: null, notice: null,
+      overflow: [], error: null, notice: null, prompt: null, blocked: false,
     };
     const desk = document.getElementById('desk');
     const statusEl = document.querySelector('.status');
@@ -333,6 +346,7 @@
       let text, kind = 'info';
       const missing = new Set([...desk.querySelectorAll('.slot-missing[data-missing]')].map(el => el.dataset.missing)).size;
       if (state.error) { text = state.error; kind = 'error'; }
+      else if (state.prompt) { text = state.prompt; kind = 'warn'; }
       else if (state.overflow.length) {
         const list = state.overflow.map(sheetNo).join(', ');
         text = state.overflow.length === 1
@@ -346,7 +360,8 @@
       else text = statusLabel();
       statusEl.textContent = text;
       statusEl.dataset.kind = kind;
-      btnSave.textContent = state.dirty ? 'Save •' : 'Save';
+      btnSave.textContent = state.mode === 'http' ? 'Save to folder…' : state.dirty ? 'Save •' : 'Save';
+      btnSave.disabled = !state.plan || state.blocked;
     };
     const setStatus = (text, kind = 'info') => {
       if (kind === 'error') state.error = text; else state.notice = text;
@@ -420,7 +435,7 @@
           : h('div', { class: 'slot-missing', dataset: { missing: img.src } }, `${img.src} not found`);
       }
       return h('figure', { class: 'slot', dataset: { path } },
-        h('div', { class: 'slot-img' }, inner),
+        h('div', { class: 'slot-img', role: 'button', tabindex: '0', 'aria-label': 'Choose image', title: 'Choose image' }, inner),
         field('figcaption', '', `${path}.caption`, captionPlaceholder));
     };
 
@@ -609,11 +624,11 @@
       });
     };
 
-    const changed = () => { state.dirty = true; state.notice = null; checkOverflow(); updateStatus(); };
+    const changed = () => { state.dirty = true; state.notice = null; state.prompt = null; checkOverflow(); updateStatus(); };
     const rerender = () => { render(); changed(); };
 
     const load = async (plan, { mode = 'http', base = '', dir = null } = {}) => {
-      Object.assign(state, { plan, mode, base, dir, error: null, notice: null });
+      Object.assign(state, { plan, mode, base, dir, error: null, notice: null, prompt: null, blocked: false });
       applyPaper(plan.plan && plan.plan.paper);
       await resolveImages();
       state.dirty = false;
@@ -663,6 +678,146 @@
       const sel = getSelection(); sel.removeAllRanges(); sel.addRange(range);
     };
 
+    // ── Plan folders ──
+    const IMAGE_EXT = /\.(png|jpe?g|svg)$/i;
+    const isNotFound = err => err && err.name === 'NotFoundError';
+
+    // Lists views/ and maps "views/<name>" to an object URL. A missing views/ folder is just empty.
+    const listViews = async dir => {
+      for (const url of state.images.values()) if (url && url.startsWith('blob:')) URL.revokeObjectURL(url);
+      const images = new Map();
+      let views = null;
+      try { views = await dir.getDirectoryHandle('views'); } catch (err) { if (!isNotFound(err)) throw err; }
+      if (views) {
+        for await (const entry of views.values()) {
+          if (entry.kind !== 'file' || !IMAGE_EXT.test(entry.name)) continue;
+          images.set(`views/${entry.name}`, URL.createObjectURL(await entry.getFile()));
+        }
+      }
+      state.images = images;
+    };
+
+    const openFolder = async dir => {
+      let text = null;
+      try { text = await (await (await dir.getFileHandle('plan.json')).getFile()).text(); }
+      catch (err) { if (!isNotFound(err)) { setStatus(`Couldn't read plan.json: ${err.message}`, 'error'); return; } }
+      let plan, notice = null;
+      if (text === null) { plan = newPlan(); notice = 'New plan: nothing saved yet'; }
+      else {
+        const parsed = parsePlan(text);
+        if (!parsed.ok) {
+          // Load nothing and turn Save off, so the broken file is never overwritten.
+          Object.assign(state, { plan: null, mode: 'folder', dir, base: '', blocked: true, dirty: false, notice: null, prompt: null });
+          render();
+          setStatus(parsed.error, 'error');
+          return;
+        }
+        plan = parsed.plan;
+      }
+      await listViews(dir);
+      await load(plan, { mode: 'folder', dir });
+      state.notice = notice;
+      updateStatus();
+    };
+
+    const ensureWritable = async dir => {
+      if (dir.queryPermission && (await dir.queryPermission({ mode: 'readwrite' })) !== 'granted') {
+        if ((await dir.requestPermission({ mode: 'readwrite' })) !== 'granted') throw new Error('permission to write to the folder was refused');
+      }
+    };
+    const writeFile = async (dir, name, data) => {
+      const w = await (await dir.getFileHandle(name, { create: true })).createWritable();
+      await w.write(data);
+      await w.close();
+    };
+    const savedAt = () => `Saved ${new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`;
+    const saveFailed = err => {
+      state.notice = null;
+      setStatus(`Couldn't save: ${err.message}. Your changes are still here.`, 'error');
+      return false;
+    };
+
+    // Copies a plan viewed over HTTP (the sample) into a folder, images included, then opens it there.
+    const saveToFolder = async (dir = null) => {
+      if (!state.plan || state.blocked) return false;
+      if (!dir) {
+        if (!window.showDirectoryPicker) { setStatus("This browser can't open folders. Use Chrome.", 'error'); return false; }
+        try { dir = await window.showDirectoryPicker({ mode: 'readwrite' }); }
+        catch (err) { if (err.name === 'AbortError') return false; return saveFailed(err); }
+      }
+      try {
+        await ensureWritable(dir);
+        const views = await dir.getDirectoryHandle('views', { create: true });
+        for (const src of planImageSrcs(state.plan)) {
+          const url = state.images.get(src);
+          if (!url || !src.startsWith('views/') || src.slice(6).includes('/')) continue;
+          await writeFile(views, src.slice(6), await (await fetch(url)).blob());
+        }
+        await writeFile(dir, 'plan.json', serializePlan(state.plan));
+      } catch (err) { return saveFailed(err); }
+      await openFolder(dir);
+      setStatus(savedAt());
+      return true;
+    };
+
+    const save = async () => {
+      if (!state.plan || state.blocked) return false;
+      if (state.mode === 'http') return saveToFolder();
+      if (state.mode !== 'folder') return false;
+      try {
+        await ensureWritable(state.dir);
+        await writeFile(state.dir, 'plan.json', serializePlan(state.plan));
+        await state.dir.getDirectoryHandle('views', { create: true });
+      } catch (err) { return saveFailed(err); }
+      state.dirty = false; state.error = null; state.prompt = null;
+      setStatus(savedAt());
+      return true;
+    };
+
+    const reloadImages = async () => {
+      if (state.mode === 'folder' && state.dir) await listViews(state.dir);
+      else if (state.mode === 'http') await resolveImages();
+      render();
+    };
+
+    // The image picker: a small list of views/ files under the slot.
+    let picker = null;
+    const closePicker = () => { if (picker) { picker.remove(); picker = null; } };
+    const pickImage = async path => {
+      closePicker();
+      const slotEl = desk.querySelector(`.slot[data-path="${CSS.escape(path)}"]`);
+      picker = h('div', { class: 'picker', role: 'listbox', 'aria-label': 'Choose an image' });
+      if (state.mode !== 'folder') picker.append(h('p', { class: 'picker-note' }, 'Open a plan folder to choose images'));
+      else {
+        const names = [...state.images.keys()].map(k => k.slice(6)).sort((a, b) => a.localeCompare(b, undefined, { sensitivity: 'base' }));
+        if (!names.length) picker.append(h('p', { class: 'picker-note' }, 'No images in views/ yet. Copy your exports there, then Reload images.'));
+        const current = (getPath(state.plan, path) || {}).src || '';
+        for (const src of [...names.map(n => `views/${n}`), '']) {
+          picker.append(h('div', { role: 'option', tabindex: '0', 'aria-selected': String(src === current), dataset: { src, path } },
+            src ? src.slice(6) : 'None'));
+        }
+      }
+      const r = slotEl ? slotEl.getBoundingClientRect() : { left: 16, bottom: 80 };
+      picker.style.left = `${Math.max(8, r.left + scrollX)}px`;
+      picker.style.top = `${r.bottom + scrollY + 4}px`;
+      document.body.append(picker);
+      const first = picker.querySelector('[role="option"]');
+      if (first) first.focus();
+    };
+    const choosePicked = option => {
+      const path = option.dataset.path;
+      const img = getPath(state.plan, path);
+      if (img) img.src = option.dataset.src; else setPath(state.plan, path, { src: option.dataset.src, caption: '' });
+      closePicker();
+      rerender();
+    };
+    document.addEventListener('click', e => {
+      if (!picker) return;
+      const option = e.target.closest('.picker [role="option"]');
+      if (option) choosePicked(option);
+      else if (!e.target.closest('.picker') && !e.target.closest('.slot-img')) closePicker();
+    });
+
     // ── Listeners ──
     desk.addEventListener('input', e => {
       const el = e.target.closest('[data-bind]');
@@ -681,6 +836,8 @@
     });
 
     desk.addEventListener('click', e => {
+      const slotImg = e.target.closest('.slot-img');
+      if (slotImg && state.plan) { pickImage(slotImg.closest('.slot').dataset.path); return; }
       const b = e.target.closest('button');
       if (!b || !state.plan) return;
       const d = b.dataset;
@@ -713,7 +870,20 @@
 
     // The page's one keydown listener.
     document.addEventListener('keydown', e => {
-      const el = e.target.closest && e.target.closest('[data-bind]');
+      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 's') { e.preventDefault(); save(); return; }
+      if (e.key === 'Escape' && picker) { e.preventDefault(); closePicker(); return; }
+      const target = e.target.closest ? e.target : document.body;
+      const option = target.closest('.picker [role="option"]');
+      if (option && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); choosePicked(option); return; }
+      if (option && (e.key === 'ArrowDown' || e.key === 'ArrowUp')) {
+        e.preventDefault();
+        const next = e.key === 'ArrowDown' ? option.nextElementSibling : option.previousElementSibling;
+        if (next && next.matches('[role="option"]')) next.focus();
+        return;
+      }
+      const slotImg = target.closest('.slot-img');
+      if (slotImg && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); pickImage(slotImg.closest('.slot').dataset.path); return; }
+      const el = target.closest('[data-bind]');
       if (e.key === 'Enter' && el) {
         e.preventDefault();
         // In a list item, Enter starts the next item; anywhere else it just finishes the field.
@@ -733,6 +903,22 @@
       addSheet(b.dataset.add);
     }));
     document.getElementById('btn-print').addEventListener('click', () => window.print());
+    btnSave.addEventListener('click', () => save());
+    document.getElementById('btn-reload').addEventListener('click', () => reloadImages());
+    const btnOpen = document.getElementById('btn-open');
+    if (!window.showDirectoryPicker) {
+      btnOpen.disabled = true;
+      state.notice = "This browser can't open folders. Use Chrome.";
+    }
+    btnOpen.addEventListener('click', async () => {
+      // With unsaved changes the first click only warns; a second click goes ahead.
+      if (state.dirty && !state.prompt) { state.prompt = 'Unsaved changes. Click Open again to discard them.'; updateStatus(); return; }
+      let dir;
+      try { dir = await window.showDirectoryPicker({ mode: 'readwrite' }); }
+      catch (err) { if (err.name !== 'AbortError') setStatus(err.message, 'error'); return; }
+      state.prompt = null;
+      await openFolder(dir);
+    });
 
     // ── Boot ──
     let markReady;
@@ -743,6 +929,7 @@
       getPath, setPath, moveItem, removeItem, insertItem, ready,
       state, load, render, setPaper, setStatus,
       addSheet, moveSheet, deleteSheet, setSlots, listAction, checkOverflow,
+      openFolder, save, saveToFolder, reloadImages, pickImage,
     };
 
     (async () => {

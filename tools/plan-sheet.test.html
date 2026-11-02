@@ -174,6 +174,95 @@
       PS.listAction('sheets.4.materials', 'remove', 0); eq(PS.checkOverflow(), []);
       PS.setPaper('a4'); eq(PS.checkOverflow(), [4]); });
 
+    // ── Task 5: plan folders ──
+    // A stand-in for a FileSystemDirectoryHandle backed by a plain object: { 'plan.json': text,
+    // 'views/front.png': Blob }. Writes land back in `files`. Set handle.failWrites to make them fail.
+    const fakeDir = (files, name = 'p-test') => {
+      const dirs = new Set();
+      let root;
+      const notFound = () => new DOMException('A requested file or directory could not be found.', 'NotFoundError');
+      const fileHandle = (key, fname) => ({
+        kind: 'file', name: fname,
+        async getFile() {
+          const v = files[key];
+          return v instanceof Blob ? new File([v], fname, { type: v.type }) : new File([v], fname, { type: 'text/plain' });
+        },
+        async createWritable() {
+          if (root.failWrites) throw new DOMException('The request is not allowed.', 'NotAllowedError');
+          const parts = [];
+          return {
+            async write(d) { parts.push(d); },
+            async close() { files[key] = parts.every(p => typeof p === 'string') ? parts.join('') : new Blob(parts); },
+          };
+        },
+      });
+      const dirHandle = (prefix, dname) => ({
+        kind: 'directory', name: dname,
+        async queryPermission() { return 'granted'; },
+        async requestPermission() { return 'granted'; },
+        async getFileHandle(n, { create = false } = {}) {
+          const key = prefix + n;
+          if (!(key in files)) { if (!create) throw notFound(); files[key] = ''; }
+          return fileHandle(key, n);
+        },
+        async getDirectoryHandle(n, { create = false } = {}) {
+          const p = prefix + n + '/';
+          if (!dirs.has(p) && !Object.keys(files).some(k => k.startsWith(p))) { if (!create) throw notFound(); dirs.add(p); }
+          return dirHandle(p, n);
+        },
+        async *values() {
+          const seen = new Set();
+          for (const k of [...Object.keys(files), ...dirs]) {
+            if (!k.startsWith(prefix)) continue;
+            const rest = k.slice(prefix.length), slash = rest.indexOf('/');
+            if (slash === -1) { if (rest) yield fileHandle(k, rest); }
+            else { const d = rest.slice(0, slash); if (!seen.has(d)) { seen.add(d); yield dirHandle(prefix + d + '/', d); } }
+          }
+        },
+      });
+      root = dirHandle('', name);
+      root.failWrites = false;
+      return root;
+    };
+    const planText = async () => (await fetch('plan-sample/p-003-floating-night-stands/plan.json')).text();
+    const statusText = doc => doc.querySelector('.status').textContent;
+
+    test('folder: open and save round-trip', async () => { const {PS} = await load('');
+      const files = { 'plan.json': await planText(), 'views/front.svg': new Blob(['<svg xmlns="http://www.w3.org/2000/svg"/>'], { type: 'image/svg+xml' }) };
+      await PS.openFolder(fakeDir(files));
+      eq(PS.state.mode, 'folder'); ok(PS.state.images.get('views/front.svg'), 'front.svg resolves');
+      PS.state.plan.plan.rev = 'B'; PS.state.dirty = true;
+      eq(await PS.save(), true); eq(JSON.parse(files['plan.json']).plan.rev, 'B'); eq(PS.state.dirty, false); });
+    test('folder: missing plan.json starts a new plan', async () => { const {doc, PS} = await load('');
+      const files = {}; await PS.openFolder(fakeDir(files));
+      eq(PS.state.plan.sheets.map(s => s.layout), ['cover']);
+      ok(statusText(doc).includes('New plan'), statusText(doc));
+      await PS.save(); ok('plan.json' in files); });
+    test('folder: invalid plan.json is never overwritten', async () => { const {doc, PS} = await load('');
+      const files = { 'plan.json': '{"version": 1,,}' }; await PS.openFolder(fakeDir(files));
+      ok(statusText(doc).startsWith('plan.json line 1'), statusText(doc));
+      eq(await PS.save(), false); eq(files['plan.json'], '{"version": 1,,}'); });
+    test('folder: odd filenames', async () => { const {doc, PS} = await load('');
+      const files = { 'plan.json': await planText(), 'views/Front View.PNG': new Blob(['x']), 'views/notes.txt': 'x' };
+      await PS.openFolder(fakeDir(files)); await PS.pickImage('sheets.1.views.0');
+      const opts = [...doc.querySelectorAll('.picker [role="option"]')].map(o => o.textContent);
+      ok(opts.includes('Front View.PNG'), JSON.stringify(opts)); ok(!opts.includes('notes.txt'));
+      doc.querySelector('.picker [role="option"]').click();
+      eq(PS.state.plan.sheets[1].views[0].src, 'views/Front View.PNG'); });
+    test('folder: save failure keeps changes', async () => { const {doc, PS} = await load('');
+      const files = { 'plan.json': await planText() }; const dir = fakeDir(files);
+      await PS.openFolder(dir); PS.state.dirty = true; dir.failWrites = true;
+      eq(await PS.save(), false); eq(PS.state.dirty, true);
+      ok(statusText(doc).startsWith("Couldn't save"), statusText(doc)); });
+    test('folder: missing image count', async () => { const {doc, PS} = await load('');
+      await PS.openFolder(fakeDir({ 'plan.json': await planText() }));
+      ok(/\d+ images missing/.test(statusText(doc)), statusText(doc)); });
+    test('folder: save to folder copies the viewed plan and its images', async () => { const {PS} = await load(SAMPLE);
+      const files = {}; eq(await PS.saveToFolder(fakeDir(files)), true);
+      eq(JSON.parse(files['plan.json']).plan.no, 'P-003');
+      ok(files['views/front.svg'] instanceof Blob, 'front.svg copied');
+      eq(PS.state.mode, 'folder'); });
+
     // ── Runner ──
     (async () => {
       const only = new URLSearchParams(location.search).get('only');
