@@ -207,7 +207,8 @@ that may differ by version say so.
 
 ## Testing
 
-No JS test infrastructure exists, and this adds none. Verification:
+No JS test infrastructure existed; this adds one dev page, `tools/plan-sheet.test.html`, run in
+headless Chrome. Verification:
 
 - Headless Chrome against `tools/plan-sheet.html?plan=plan-sample/p-003-floating-night-stands/`:
   the sample renders all four layouts; sheet numbers, the total, the cover's sheet index, part
