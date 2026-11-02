@@ -268,6 +268,43 @@
       ok(files['views/front.svg'] instanceof Blob, 'front.svg copied');
       eq(PS.state.mode, 'folder'); });
 
+    // ── Final review fixes ──
+    test('fix: save to folder asks before overwriting a plan', async () => { const {doc, PS} = await load(SAMPLE);
+      const files = { 'plan.json': '{"version":1,"plan":{"no":"P-009"},"sheets":[]}' }; const dir = fakeDir(files);
+      eq(await PS.saveToFolder(dir), false);
+      eq(JSON.parse(files['plan.json']).plan.no, 'P-009');
+      ok(statusText(doc).includes('already has a plan'), statusText(doc));
+      eq(await PS.saveToFolder(dir), true);
+      eq(JSON.parse(files['plan.json']).plan.no, 'P-003'); });
+    test('fix: plan without a plan block or cover image can be edited', async () => { const {doc, PS} = await load('');
+      await PS.openFolder(fakeDir({ 'plan.json': '{"version":1,"sheets":[{"layout":"cover"}]}' }));
+      input(doc.querySelector('[data-bind="plan.name"]'), 'Bench');
+      eq(PS.state.plan.plan.name, 'Bench');
+      input(doc.querySelector('[data-bind="sheets.0.image.caption"]'), 'As built');
+      eq(PS.state.plan.sheets[0].image.caption, 'As built');
+      PS.setPaper('a4'); eq(PS.state.plan.plan.paper, 'a4'); });
+    test('fix: focus follows a moved item', async () => { const {doc} = await load(SAMPLE);
+      doc.querySelector('[data-list="sheets.3.parts"][data-act="down"][data-j="0"]').click();
+      const a = doc.activeElement;
+      eq([a.dataset.list, a.dataset.act, a.dataset.j], ['sheets.3.parts', 'down', '1']); });
+    test('fix: focus stays on a sheet button after moving the sheet', async () => { const {doc} = await load(SAMPLE);
+      doc.querySelector('[data-sheet="2"][data-sheet-act="up"]').click();
+      const a = doc.activeElement;
+      eq([a.dataset.sheet, a.dataset.sheetAct], ['1', 'up']); });
+    test('fix: overflow re-checked when fonts finish loading', async () => { const {doc, win, PS} = await load(SAMPLE);
+      const parts = PS.state.plan.sheets[4].parts;
+      for (let i = 0; i < 40; i++) parts.push({ name: 'x', qty: '1', t: '', w: '', l: '', material: '', notes: '' });
+      // Grow the table without going through an edit, as a late font swap would.
+      const tbody = doc.querySelector('[data-i="4"] tbody');
+      for (let i = 0; i < 40; i++) tbody.append(tbody.rows[0].cloneNode(true));
+      win.document.fonts.dispatchEvent(new win.Event('loadingdone'));
+      ok(doc.querySelector('[data-i="4"]').classList.contains('is-overflowing')); });
+    test('fix: nothing on a sheet below 8pt except zone labels', async () => { const {doc, win} = await load(SAMPLE);
+      const small = [...doc.querySelectorAll('.sheet-page *')].filter(el =>
+        !el.closest('.sheet-zones, .item-controls, .list-add, .callout-tools') && [...el.childNodes].some(n => n.nodeType === 3 && n.textContent.trim())
+        && parseFloat(win.getComputedStyle(el).fontSize) < 10.66);
+      eq(small.map(el => el.className || el.tagName).slice(0, 5), []); });
+
     // ── Runner ──
     (async () => {
       const only = new URLSearchParams(location.search).get('only');

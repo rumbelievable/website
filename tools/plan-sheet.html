@@ -87,7 +87,7 @@
     .tb-row > div { min-width: 0; padding: 4pt 7pt; border-right: 1px solid rgba(47, 93, 138, 0.4); }
     .tb-row > div:last-child { border-right: none; }
     .tb-row:last-child { border-bottom: none; }
-    .tb-label { display: block; font-size: 6.5pt; letter-spacing: 0.12em; text-transform: uppercase; color: var(--cyan); }
+    .tb-label { display: block; font-size: 8pt; letter-spacing: 0.12em; text-transform: uppercase; color: var(--cyan); }
     .tb-title {
       display: block; padding: 6pt 7pt 5pt; border-bottom: 1px solid rgba(47, 93, 138, 0.4);
       font-family: var(--font-display); font-weight: 800; font-stretch: 125%; font-size: 12pt; line-height: 1.1; text-transform: uppercase;
@@ -171,9 +171,10 @@
     .seg-mini button[aria-pressed="true"] { background: var(--ink); border-color: var(--ink); color: #fff; }
     .sheet-page.is-overflowing { box-shadow: 0 0 0 3px #a3262a; }
     .item { position: relative; }
-    .item-controls { position: absolute; right: 0; top: -2px; display: none; gap: 2px; padding-left: 4px; background: #fff; z-index: 2; }
+    /* Transparent rather than display:none so the buttons stay reachable with Tab and can take focus. */
+    .item-controls { position: absolute; right: 0; top: -2px; display: inline-flex; gap: 2px; padding-left: 4px; background: #fff; z-index: 2; opacity: 0; pointer-events: none; }
     .item:hover > .item-controls, .item:focus-within > .item-controls,
-    .item-row:hover .item-controls, .item-row:focus-within .item-controls { display: inline-flex; }
+    .item-row:hover .item-controls, .item-row:focus-within .item-controls { opacity: 1; pointer-events: auto; }
     .item-controls button { width: 20px; height: 20px; padding: 0; line-height: 1; }
     .item-cell { position: relative; width: 0; padding: 0 !important; border-bottom: none !important; }
     .item-cell .item-controls { top: 2px; }
@@ -287,6 +288,8 @@
       if (data.version === undefined) return { ok: false, error: 'plan.json has no version' };
       if (data.version !== 1) return { ok: false, error: `plan.json is version ${data.version}; this editor reads version 1` };
       if (!Array.isArray(data.sheets)) return { ok: false, error: 'plan.json has no sheets list' };
+      // A hand-written plan may leave out the plan block; give it one so the title block can be edited.
+      if (!data.plan || typeof data.plan !== 'object' || Array.isArray(data.plan)) data.plan = {};
       return { ok: true, plan: data };
     };
 
@@ -314,8 +317,13 @@
     const pathKeys = path => path.split('.').map(k => (/^\d+$/.test(k) ? Number(k) : k));
     const getPath = (obj, path) => pathKeys(path).reduce((o, k) => (o == null ? undefined : o[k]), obj);
     const setPath = (obj, path, value) => {
+      // Creates missing objects on the way (a cover without an image block, say).
       const keys = pathKeys(path), last = keys.pop();
-      const target = keys.reduce((o, k) => o[k], obj);
+      const target = keys.reduce((o, k, n) => {
+        const next = n + 1 < keys.length ? keys[n + 1] : last;
+        if (o[k] == null || typeof o[k] !== 'object') o[k] = typeof next === 'number' ? [] : {};
+        return o[k];
+      }, obj);
       target[last] = value;
     };
 
@@ -738,13 +746,27 @@
     };
 
     // Copies a plan viewed over HTTP (the sample) into a folder, images included, then opens it there.
+    // A folder that already has a plan.json is only overwritten on a second try with the same folder.
+    let overwriteDir = null;
     const saveToFolder = async (dir = null) => {
       if (!state.plan || state.blocked) return false;
+      if (!dir && overwriteDir) dir = overwriteDir;
       if (!dir) {
         if (!window.showDirectoryPicker) { setStatus("This browser can't open folders. Use Chrome.", 'error'); return false; }
         try { dir = await window.showDirectoryPicker({ mode: 'readwrite' }); }
         catch (err) { if (err.name === 'AbortError') return false; return saveFailed(err); }
       }
+      if (dir !== overwriteDir) {
+        let hasPlan = true;
+        try { await dir.getFileHandle('plan.json'); } catch (err) { if (isNotFound(err)) hasPlan = false; else return saveFailed(err); }
+        if (hasPlan) {
+          overwriteDir = dir;
+          state.prompt = `${dir.name} already has a plan. Click Save to folder… again to replace it, or Open plan folder to pick another.`;
+          updateStatus();
+          return false;
+        }
+      }
+      overwriteDir = null;
       try {
         await ensureWritable(dir);
         const views = await dir.getDirectoryHandle('views', { create: true });
@@ -835,16 +857,36 @@
       changed();
     });
 
+    // After a re-render, put focus back on the equivalent control so keyboard users keep their place.
+    // `data` is the dataset to match; moves follow the item to its new index.
+    const refocus = data => {
+      const sel = Object.entries(data).map(([k, v]) =>
+        `[data-${k.replace(/[A-Z]/g, c => '-' + c.toLowerCase())}="${CSS.escape(String(v))}"]`).join('');
+      const el = desk.querySelector(`button${sel}`);
+      if (el) el.focus();
+    };
+
     desk.addEventListener('click', e => {
       const slotImg = e.target.closest('.slot-img');
       if (slotImg && state.plan) { pickImage(slotImg.closest('.slot').dataset.path); return; }
       const b = e.target.closest('button');
       if (!b || !state.plan) return;
       const d = b.dataset;
-      if (d.list) listAction(d.list, d.act, Number(d.j));
-      else if (d.slots) setSlots(Number(d.sheet), Number(d.slots));
-      else if (d.sheetAct === 'up') moveSheet(Number(d.sheet), -1);
-      else if (d.sheetAct === 'down') moveSheet(Number(d.sheet), 1);
+      if (d.list) {
+        const j = Number(d.j), len = (getPath(state.plan, d.list) || []).length;
+        listAction(d.list, d.act, j);
+        const to = d.act === 'up' ? Math.max(0, j - 1) : d.act === 'down' ? Math.min(len - 1, j + 1) : j;
+        if (d.act === 'remove') refocus({ list: d.list, act: 'remove', j: Math.min(j, len - 2) });
+        else if (d.act !== 'add') refocus({ list: d.list, act: d.act, j: to });
+        else refocus({ list: d.list, act: 'add', j: j + 1 });
+      }
+      else if (d.slots) { setSlots(Number(d.sheet), Number(d.slots)); refocus({ sheet: d.sheet, slots: d.slots }); }
+      else if (d.sheetAct === 'up' || d.sheetAct === 'down') {
+        const i = Number(d.sheet), dir = d.sheetAct === 'up' ? -1 : 1;
+        const to = Math.max(0, Math.min(state.plan.sheets.length - 1, i + dir));
+        moveSheet(i, dir);
+        refocus({ sheet: to, sheetAct: d.sheetAct });
+      }
       else if (d.sheetAct === 'delete') {
         // Two clicks: the first arms the button, the second deletes.
         if (d.armed) deleteSheet(Number(d.sheet));
@@ -867,6 +909,10 @@
       }
     });
     desk.addEventListener('load', e => { if (e.target.tagName === 'IMG') { checkOverflow(); updateStatus(); } }, true);
+    // Web fonts swap in after first paint and change line lengths, so re-check overflow when they land.
+    const recheck = () => { checkOverflow(); updateStatus(); };
+    document.fonts.addEventListener('loadingdone', recheck);
+    document.fonts.ready.then(recheck);
 
     // The page's one keydown listener.
     document.addEventListener('keydown', e => {
