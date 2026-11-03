@@ -129,9 +129,16 @@ middle, and the sheet fits the whole image into each slot. After exporting, run 
 in the site folder and type the project's number (or `make trim-views PLAN=3`). It crops the white
 or transparent margin off every PNG in `views/`, keeping the same filenames, and moves the untouched
 exports to the plan's `originals/` folder. Then click **Reload images** in the editor. Running it
-again is safe: images already cropped are left alone, and a re-exported image replaces its older
-copy in `originals/`. JPGs and SVGs aren't touched. It needs macOS with the Xcode command line tools
-(`xcode-select --install`).
+again is safe: every image is rebuilt from its untouched export, images already done are left alone,
+and a re-exported image replaces its older copy in `originals/`. JPGs and SVGs aren't touched. It
+needs macOS with the Xcode command line tools (`xcode-select --install`).
+
+**Thicken thin lines.** Exports draw edges 1px wide, which print as hairlines. `make trim-views
+THICKEN=1` grows every line by 1px on each side (about a 0.4mm pen line in a drawing slot);
+`THICKEN=2` is heavier. Only line drawings are thickened: colour renders are cropped but left alone,
+since it would smear the wood grain. Lines closer than a couple of pixels can merge into one, so
+check fine details like drawer reveals. The plan remembers the setting, so a later `make trim-views`
+keeps it; `THICKEN=0` turns it off and rebuilds the images from the originals.
 
 **About scale:** a PNG isn't to scale. A view's printed size depends on the sheet, not the model.
 Leave the sheet's Scale at **Not to scale** and let the dimensions carry the sizes. Only write a
