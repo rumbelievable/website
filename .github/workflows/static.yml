@@ -33,11 +33,18 @@ jobs:
         uses: actions/checkout@v4
       - name: Setup Pages
         uses: actions/configure-pages@v5
+      - name: Copy the site, leaving out dev files
+        # tools/, docs/ and mockups/ are dev pages, specs and drafts (the plan sheet editor among
+        # them); no site page links to them, so they stay in the repo but off the website.
+        run: >
+          rsync -a ./ _site/
+          --exclude '/.git' --exclude '/.github' --exclude '/.gitignore' --exclude '/_site'
+          --exclude '/tools/' --exclude '/docs/' --exclude '/mockups/' --exclude '/.superpowers/'
+          --exclude '/Makefile' --exclude '/*.md'
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          # Upload entire repository
-          path: '.'
+          path: '_site'
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
