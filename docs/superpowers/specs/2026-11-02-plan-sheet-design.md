@@ -15,6 +15,21 @@ so the "template" is two parts:
 2. **A print sheet editor**, `tools/plan-sheet.html`: drafting sheets with border, zones and title
    block, filled in the browser with text and the exported PNGs, printed to PDF from Chrome.
 
+## Changes after the first version (2026-11-06)
+
+- **Fusion as well as SketchUp.** Annie models in Fusion. The editor never depended on SketchUp
+  (it takes any PNG, JPG or SVG in `views/`), so only the guide changed: it is now
+  `docs/plans/making-plans.md` and covers Fusion's Capture Image and Drawing workspace alongside
+  the SketchUp starter model.
+- **Plans live in `~/Desktop/plans/`**, not `~/Dropbox/plans/`.
+- **`make plan`** (`tools/new_plan.py`) makes a plan folder for a project number, named
+  `p-<no>-<slug>`, with a starter `plan.json`: title block from the project page and one sheet of
+  each layout. The sheet shapes copy `newSheet()` in the editor and must stay in step with it.
+- **`make trim-views`** (`tools/trim_views.py` + `tools/trim_png.swift`) crops the margin off PNG
+  exports, which come out screen-shaped with the model small in the middle, and with `THICKEN=n`
+  thickens line drawings, because Fusion captures 1px edges at any size. Untouched exports move to
+  `originals/`, recorded in `originals/.trim.json`, and every processed image is rebuilt from them.
+
 ## Sources
 
 - Approved product page: `mockups/plan-package/v2-r1.html` on branch `mockups/plan-package` (the
@@ -31,7 +46,9 @@ so the "template" is two parts:
 | `tools/plan-sheet.html` | Editor and print template. A dev page, like `tools/plate-editor.html`: `noindex`, inline `<style>` and `<script>`. |
 | `tools/plan-sample/p-003-floating-night-stands/plan.json` | Sample plan, placeholder data from the mockup, all four layouts. |
 | `tools/plan-sample/p-003-floating-night-stands/views/*.svg` | Sample views made from the mockup's SVG drawings (no SketchUp export is possible here). |
-| `docs/plans/sketchup-starter.md` | One-time SketchUp Free setup checklist and the per-plan export steps. |
+| `docs/plans/making-plans.md` | The how-to: start a plan, export from Fusion or SketchUp (including the one-time SketchUp starter model), crop and thicken, lay out, print. Was `sketchup-starter.md`. |
+| `tools/new_plan.py`, `tools/test_new_plan.py` | `make plan`: a plan folder with a starter `plan.json`. Added 2026-11-06. |
+| `tools/trim_views.py`, `tools/trim_png.swift`, `tools/test_trim_views.py` | `make trim-views`: crop and thicken exports. Added 2026-11-06. |
 
 The editor does **not** link `rumbelievable.css`: the site stylesheet's body padding, fixed `.sheet`
 frame and nav rules are wrong for a print document. It copies the tokens it needs (`--paper`,
@@ -43,13 +60,14 @@ Nothing else in the site changes: no nav link, no page, no generator change.
 
 ## Where plans live
 
-A plan is a folder **outside this repo** (e.g. `~/Dropbox/plans/`), because GitHub Pages publishes
+A plan is a folder **outside this repo**, in `~/Desktop/plans/`, because GitHub Pages publishes
 everything in the repo and these are paid drawings. Only the placeholder sample lives in the repo.
 
 ```
 p-003-floating-night-stands/
-  plan.json        written by Save
-  views/           SketchUp exports and shop photos (png, jpg, svg)
+  plan.json        written by Save (a starter one by make plan)
+  views/           Fusion or SketchUp exports and shop photos (png, jpg, svg)
+  originals/       untouched exports and .trim.json, written by make trim-views
 ```
 
 The editor opens the folder with `showDirectoryPicker()` (Chrome, read/write; it works on
@@ -186,7 +204,7 @@ Every sheet is one printed page: Letter landscape (11 × 8.5 in) or A4 landscape
   sheet's top margin. Print still works.
 - **Save fails** (permission revoked): status line error; changes stay in memory.
 
-## SketchUp starter (docs/plans/sketchup-starter.md)
+## SketchUp starter (now a section of docs/plans/making-plans.md)
 
 One-time setup in SketchUp Free, saved as `plan-starter.skp`, then **Save as** per plan:
 

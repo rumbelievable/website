@@ -1,3 +1,12 @@
+# tools/
+
+Dev tools for the site. None of them are linked from the site's pages.
+
+- [`new_project.py`](#toolsnew_projectpy): generates a woodworking project page (`make project`)
+- [`plate-editor.html`](#specimen-plates): draws specimen plates for project pages
+- [Plan set tools](#plan-set-tools): `plan-sheet.html`, `new_plan.py`, `trim_views.py` for the
+  woodworking plan PDFs
+
 # tools/new_project.py
 
 Generates a new woodworking project page and links it in everywhere it's listed.
@@ -94,3 +103,30 @@ https://res.cloudinary.com/df4rizvgx/image/upload/c_scale,w_800/f_auto/q_auto/v.
 ```
 
 is the standard format used across the site.
+
+# Plan set tools
+
+Tools for making the woodworking plan PDFs. The step-by-step guide, including exporting from
+Fusion and SketchUp, is [`docs/plans/making-plans.md`](../docs/plans/making-plans.md); the design is
+[`docs/superpowers/specs/2026-11-02-plan-sheet-design.md`](../docs/superpowers/specs/2026-11-02-plan-sheet-design.md).
+
+Plans themselves live outside the repo, in `~/Desktop/plans/p-<no>-<slug>/` (`plan.json`,
+`views/`, and `originals/` once trimmed), because everything on `main` is published.
+
+| File | What it does |
+|---|---|
+| `plan-sheet.html` | The editor and print template. `make preview`, then <http://localhost:8000/tools/plan-sheet.html> in Chrome (it opens and saves plan folders with Chrome's folder access). `?plan=plan-sample/p-003-floating-night-stands/` shows the sample read-only. |
+| `plan-sample/` | A placeholder sample plan (P-003) with SVG views. Not a real plan. |
+| `new_plan.py` | `make plan`: asks for a project number and makes its plan folder with a starter `plan.json` (title block from the project page; cover, drawing, cut list and build step sheets). Never overwrites a `plan.json`; refuses a folder inside the repo. `PLANS_DIR=` overrides `~/Desktop/plans`. |
+| `trim_views.py` | `make trim-views`: crops the margin off a plan's PNG exports and, with `THICKEN=1` or `2`, thickens the lines of line drawings. Untouched exports go to `originals/`; every image is rebuilt from them, so re-running is safe. `PLAN=3` skips the prompt. |
+| `trim_png.swift` | The pixel work for `trim_views.py` (CoreGraphics, run with `swift -O`). macOS with the Xcode command line tools only. |
+
+Tests:
+
+```bash
+python3 -m unittest tools/test_new_plan.py tools/test_trim_views.py   # trim tests need swift
+# with make preview running:
+"/Applications/Google Chrome.app/Contents/MacOS/Google Chrome" --headless=new --disable-gpu --virtual-time-budget=30000 --dump-dom "http://localhost:8000/tools/plan-sheet.test.html" | grep -E "<title>|class=\"fail"
+```
+
+The editor tests pass when the title reads `PASS n`.
