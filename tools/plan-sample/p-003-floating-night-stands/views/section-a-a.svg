@@ -1,0 +1,42 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="540 30 300 250" width="600" height="500">
+  <!-- Sample view, drawn from mockups/plan-package/v2-r1.html. Stands in for a SketchUp PNG export. -->
+  <defs>
+    <pattern id="h45" width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><line x1="0" y1="0" x2="0" y2="6" stroke="#22272c" stroke-width="0.7"/></pattern>
+    <pattern id="hx" width="4" height="4" patternUnits="userSpaceOnUse" patternTransform="rotate(-45)"><line x1="0" y1="0" x2="0" y2="4" stroke="#22272c" stroke-width="0.7"/></pattern>
+    <pattern id="hw" width="3.5" height="3.5" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><line x1="0" y1="0" x2="0" y2="3.5" stroke="#22272c" stroke-width="0.7"/></pattern>
+  </defs>
+  <style>
+    .ln { fill: none; stroke: #22272c; stroke-width: 1.5; }
+    .ln-thin { fill: none; stroke: #22272c; stroke-width: 1; }
+    .brass { fill: #b8924a; stroke: #22272c; stroke-width: 0.75; }
+    .cut { fill: url(#h45); stroke: #22272c; stroke-width: 1; }
+    .cut-x { fill: url(#hx); stroke: #22272c; stroke-width: 1; }
+    .wall { fill: url(#hw); }
+    .slide { fill: #555b61; }
+    .dim { fill: none; stroke: #2f5d8a; stroke-width: 1; }
+    .leader { fill: none; stroke: #22272c; stroke-width: 0.75; }
+    .dot { fill: #22272c; }
+    .t-dim { font-family: ui-monospace, Menlo, monospace; font-size: 11px; fill: #2f5d8a; }
+    .t { font-family: ui-monospace, Menlo, monospace; font-size: 10px; letter-spacing: 0.08em; fill: #555b61; }
+  </style>
+  <rect class="cut" x="580" y="80" width="200" height="15"/>
+  <rect class="cut" x="580" y="205" width="200" height="15"/>
+  <rect class="cut-x" x="581" y="97" width="15" height="106"/>
+  <rect class="brass" x="574" y="112" width="7" height="6"/>
+  <rect class="cut" x="597" y="112" width="8" height="84"/>
+  <rect class="cut" x="742" y="112" width="8" height="84"/>
+  <rect class="cut" x="605" y="186" width="137" height="8"/>
+  <rect class="slide" x="608" y="196" width="134" height="5"/>
+  <polygon class="cut" points="765,95 780,95 780,118 765,103"/>
+  <polygon class="cut-x" points="765,105 780,120 780,150 765,150"/>
+  <rect class="wall" x="782" y="60" width="16" height="190"/>
+  <path class="ln" d="M580 80 H780 V220 H580 Z"/>
+  <path class="ln-thin" d="M782 60 V250"/>
+  <path class="dim" d="M580 76 V44 M780 76 V44 M580 50 H662 M698 50 H780 M576 54 584 46 M776 54 784 46"/>
+  <text class="t-dim" x="680" y="54" text-anchor="middle">10"</text>
+  <circle class="dot" cx="660" cy="198" r="2"/><path class="leader" d="M660 198 V240"/>
+  <text class="t" x="660" y="252" text-anchor="middle">UNDERMOUNT SLIDE</text>
+  <circle class="dot" cx="772" cy="140" r="2"/><path class="leader" d="M772 140 V256"/>
+  <text class="t" x="764" y="268" text-anchor="end">FRENCH CLEAT, 45°</text>
+  <text class="t" x="808" y="160" transform="rotate(90 808 160)" text-anchor="middle">WALL</text>
+</svg>

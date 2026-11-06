@@ -1,0 +1,1001 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex">
+  <title>Plan Sheet — Rumbelievable</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Archivo:ital,wdth,wght@0,62..125,100..900;1,62..125,100..900&family=Martian+Mono:wght@400;600&display=swap" rel="stylesheet">
+  <!-- A dev tool and print template, not a site page. It deliberately does not link rumbelievable.css:
+       that sheet's body padding, fixed frame and nav are wrong for a printed document.
+       Spec: docs/superpowers/specs/2026-11-02-plan-sheet-design.md -->
+  <style id="page-size">@page { size: letter landscape; margin: 0 }</style>
+  <style>
+    :root {
+      --paper: #efe9dc; --paper-2: #e6dfd0; --ink: #22272c; --ink-2: #555b61;
+      --hairline: rgba(34, 39, 44, 0.28); --brass: #b8924a; --brass-text: #7a5b22;
+      --cyan: #2f5d8a;
+      --font-display: 'Archivo', 'Helvetica Neue', Arial, sans-serif;
+      --font-mono: 'Martian Mono', ui-monospace, Menlo, monospace;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: var(--font-display); color: var(--ink); background: var(--paper); -webkit-font-smoothing: antialiased; }
+    button { font: inherit; color: inherit; }
+    :focus-visible { outline: 2px solid var(--cyan); outline-offset: 2px; }
+
+    /* ── Toolbar (screen only) ── */
+    .toolbar {
+      position: sticky; top: 0; z-index: 10;
+      display: flex; flex-wrap: wrap; align-items: center; gap: 8px 10px;
+      padding: 10px 16px; background: var(--ink); color: var(--paper);
+      font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.06em; text-transform: uppercase;
+    }
+    .toolbar button, .toolbar summary {
+      padding: 7px 11px; border: 1px solid rgba(239, 233, 220, 0.4); background: transparent;
+      cursor: pointer; letter-spacing: inherit; text-transform: inherit; list-style: none;
+    }
+    .toolbar button:hover:not(:disabled), .toolbar summary:hover { background: rgba(239, 233, 220, 0.12); }
+    .toolbar button:disabled { opacity: 0.45; cursor: default; }
+    .toolbar .seg { display: inline-flex; }
+    .toolbar .seg button + button { border-left: none; }
+    .toolbar .seg button[aria-pressed="true"] { background: var(--paper); color: var(--ink); }
+    .add-menu { position: relative; }
+    .add-menu summary::-webkit-details-marker { display: none; }
+    .add-menu-list {
+      position: absolute; top: calc(100% + 4px); left: 0; display: grid; min-width: 160px;
+      background: var(--ink); border: 1px solid rgba(239, 233, 220, 0.4);
+    }
+    .add-menu-list button { border: none; text-align: left; }
+    .status { flex: 1 1 260px; text-transform: none; letter-spacing: 0.02em; color: #c9ccce; }
+    .status[data-kind="warn"] { color: #d4ae6a; }
+    .status[data-kind="error"] { color: #f0a29a; }
+
+    #desk { padding: 0.5in 0.5in 1in; }
+    .desk-empty { max-width: 40em; margin: 2in auto; font-family: var(--font-mono); font-size: 12px; color: var(--ink-2); text-align: center; }
+
+    /* ── The sheet: one printed page ── */
+    body[data-paper="letter"] { --sheet-w: 11in; --sheet-h: 8.5in; }
+    body[data-paper="a4"] { --sheet-w: 297mm; --sheet-h: 210mm; }
+    .sheet-wrap { width: var(--sheet-w); margin: 0 auto 0.5in; }
+    .sheet-page {
+      position: relative; width: var(--sheet-w); height: var(--sheet-h);
+      background: #fff; box-shadow: 0 1px 2px rgba(34, 39, 44, 0.12), 0 6px 24px rgba(34, 39, 44, 0.1);
+      break-after: page; overflow: hidden;
+    }
+    .sheet-zones {
+      position: absolute; display: flex; justify-content: space-around; align-items: center;
+      font-family: var(--font-mono); font-size: 7pt; color: var(--ink-2);
+    }
+    .sheet-zones--top, .sheet-zones--bottom { left: 0.4in; right: 0.4in; height: 0.4in; }
+    .sheet-zones--top { top: 0; } .sheet-zones--bottom { bottom: 0; }
+    .sheet-zones--left, .sheet-zones--right { top: 0.4in; bottom: 0.4in; width: 0.4in; flex-direction: column; }
+    .sheet-zones--left { left: 0; } .sheet-zones--right { right: 0; }
+    .sheet-frame {
+      position: absolute; inset: 0.4in; border: 1.5px solid var(--ink);
+      display: grid; grid-template-columns: minmax(0, 1fr) 3.4in; grid-template-rows: minmax(0, 1fr) auto;
+    }
+    .sheet-body { grid-area: 1 / 1 / 2 / 3; min-height: 0; padding: 0.3in; overflow: hidden; }
+    .sheet-foot { grid-area: 2 / 1 / 3 / 2; min-width: 0; padding: 0.12in 0.3in 0.14in; }
+    .sheet-foot:has(.list-block) { border-top: 1px solid var(--hairline); }
+    @media print { .sheet-frame .sheet-foot:not(:has(li)) { border-top: none; } }
+
+    /* Title block, bottom right */
+    .tb { grid-area: 2 / 2 / 3 / 3; border-top: 1.5px solid var(--ink); border-left: 1.5px solid var(--ink); font-family: var(--font-mono); font-size: 8.5pt; line-height: 1.35; }
+    .tb-row { display: grid; grid-template-columns: repeat(var(--cells, 2), minmax(0, 1fr)); border-bottom: 1px solid rgba(47, 93, 138, 0.4); }
+    .tb-row > div { min-width: 0; padding: 4pt 7pt; border-right: 1px solid rgba(47, 93, 138, 0.4); }
+    .tb-row > div:last-child { border-right: none; }
+    .tb-row:last-child { border-bottom: none; }
+    .tb-label { display: block; font-size: 8pt; letter-spacing: 0.12em; text-transform: uppercase; color: var(--cyan); }
+    .tb-title {
+      display: block; padding: 6pt 7pt 5pt; border-bottom: 1px solid rgba(47, 93, 138, 0.4);
+      font-family: var(--font-display); font-weight: 800; font-stretch: 125%; font-size: 12pt; line-height: 1.1; text-transform: uppercase;
+    }
+    .tb-name { display: block; padding: 4pt 7pt; border-bottom: 1.5px solid var(--ink); }
+    .tb-sheet-cell { box-shadow: inset 0 3pt 0 var(--brass); padding-top: calc(4pt + 3pt) !important; }
+    .tb-sheet { font-weight: 600; }
+
+    /* Shared bits */
+    .eyebrow { font-family: var(--font-mono); font-size: 8.5pt; letter-spacing: 0.14em; text-transform: uppercase; color: var(--cyan); }
+    .label-h { margin-bottom: 4pt; font-family: var(--font-mono); font-size: 8pt; letter-spacing: 0.14em; text-transform: uppercase; color: var(--cyan); }
+    .notes { padding-left: 1.6em; font-family: var(--font-mono); font-size: 8pt; line-height: 1.55; color: var(--ink-2); }
+    .sheet-foot .notes { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1pt 0.35in; }
+    .slot { display: flex; flex-direction: column; min-width: 0; min-height: 0; }
+    .slot-img { flex: 1; min-height: 0; display: flex; align-items: center; justify-content: center; }
+    .slot-img img { display: block; max-width: 100%; max-height: 100%; object-fit: contain; }
+    .slot-missing {
+      width: 100%; height: 100%; min-height: 0.8in; display: flex; align-items: center; justify-content: center;
+      border: 1px dashed var(--ink-2); font-family: var(--font-mono); font-size: 8pt; color: var(--ink-2); text-align: center;
+    }
+    .slot figcaption { padding-top: 5pt; font-family: var(--font-mono); font-size: 8pt; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase; }
+
+    /* Cover */
+    .cover-body { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.3fr); gap: 0.35in; height: 100%; }
+    .cover-text { display: flex; flex-direction: column; gap: 0.18in; min-height: 0; }
+    .cover-name { font-weight: 800; font-stretch: 125%; font-size: 34pt; line-height: 0.95; letter-spacing: -0.01em; text-transform: uppercase; text-wrap: balance; }
+    .cover-built { font-family: var(--font-mono); font-size: 8.5pt; color: var(--ink-2); }
+    .sheet-index { list-style: none; columns: 2; column-gap: 0.3in; font-family: var(--font-mono); font-size: 8pt; line-height: 1.6; }
+    .cover-body .slot { height: 100%; }
+
+    /* Drawing */
+    .slots { display: grid; gap: 0.25in; height: 100%; }
+    .slots-1 { grid-template-columns: 1fr; }
+    .slots-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .slots-4 { grid-template-columns: repeat(2, minmax(0, 1fr)); grid-template-rows: repeat(2, minmax(0, 1fr)); }
+
+    /* Cut list */
+    .parts { width: 100%; border-collapse: collapse; font-family: var(--font-mono); font-size: 8.5pt; line-height: 1.35; }
+    .parts th { padding: 0 6pt 5pt; border-bottom: 1.5px solid var(--ink); font-size: 8pt; font-weight: 400; letter-spacing: 0.12em; text-transform: uppercase; color: var(--cyan); text-align: left; white-space: nowrap; }
+    .parts td { padding: 4pt 6pt; border-bottom: 1px solid var(--hairline); vertical-align: top; }
+    .parts .part-letter { width: 3.2em; font-weight: 600; }
+    .parts .qty { width: 3.2em; }
+    .parts .dims { white-space: nowrap; }
+    .cut-lists { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0.35in; margin-top: 0.25in; }
+    .plain-list { list-style: none; font-family: var(--font-mono); font-size: 8.5pt; line-height: 1.6; }
+    .plain-list li::before { content: "–  "; color: var(--ink-2); }
+
+    /* Build step */
+    .step-body { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.25fr); gap: 0.35in; height: 100%; }
+    .step-text { display: flex; flex-direction: column; gap: 0.16in; min-height: 0; }
+    .step-title { font-weight: 800; font-stretch: 125%; font-size: 18pt; line-height: 1.05; text-transform: uppercase; text-wrap: balance; }
+    .steps { padding-left: 1.5em; font-size: 10.5pt; line-height: 1.5; }
+    .steps li { padding-left: 0.2em; margin-bottom: 4pt; }
+    .steps li::marker { font-family: var(--font-mono); font-size: 9pt; font-weight: 600; color: var(--cyan); }
+    .step-parts { font-family: var(--font-mono); font-size: 8.5pt; color: var(--ink-2); }
+    .callout { padding: 2pt 0 2pt 10pt; border-left: 3px solid var(--cyan); font-size: 9.5pt; line-height: 1.45; }
+    .callout-kind { display: block; margin-bottom: 2pt; font-family: var(--font-mono); font-size: 8pt; letter-spacing: 0.14em; color: var(--cyan); }
+    .step-images { display: grid; gap: 0.25in; grid-template-rows: repeat(var(--n, 1), minmax(0, 1fr)); height: 100%; min-height: 0; }
+
+    /* ── Editing controls (screen only) ── */
+    [contenteditable] { outline: none; border-radius: 1px; }
+    [contenteditable]:hover { background: rgba(47, 93, 138, 0.06); }
+    [contenteditable]:focus { background: rgba(47, 93, 138, 0.1); box-shadow: 0 0 0 1px rgba(47, 93, 138, 0.5); }
+    .sheet-controls {
+      display: flex; align-items: center; gap: 10px; min-height: 34px; padding-bottom: 6px;
+      font-family: var(--font-mono); font-size: 11px; color: var(--ink-2);
+    }
+    .sc-name { letter-spacing: 0.08em; text-transform: uppercase; }
+    .sc-warn { flex: 1; color: #a3262a; }
+    .sc-buttons { display: inline-flex; gap: 4px; margin-left: auto; }
+    .sheet-controls button, .item-controls button, .list-add, .callout-tools button {
+      font-family: var(--font-mono); font-size: 10.5px; background: #fff; color: var(--ink);
+      border: 1px solid var(--hairline); cursor: pointer;
+    }
+    .sheet-controls button { min-width: 26px; height: 24px; padding: 0 7px; }
+    .sheet-controls button:hover, .item-controls button:hover, .list-add:hover, .callout-tools button:hover { border-color: var(--cyan); color: var(--cyan); }
+    .sheet-controls button[data-armed] { background: #a3262a; border-color: #a3262a; color: #fff; }
+    .seg-mini { display: inline-flex; align-items: center; gap: 0; }
+    .seg-mini > span { margin-right: 6px; }
+    .seg-mini button + button { border-left: none; }
+    .seg-mini button[aria-pressed="true"] { background: var(--ink); border-color: var(--ink); color: #fff; }
+    .sheet-page.is-overflowing { box-shadow: 0 0 0 3px #a3262a; }
+    .item { position: relative; }
+    /* Transparent rather than display:none so the buttons stay reachable with Tab and can take focus. */
+    .item-controls { position: absolute; right: 0; top: -2px; display: inline-flex; gap: 2px; padding-left: 4px; background: #fff; z-index: 2; opacity: 0; pointer-events: none; }
+    .item:hover > .item-controls, .item:focus-within > .item-controls,
+    .item-row:hover .item-controls, .item-row:focus-within .item-controls { opacity: 1; pointer-events: auto; }
+    .item-controls button { width: 20px; height: 20px; padding: 0; line-height: 1; }
+    .item-cell { position: relative; width: 0; padding: 0 !important; border-bottom: none !important; }
+    .item-cell .item-controls { top: 2px; }
+    .list-add { display: inline-block; align-self: flex-start; margin-top: 4pt; padding: 3px 9px; border-style: dashed; color: var(--cyan); }
+    .callout-tools { display: inline-flex; gap: 4px; }
+    .callout-tools button { padding: 2px 8px; color: var(--cyan); }
+    .callout .callout-tools { position: absolute; right: 0; top: 0; display: none; }
+    .callout { position: relative; }
+    .slot-img { cursor: pointer; }
+    .slot-img:hover .slot-missing, .slot-img:focus-visible .slot-missing { border-color: var(--cyan); color: var(--cyan); }
+    .picker {
+      position: absolute; z-index: 20; min-width: 220px; max-height: 320px; overflow-y: auto; padding: 4px 0;
+      background: #fff; border: 1px solid var(--ink); box-shadow: 0 6px 24px rgba(34, 39, 44, 0.18);
+      font-family: var(--font-mono); font-size: 11px;
+    }
+    .picker [role="option"] { padding: 6px 12px; cursor: pointer; }
+    .picker [role="option"]:hover, .picker [role="option"]:focus { background: rgba(47, 93, 138, 0.1); outline: none; }
+    .picker [role="option"][aria-selected="true"] { font-weight: 600; }
+    .picker [role="option"]:last-child { border-top: 1px solid var(--hairline); color: var(--ink-2); }
+    .picker-note { padding: 6px 12px; color: var(--ink-2); max-width: 280px; }
+    @media print { .picker { display: none; } }
+    .callout:hover .callout-tools, .callout:focus-within .callout-tools { display: inline-flex; }
+
+    @media screen {
+      [data-bind]:empty::before { content: attr(data-placeholder); color: #a3a7aa; }
+    }
+
+    @media print {
+      body { background: #fff; }
+      .toolbar { display: none; }
+      #desk { padding: 0; }
+      .sheet-wrap { width: auto; margin: 0; }
+      .sheet-page, .sheet-page.is-overflowing { box-shadow: none; }
+      .sheet-wrap:last-child .sheet-page { break-after: auto; }
+      .sheet-controls, .item-controls, .item-cell, .list-add, .callout-tools { display: none !important; }
+      .tb-scale-cell:has(> [data-bind]:empty), .cover-built:has(> [data-bind]:empty), .step-parts:has(> [data-bind]:empty),
+      .callout:has([data-bind]:empty), .list-block:not(:has(li)) { display: none; }
+      .tb-row:has(.tb-scale-cell > [data-bind]:empty) { --cells: 1; }
+    }
+  </style>
+</head>
+<body data-paper="letter">
+  <header class="toolbar">
+    <button type="button" id="btn-open">Open plan folder</button>
+    <button type="button" id="btn-save">Save</button>
+    <button type="button" id="btn-reload">Reload images</button>
+    <span class="seg" role="group" aria-label="Paper size">
+      <button type="button" data-paper="letter" aria-pressed="true">Letter</button>
+      <button type="button" data-paper="a4" aria-pressed="false">A4</button>
+    </span>
+    <details class="add-menu">
+      <summary>Add sheet ▾</summary>
+      <div class="add-menu-list">
+        <button type="button" data-add="cover">Cover</button>
+        <button type="button" data-add="drawing">Drawing</button>
+        <button type="button" data-add="cutlist">Cut list</button>
+        <button type="button" data-add="step">Build step</button>
+      </div>
+    </details>
+    <button type="button" id="btn-print">Print</button>
+    <p class="status" role="status"></p>
+  </header>
+
+  <main id="desk"></main>
+
+  <script>
+  {
+    // ── Plan model ──
+    const LAYOUTS = ['cover', 'drawing', 'cutlist', 'step'];
+
+    const today = () => {
+      const d = new Date();
+      return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+    };
+
+    const emptyPart = () => ({ name: '', qty: '', t: '', w: '', l: '', material: '', notes: '' });
+    const emptyImage = () => ({ src: '', caption: '' });
+
+    const newSheet = layout => {
+      switch (layout) {
+        case 'cover': return { layout, title: 'Cover', scale: 'Not to scale', image: emptyImage(), notes: [] };
+        case 'drawing': return { layout, title: 'Drawing', scale: 'Not to scale', slots: 1, views: [emptyImage()], notes: [] };
+        case 'cutlist': return { layout, title: 'Cut list', scale: '', parts: [emptyPart()], materials: [], hardware: [] };
+        case 'step': return { layout, title: 'Build step', scale: 'Not to scale', images: [emptyImage()], steps: [], parts: '', callout: { kind: 'tip', text: '' } };
+        default: throw new Error(`Unknown layout: ${layout}`);
+      }
+    };
+
+    const newPlan = () => ({
+      version: 1,
+      plan: { no: '', name: '', drawn: 'A.R.', units: 'Inches', rev: 'A', date: today(), built: '', paper: 'letter' },
+      sheets: [newSheet('cover')],
+    });
+
+    const jsonErrorLine = (text, message) => {
+      const lc = message.match(/line (\d+) column/);
+      if (lc) return Number(lc[1]);
+      const pos = message.match(/position (\d+)/);
+      if (pos) return text.slice(0, Number(pos[1])).split('\n').length;
+      return 1;
+    };
+
+    const parsePlan = text => {
+      let data;
+      try { data = JSON.parse(text); }
+      catch (err) {
+        const reason = err.message.replace(/ in JSON at position.*$/, '').replace(/^JSON\.parse: /, '');
+        return { ok: false, error: `plan.json line ${jsonErrorLine(text, err.message)}: ${reason}` };
+      }
+      if (!data || typeof data !== 'object' || Array.isArray(data)) return { ok: false, error: 'plan.json is not a plan object' };
+      if (data.version === undefined) return { ok: false, error: 'plan.json has no version' };
+      if (data.version !== 1) return { ok: false, error: `plan.json is version ${data.version}; this editor reads version 1` };
+      if (!Array.isArray(data.sheets)) return { ok: false, error: 'plan.json has no sheets list' };
+      // A hand-written plan may leave out the plan block; give it one so the title block can be edited.
+      if (!data.plan || typeof data.plan !== 'object' || Array.isArray(data.plan)) data.plan = {};
+      return { ok: true, plan: data };
+    };
+
+    const serializePlan = plan => JSON.stringify(plan, null, 2) + '\n';
+
+    const sheetNo = i => 'S-' + String(i + 1).padStart(2, '0');
+
+    const partLetter = n => {
+      let s = '';
+      for (let k = n + 1; k > 0; k = Math.floor(k / 26)) { k--; s = String.fromCharCode(65 + (k % 26)) + s; }
+      return s;
+    };
+
+    const numberPlan = plan => {
+      const total = plan.sheets.length;
+      let part = 0, step = 0;
+      return plan.sheets.map((sheet, i) => {
+        const entry = { sheetNo: sheetNo(i), n: i + 1, total, firstPart: null, stepNo: null };
+        if (sheet.layout === 'cutlist') { entry.firstPart = part; part += (sheet.parts || []).length; }
+        if (sheet.layout === 'step') entry.stepNo = ++step;
+        return entry;
+      });
+    };
+
+    const pathKeys = path => path.split('.').map(k => (/^\d+$/.test(k) ? Number(k) : k));
+    const getPath = (obj, path) => pathKeys(path).reduce((o, k) => (o == null ? undefined : o[k]), obj);
+    const setPath = (obj, path, value) => {
+      // Creates missing objects on the way (a cover without an image block, say).
+      const keys = pathKeys(path), last = keys.pop();
+      const target = keys.reduce((o, k, n) => {
+        const next = n + 1 < keys.length ? keys[n + 1] : last;
+        if (o[k] == null || typeof o[k] !== 'object') o[k] = typeof next === 'number' ? [] : {};
+        return o[k];
+      }, obj);
+      target[last] = value;
+    };
+
+    const moveItem = (arr, i, dir) => {
+      const j = i + dir;
+      if (i < 0 || i >= arr.length || j < 0 || j >= arr.length) return;
+      [arr[i], arr[j]] = [arr[j], arr[i]];
+    };
+    const removeItem = (arr, i) => { if (i >= 0 && i < arr.length) arr.splice(i, 1); };
+    const insertItem = (arr, i, item) => { arr.splice(Math.max(0, Math.min(i, arr.length)), 0, item); };
+
+    // ── State ──
+    const state = {
+      plan: null, mode: 'empty', base: '', dir: null, images: new Map(), dirty: false,
+      overflow: [], error: null, notice: null, prompt: null, blocked: false,
+    };
+    const desk = document.getElementById('desk');
+    const statusEl = document.querySelector('.status');
+    const btnSave = document.getElementById('btn-save');
+
+    // Status line priority: error > overflow > missing images > unsaved > last notice > where we are.
+    const statusLabel = () => {
+      if (state.mode === 'http') return `Viewing ${state.base} (read-only)`;
+      if (state.mode === 'folder') return `Folder: ${state.dir ? state.dir.name : ''}`;
+      return 'Open a plan folder to start.';
+    };
+    const updateStatus = () => {
+      let text, kind = 'info';
+      const missing = new Set([...desk.querySelectorAll('.slot-missing[data-missing]')].map(el => el.dataset.missing)).size;
+      if (state.error) { text = state.error; kind = 'error'; }
+      else if (state.prompt) { text = state.prompt; kind = 'warn'; }
+      else if (state.overflow.length) {
+        const list = state.overflow.map(sheetNo).join(', ');
+        text = state.overflow.length === 1
+          ? `Sheet ${list}: content runs past the sheet. Split it.`
+          : `Sheets ${list}: content runs past the sheet. Split them.`;
+        kind = 'warn';
+      }
+      else if (missing) { text = `${missing} image${missing === 1 ? '' : 's'} missing`; kind = 'warn'; }
+      else if (state.dirty) text = 'Unsaved changes';
+      else if (state.notice) text = state.notice;
+      else text = statusLabel();
+      statusEl.textContent = text;
+      statusEl.dataset.kind = kind;
+      btnSave.textContent = state.mode === 'http' ? 'Save to folder…' : state.dirty ? 'Save •' : 'Save';
+      btnSave.disabled = !state.plan || state.blocked;
+    };
+    const setStatus = (text, kind = 'info') => {
+      if (kind === 'error') state.error = text; else state.notice = text;
+      updateStatus();
+    };
+
+    // Every image src the plan refers to, shown or not.
+    const planImageSrcs = plan => {
+      const srcs = new Set();
+      for (const s of plan.sheets) {
+        if (s.image && s.image.src) srcs.add(s.image.src);
+        for (const v of [...(s.views || []), ...(s.images || [])]) if (v && v.src) srcs.add(v.src);
+      }
+      return [...srcs];
+    };
+
+    const resolveImages = async () => {
+      if (state.mode !== 'http') return;
+      state.images = new Map();
+      await Promise.all(planImageSrcs(state.plan).map(async src => {
+        const url = state.base + src;
+        let found = false;
+        try { found = (await fetch(url, { method: 'HEAD', cache: 'no-store' })).ok; } catch { found = false; }
+        state.images.set(src, found ? url : null);
+      }));
+    };
+
+    // ── Paper ──
+    const pageSize = document.getElementById('page-size');
+    const applyPaper = paper => {
+      const p = paper === 'a4' ? 'a4' : 'letter';
+      document.body.dataset.paper = p;
+      pageSize.textContent = `@page { size: ${p === 'a4' ? 'A4' : 'letter'} landscape; margin: 0 }`;
+      document.querySelectorAll('.seg [data-paper]').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.paper === p)));
+      return p;
+    };
+    const setPaper = paper => {
+      const p = applyPaper(paper);
+      if (state.plan) { state.plan.plan.paper = p; changed(); }
+    };
+
+    // ── Rendering ──
+    const h = (tag, attrs = {}, ...children) => {
+      const el = document.createElement(tag);
+      for (const [k, v] of Object.entries(attrs)) {
+        if (v == null || v === false) continue;
+        if (k === 'class') el.className = v;
+        else if (k === 'dataset') Object.assign(el.dataset, v);
+        else el.setAttribute(k, v);
+      }
+      el.append(...children.flat(Infinity).filter(c => c != null && c !== false));
+      return el;
+    };
+
+    // An editable text field bound to a path in the plan.
+    const field = (tag, cls, path, placeholder = '') =>
+      h(tag, { class: cls, 'data-bind': path, 'data-placeholder': placeholder, contenteditable: 'plaintext-only', spellcheck: 'true' },
+        String(getPath(state.plan, path) ?? ''));
+
+    const button = (text, label, data, cls) =>
+      h('button', { type: 'button', class: cls, 'aria-label': label, title: label, dataset: data }, text);
+
+    const slot = (path, captionPlaceholder) => {
+      const img = getPath(state.plan, path) || emptyImage();
+      let inner;
+      if (!img.src) inner = h('div', { class: 'slot-missing' }, 'No image');
+      else {
+        const url = state.images.get(img.src);
+        inner = url
+          ? h('img', { src: url, alt: img.caption || img.src })
+          : h('div', { class: 'slot-missing', dataset: { missing: img.src } }, `${img.src} not found`);
+      }
+      return h('figure', { class: 'slot', dataset: { path } },
+        h('div', { class: 'slot-img', role: 'button', tabindex: '0', 'aria-label': 'Choose image', title: 'Choose image' }, inner),
+        field('figcaption', '', `${path}.caption`, captionPlaceholder));
+    };
+
+    // Editable lists: notes, steps, materials, hardware, cut-list parts.
+    const NOUNS = { notes: 'note', steps: 'step', materials: 'material', hardware: 'hardware line', parts: 'part' };
+    const nounFor = listPath => NOUNS[listPath.split('.').pop()] || 'item';
+    const itemControls = (listPath, j) => {
+      const noun = nounFor(listPath), d = act => ({ list: listPath, act, j: String(j) });
+      return h('span', { class: 'item-controls' },
+        button('+', `Add ${noun} after this`, d('add')), button('↑', `Move ${noun} up`, d('up')),
+        button('↓', `Move ${noun} down`, d('down')), button('✕', `Delete ${noun}`, d('remove')));
+    };
+    const addButton = listPath => {
+      const n = (getPath(state.plan, listPath) || []).length;
+      return h('button', { type: 'button', class: 'list-add', dataset: { list: listPath, act: 'add', j: String(n - 1) } }, `+ Add ${nounFor(listPath)}`);
+    };
+    const editableList = (tag, cls, listPath, placeholder) => {
+      const items = getPath(state.plan, listPath) || [];
+      return [
+        items.length ? h(tag, { class: cls }, items.map((_, j) =>
+          h('li', { class: 'item' }, field('span', 'item-text', `${listPath}.${j}`, placeholder), itemControls(listPath, j)))) : null,
+        addButton(listPath),
+      ];
+    };
+    const listBlock = (heading, ...content) => h('div', { class: 'list-block' }, h('p', { class: 'label-h' }, heading), content);
+    const notesList = (path, placeholder) => editableList('ol', 'notes', path, placeholder);
+
+    // Callouts opened with "+ Tip" but not typed in yet stay visible until the next load.
+    const openCallouts = new WeakSet();
+    const stepSlots = sheet => (sheet.slots === 1 || sheet.slots === 2 ? sheet.slots : Math.min(Math.max((sheet.images || []).length, 1), 2));
+    const LAYOUT_NAMES = { cover: 'Cover', drawing: 'Drawing', cutlist: 'Cut list', step: 'Build step' };
+
+    const titleBlock = (i, num) => {
+      const p = `sheets.${i}`;
+      return h('aside', { class: 'tb', 'aria-label': 'Title block' },
+        h('div', { class: 'tb-row tb-head' },
+          h('div', {}, h('span', { class: 'tb-label' }, 'Plan'), field('span', 'tb-no', 'plan.no', 'P-0nn')),
+          h('div', {}, h('span', { class: 'tb-label' }, 'Drawn'), field('span', '', 'plan.drawn', 'Initials'))),
+        field('span', 'tb-title', `${p}.title`, 'Sheet title'),
+        field('span', 'tb-name', 'plan.name', 'Plan name'),
+        h('div', { class: 'tb-row' },
+          h('div', { class: 'tb-sheet-cell' }, h('span', { class: 'tb-label' }, 'Sheet'),
+            h('span', { class: 'tb-sheet' }, `${String(num.n).padStart(2, '0')} / ${String(num.total).padStart(2, '0')}`)),
+          h('div', { class: 'tb-scale-cell' }, h('span', { class: 'tb-label' }, 'Scale'), field('span', '', `${p}.scale`, '1:4'))),
+        h('div', { class: 'tb-row', style: '--cells: 3' },
+          h('div', {}, h('span', { class: 'tb-label' }, 'Units'), field('span', '', 'plan.units', 'Inches')),
+          h('div', {}, h('span', { class: 'tb-label' }, 'Rev'), field('span', '', 'plan.rev', 'A')),
+          h('div', {}, h('span', { class: 'tb-label' }, 'Date'), field('span', '', 'plan.date', 'YYYY-MM-DD'))));
+    };
+
+    const renderers = {
+      cover(sheet, i, nums) {
+        const p = `sheets.${i}`;
+        const body = h('div', { class: 'cover-body' },
+          h('div', { class: 'cover-text' },
+            h('p', { class: 'eyebrow' }, 'Plan set ', field('span', '', 'plan.no', 'P-0nn')),
+            field('h1', 'cover-name', 'plan.name', 'Plan name'),
+            h('p', { class: 'cover-built' }, 'Built: ', field('span', '', 'plan.built', 'No. 0nn, year')),
+            h('div', {}, h('p', { class: 'label-h' }, 'Sheets'),
+              h('ol', { class: 'sheet-index' }, state.plan.sheets.map((s, k) => h('li', {}, `${nums[k].sheetNo} · ${s.title}`)))),
+            listBlock('General notes', notesList(`${p}.notes`, 'Note'))),
+          slot(`${p}.image`, 'Caption'));
+        return { body };
+      },
+      drawing(sheet, i) {
+        const p = `sheets.${i}`;
+        const n = [1, 2, 4].includes(sheet.slots) ? sheet.slots : 1;
+        const views = sheet.views || (sheet.views = []);
+        while (views.length < n) views.push(emptyImage());
+        const body = h('div', { class: `slots slots-${n}` }, views.slice(0, n).map((_, j) => slot(`${p}.views.${j}`, 'View caption')));
+        return { body, foot: listBlock('Notes', notesList(`${p}.notes`, 'Note')) };
+      },
+      cutlist(sheet, i, nums) {
+        const p = `sheets.${i}`;
+        const parts = sheet.parts || (sheet.parts = []);
+        const cell = (j, key, placeholder, cls = '') => h('td', { class: cls }, field('span', '', `${p}.parts.${j}.${key}`, placeholder));
+        const table = h('table', { class: 'parts' },
+          h('thead', {}, h('tr', {}, ['Part', 'Name', 'Qty', 'T × W × L', 'Material', 'Notes'].map(t => h('th', { scope: 'col' }, t)))),
+          h('tbody', {}, parts.map((_, j) => h('tr', { class: 'item-row' },
+            h('td', { class: 'part-letter' }, partLetter(nums[i].firstPart + j)),
+            cell(j, 'name', 'Name'), cell(j, 'qty', '0', 'qty'),
+            h('td', { class: 'dims' },
+              field('span', '', `${p}.parts.${j}.t`, 'T'), ' × ',
+              field('span', '', `${p}.parts.${j}.w`, 'W'), ' × ',
+              field('span', '', `${p}.parts.${j}.l`, 'L')),
+            cell(j, 'material', 'Material'), cell(j, 'notes', ''),
+            h('td', { class: 'item-cell' }, itemControls(`${p}.parts`, j))))));
+        const list = (key, heading, placeholder) => listBlock(heading, editableList('ul', 'plain-list', `${p}.${key}`, placeholder));
+        return { body: h('div', {}, table, addButton(`${p}.parts`),
+          h('div', { class: 'cut-lists' }, list('materials', 'Materials', 'Material'), list('hardware', 'Hardware', 'Hardware'))) };
+      },
+      step(sheet, i, nums) {
+        const p = `sheets.${i}`;
+        const images = sheet.images || (sheet.images = []);
+        // Stored slots (set by the 1/2 switch) wins; otherwise as many images as there are, 1 or 2.
+        const n = stepSlots(sheet);
+        while (images.length < n) images.push(emptyImage());
+        const callout = sheet.callout || (sheet.callout = { kind: 'tip', text: '' });
+        const kind = callout.kind === 'caution' ? 'caution' : 'tip';
+        const showCallout = Boolean(callout.text) || openCallouts.has(sheet);
+        const body = h('div', { class: 'step-body' },
+          h('div', { class: 'step-text' },
+            h('p', { class: 'eyebrow step-no' }, `STEP ${String(nums[i].stepNo).padStart(2, '0')}`),
+            field('h2', 'step-title', `${p}.title`, 'Step title'),
+            editableList('ol', 'steps', `${p}.steps`, 'Instruction'),
+            h('p', { class: 'step-parts' }, 'Parts: ', field('span', '', `${p}.parts`, 'A, B')),
+            h('div', { class: 'callout', dataset: { kind }, hidden: !showCallout },
+              h('span', { class: 'callout-kind' }, kind === 'caution' ? 'CAUTION' : 'TIP'),
+              field('span', '', `${p}.callout.text`, kind === 'caution' ? 'Caution' : 'Tip'),
+              h('span', { class: 'callout-tools' },
+                button(kind === 'caution' ? 'Make it a tip' : 'Make it a caution', 'Switch tip and caution', { calloutKind: String(i) }))),
+            showCallout ? null : h('span', { class: 'callout-tools' },
+              button('+ Tip', 'Add a tip', { calloutOpen: String(i), kind: 'tip' }),
+              button('+ Caution', 'Add a caution', { calloutOpen: String(i), kind: 'caution' }))),
+          h('div', { class: 'step-images', style: `--n: ${n}` }, images.slice(0, n).map((_, j) => slot(`${p}.images.${j}`, 'Caption'))));
+        return { body };
+      },
+    };
+
+    const renderSheet = (sheet, i, nums) => {
+      const r = renderers[sheet.layout]
+        ? renderers[sheet.layout](sheet, i, nums)
+        : { body: h('p', { class: 'desk-empty' }, `Unknown layout "${sheet.layout}"`) };
+      const zones = (side, labels) => h('div', { class: `sheet-zones sheet-zones--${side}`, 'aria-hidden': 'true' }, labels.map(l => h('span', {}, l)));
+      const nums18 = ['1', '2', '3', '4', '5', '6', '7', '8'], aToF = ['A', 'B', 'C', 'D', 'E', 'F'];
+      const page = h('article', { class: 'sheet-page', dataset: { i: String(i), layout: sheet.layout }, 'aria-label': `${nums[i].sheetNo} ${sheet.title || ''}` },
+        zones('top', nums18), zones('bottom', nums18), zones('left', aToF), zones('right', aToF),
+        h('div', { class: 'sheet-frame' },
+          h('div', { class: 'sheet-body' }, r.body),
+          h('div', { class: 'sheet-foot' }, r.foot || []),
+          titleBlock(i, nums[i])));
+      return h('section', { class: 'sheet-wrap' }, sheetControls(sheet, i, nums), page);
+    };
+
+    const sheetControls = (sheet, i, nums) => {
+      const d = act => ({ sheet: String(i), sheetAct: act });
+      const choices = sheet.layout === 'drawing' ? [1, 2, 4] : sheet.layout === 'step' ? [1, 2] : null;
+      const current = sheet.layout === 'drawing' ? ([1, 2, 4].includes(sheet.slots) ? sheet.slots : 1) : stepSlots(sheet);
+      return h('div', { class: 'sheet-controls' },
+        h('span', { class: 'sc-name' }, `${nums[i].sheetNo} · ${LAYOUT_NAMES[sheet.layout] || sheet.layout}`),
+        choices ? h('span', { class: 'seg-mini', role: 'group', 'aria-label': 'Images on this sheet' },
+          h('span', {}, 'Images'),
+          choices.map(n => h('button', { type: 'button', 'aria-pressed': String(n === current), dataset: { sheet: String(i), slots: String(n) } }, String(n)))) : null,
+        h('span', { class: 'sc-warn' }),
+        h('span', { class: 'sc-buttons' },
+          button('↑', 'Move sheet up', d('up')), button('↓', 'Move sheet down', d('down')), button('✕', 'Delete sheet', d('delete'))));
+    };
+
+    // Marks sheets whose content runs past the border; returns their indices.
+    const checkOverflow = () => {
+      const over = [];
+      desk.querySelectorAll('.sheet-page').forEach(page => {
+        const body = page.querySelector('.sheet-body'), frame = page.querySelector('.sheet-frame');
+        const isOver = body.scrollHeight > body.clientHeight + 1 || body.scrollWidth > body.clientWidth + 1
+          || frame.scrollHeight > frame.clientHeight + 1;
+        page.classList.toggle('is-overflowing', isOver);
+        const warn = page.parentElement.querySelector('.sc-warn');
+        if (warn) warn.textContent = isOver ? 'Content runs past the sheet: split it' : '';
+        if (isOver) over.push(Number(page.dataset.i));
+      });
+      state.overflow = over;
+      return over;
+    };
+
+    const render = () => {
+      desk.replaceChildren();
+      if (!state.plan) desk.append(h('p', { class: 'desk-empty' }, 'Open a plan folder to start.'));
+      else if (!state.plan.sheets.length) desk.append(h('p', { class: 'desk-empty' }, 'No sheets yet. Add one from the toolbar.'));
+      else {
+        const nums = numberPlan(state.plan);
+        desk.append(...state.plan.sheets.map((s, i) => renderSheet(s, i, nums)));
+      }
+      checkOverflow();
+      updateStatus();
+    };
+
+    // Derived text that depends on what's typed: the cover's sheet index and the sheets' labels.
+    const refreshDerived = () => {
+      const nums = numberPlan(state.plan);
+      desk.querySelectorAll('.sheet-index').forEach(ol => ol.querySelectorAll('li').forEach((li, k) => {
+        if (state.plan.sheets[k]) li.textContent = `${nums[k].sheetNo} · ${state.plan.sheets[k].title}`;
+      }));
+      desk.querySelectorAll('.sheet-page').forEach(page => {
+        const k = Number(page.dataset.i);
+        page.setAttribute('aria-label', `${nums[k].sheetNo} ${state.plan.sheets[k].title || ''}`);
+      });
+    };
+
+    const changed = () => { state.dirty = true; state.notice = null; state.prompt = null; checkOverflow(); updateStatus(); };
+    const rerender = () => { render(); changed(); };
+
+    const load = async (plan, { mode = 'http', base = '', dir = null } = {}) => {
+      Object.assign(state, { plan, mode, base, dir, error: null, notice: null, prompt: null, blocked: false });
+      applyPaper(plan.plan && plan.plan.paper);
+      await resolveImages();
+      state.dirty = false;
+      render();
+    };
+
+    // ── Editing operations ──
+    const blankFor = listPath => {
+      const key = listPath.split('.').pop();
+      if (key === 'parts') return emptyPart();
+      if (key === 'views' || key === 'images') return emptyImage();
+      return '';
+    };
+
+    const listAction = (listPath, action, i) => {
+      let arr = getPath(state.plan, listPath);
+      if (!Array.isArray(arr)) { arr = []; setPath(state.plan, listPath, arr); }
+      if (action === 'add') insertItem(arr, i + 1, blankFor(listPath));
+      else if (action === 'remove') removeItem(arr, i);
+      else if (action === 'up') moveItem(arr, i, -1);
+      else if (action === 'down') moveItem(arr, i, 1);
+      rerender();
+    };
+
+    const addSheet = layout => {
+      state.plan.sheets.push(newSheet(layout));
+      rerender();
+      const last = desk.querySelector('.sheet-wrap:last-child');
+      if (last) last.scrollIntoView({ block: 'start' });
+    };
+    const moveSheet = (i, dir) => { moveItem(state.plan.sheets, i, dir); rerender(); };
+    const deleteSheet = i => { removeItem(state.plan.sheets, i); rerender(); };
+    const setSlots = (i, n) => {
+      const sheet = state.plan.sheets[i];
+      sheet.slots = n;
+      const key = sheet.layout === 'step' ? 'images' : 'views';
+      const arr = sheet[key] || (sheet[key] = []);
+      while (arr.length < n) arr.push(emptyImage());
+      rerender();
+    };
+
+    const focusBind = path => {
+      const el = desk.querySelector(`[data-bind="${CSS.escape(path)}"]`);
+      if (!el) return;
+      el.focus();
+      const range = document.createRange(); range.selectNodeContents(el); range.collapse(false);
+      const sel = getSelection(); sel.removeAllRanges(); sel.addRange(range);
+    };
+
+    // ── Plan folders ──
+    const IMAGE_EXT = /\.(png|jpe?g|svg)$/i;
+    const isNotFound = err => err && err.name === 'NotFoundError';
+
+    // Lists views/ and maps "views/<name>" to an object URL. A missing views/ folder is just empty.
+    const listViews = async dir => {
+      for (const url of state.images.values()) if (url && url.startsWith('blob:')) URL.revokeObjectURL(url);
+      const images = new Map();
+      let views = null;
+      try { views = await dir.getDirectoryHandle('views'); } catch (err) { if (!isNotFound(err)) throw err; }
+      if (views) {
+        for await (const entry of views.values()) {
+          if (entry.kind !== 'file' || !IMAGE_EXT.test(entry.name)) continue;
+          images.set(`views/${entry.name}`, URL.createObjectURL(await entry.getFile()));
+        }
+      }
+      state.images = images;
+    };
+
+    const openFolder = async dir => {
+      let text = null;
+      try { text = await (await (await dir.getFileHandle('plan.json')).getFile()).text(); }
+      catch (err) { if (!isNotFound(err)) { setStatus(`Couldn't read plan.json: ${err.message}`, 'error'); return; } }
+      let plan, notice = null;
+      if (text === null) { plan = newPlan(); notice = 'New plan: nothing saved yet'; }
+      else {
+        const parsed = parsePlan(text);
+        if (!parsed.ok) {
+          // Load nothing and turn Save off, so the broken file is never overwritten.
+          Object.assign(state, { plan: null, mode: 'folder', dir, base: '', blocked: true, dirty: false, notice: null, prompt: null });
+          render();
+          setStatus(parsed.error, 'error');
+          return;
+        }
+        plan = parsed.plan;
+      }
+      await listViews(dir);
+      await load(plan, { mode: 'folder', dir });
+      state.notice = notice;
+      updateStatus();
+    };
+
+    const ensureWritable = async dir => {
+      if (dir.queryPermission && (await dir.queryPermission({ mode: 'readwrite' })) !== 'granted') {
+        if ((await dir.requestPermission({ mode: 'readwrite' })) !== 'granted') throw new Error('permission to write to the folder was refused');
+      }
+    };
+    const writeFile = async (dir, name, data) => {
+      const w = await (await dir.getFileHandle(name, { create: true })).createWritable();
+      await w.write(data);
+      await w.close();
+    };
+    const savedAt = () => `Saved ${new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`;
+    const saveFailed = err => {
+      state.notice = null;
+      setStatus(`Couldn't save: ${err.message}. Your changes are still here.`, 'error');
+      return false;
+    };
+
+    // Copies a plan viewed over HTTP (the sample) into a folder, images included, then opens it there.
+    // A folder that already has a plan.json is only overwritten on a second try with the same folder.
+    let overwriteDir = null;
+    const saveToFolder = async (dir = null) => {
+      if (!state.plan || state.blocked) return false;
+      if (!dir && overwriteDir) dir = overwriteDir;
+      if (!dir) {
+        if (!window.showDirectoryPicker) { setStatus("This browser can't open folders. Use Chrome.", 'error'); return false; }
+        try { dir = await window.showDirectoryPicker({ mode: 'readwrite' }); }
+        catch (err) { if (err.name === 'AbortError') return false; return saveFailed(err); }
+      }
+      if (dir !== overwriteDir) {
+        let hasPlan = true;
+        try { await dir.getFileHandle('plan.json'); } catch (err) { if (isNotFound(err)) hasPlan = false; else return saveFailed(err); }
+        if (hasPlan) {
+          overwriteDir = dir;
+          state.prompt = `${dir.name} already has a plan. Click Save to folder… again to replace it, or Open plan folder to pick another.`;
+          updateStatus();
+          return false;
+        }
+      }
+      overwriteDir = null;
+      try {
+        await ensureWritable(dir);
+        const views = await dir.getDirectoryHandle('views', { create: true });
+        for (const src of planImageSrcs(state.plan)) {
+          const url = state.images.get(src);
+          if (!url || !src.startsWith('views/') || src.slice(6).includes('/')) continue;
+          await writeFile(views, src.slice(6), await (await fetch(url)).blob());
+        }
+        await writeFile(dir, 'plan.json', serializePlan(state.plan));
+      } catch (err) { return saveFailed(err); }
+      await openFolder(dir);
+      setStatus(savedAt());
+      return true;
+    };
+
+    const save = async () => {
+      if (!state.plan || state.blocked) return false;
+      if (state.mode === 'http') return saveToFolder();
+      if (state.mode !== 'folder') return false;
+      try {
+        await ensureWritable(state.dir);
+        await writeFile(state.dir, 'plan.json', serializePlan(state.plan));
+        await state.dir.getDirectoryHandle('views', { create: true });
+      } catch (err) { return saveFailed(err); }
+      state.dirty = false; state.error = null; state.prompt = null;
+      setStatus(savedAt());
+      return true;
+    };
+
+    const reloadImages = async () => {
+      if (state.mode === 'folder' && state.dir) await listViews(state.dir);
+      else if (state.mode === 'http') await resolveImages();
+      render();
+    };
+
+    // The image picker: a small list of views/ files under the slot.
+    let picker = null;
+    const closePicker = () => { if (picker) { picker.remove(); picker = null; } };
+    const pickImage = async path => {
+      closePicker();
+      const slotEl = desk.querySelector(`.slot[data-path="${CSS.escape(path)}"]`);
+      picker = h('div', { class: 'picker', role: 'listbox', 'aria-label': 'Choose an image' });
+      if (state.mode !== 'folder') picker.append(h('p', { class: 'picker-note' }, 'Open a plan folder to choose images'));
+      else {
+        const names = [...state.images.keys()].map(k => k.slice(6)).sort((a, b) => a.localeCompare(b, undefined, { sensitivity: 'base' }));
+        if (!names.length) picker.append(h('p', { class: 'picker-note' }, 'No images in views/ yet. Copy your exports there, then Reload images.'));
+        const current = (getPath(state.plan, path) || {}).src || '';
+        for (const src of [...names.map(n => `views/${n}`), '']) {
+          picker.append(h('div', { role: 'option', tabindex: '0', 'aria-selected': String(src === current), dataset: { src, path } },
+            src ? src.slice(6) : 'None'));
+        }
+      }
+      const r = slotEl ? slotEl.getBoundingClientRect() : { left: 16, bottom: 80 };
+      picker.style.left = `${Math.max(8, r.left + scrollX)}px`;
+      picker.style.top = `${r.bottom + scrollY + 4}px`;
+      document.body.append(picker);
+      const first = picker.querySelector('[role="option"]');
+      if (first) first.focus();
+    };
+    const choosePicked = option => {
+      const path = option.dataset.path;
+      const img = getPath(state.plan, path);
+      if (img) img.src = option.dataset.src; else setPath(state.plan, path, { src: option.dataset.src, caption: '' });
+      closePicker();
+      rerender();
+    };
+    document.addEventListener('click', e => {
+      if (!picker) return;
+      const option = e.target.closest('.picker [role="option"]');
+      if (option) choosePicked(option);
+      else if (!e.target.closest('.picker') && !e.target.closest('.slot-img')) closePicker();
+    });
+
+    // ── Listeners ──
+    desk.addEventListener('input', e => {
+      const el = e.target.closest('[data-bind]');
+      if (!el || !state.plan) return;
+      let value = el.textContent;
+      if (/[\r\n]/.test(value)) {
+        // Every field is one line; pasted line breaks become spaces.
+        value = value.replace(/\s*[\r\n]+\s*/g, ' ');
+        el.textContent = value;
+        if (document.activeElement === el) focusBind(el.dataset.bind);
+      }
+      setPath(state.plan, el.dataset.bind, value);
+      desk.querySelectorAll(`[data-bind="${CSS.escape(el.dataset.bind)}"]`).forEach(other => { if (other !== el) other.textContent = value; });
+      refreshDerived();
+      changed();
+    });
+
+    // After a re-render, put focus back on the equivalent control so keyboard users keep their place.
+    // `data` is the dataset to match; moves follow the item to its new index.
+    const refocus = data => {
+      const sel = Object.entries(data).map(([k, v]) =>
+        `[data-${k.replace(/[A-Z]/g, c => '-' + c.toLowerCase())}="${CSS.escape(String(v))}"]`).join('');
+      const el = desk.querySelector(`button${sel}`);
+      if (el) el.focus();
+    };
+
+    desk.addEventListener('click', e => {
+      const slotImg = e.target.closest('.slot-img');
+      if (slotImg && state.plan) { pickImage(slotImg.closest('.slot').dataset.path); return; }
+      const b = e.target.closest('button');
+      if (!b || !state.plan) return;
+      const d = b.dataset;
+      if (d.list) {
+        const j = Number(d.j), len = (getPath(state.plan, d.list) || []).length;
+        listAction(d.list, d.act, j);
+        const to = d.act === 'up' ? Math.max(0, j - 1) : d.act === 'down' ? Math.min(len - 1, j + 1) : j;
+        if (d.act === 'remove') refocus({ list: d.list, act: 'remove', j: Math.min(j, len - 2) });
+        else if (d.act !== 'add') refocus({ list: d.list, act: d.act, j: to });
+        else refocus({ list: d.list, act: 'add', j: j + 1 });
+      }
+      else if (d.slots) { setSlots(Number(d.sheet), Number(d.slots)); refocus({ sheet: d.sheet, slots: d.slots }); }
+      else if (d.sheetAct === 'up' || d.sheetAct === 'down') {
+        const i = Number(d.sheet), dir = d.sheetAct === 'up' ? -1 : 1;
+        const to = Math.max(0, Math.min(state.plan.sheets.length - 1, i + dir));
+        moveSheet(i, dir);
+        refocus({ sheet: to, sheetAct: d.sheetAct });
+      }
+      else if (d.sheetAct === 'delete') {
+        // Two clicks: the first arms the button, the second deletes.
+        if (d.armed) deleteSheet(Number(d.sheet));
+        else {
+          d.armed = '1'; b.textContent = 'Delete sheet?';
+          b.addEventListener('blur', () => { delete d.armed; b.textContent = '✕'; }, { once: true });
+        }
+      }
+      else if (d.calloutOpen) {
+        const sheet = state.plan.sheets[Number(d.calloutOpen)];
+        sheet.callout = { ...(sheet.callout || {}), kind: d.kind, text: (sheet.callout && sheet.callout.text) || '' };
+        openCallouts.add(sheet);
+        rerender();
+        focusBind(`sheets.${d.calloutOpen}.callout.text`);
+      }
+      else if (d.calloutKind) {
+        const c = state.plan.sheets[Number(d.calloutKind)].callout;
+        c.kind = c.kind === 'caution' ? 'tip' : 'caution';
+        rerender();
+      }
+    });
+    desk.addEventListener('load', e => { if (e.target.tagName === 'IMG') { checkOverflow(); updateStatus(); } }, true);
+    // Web fonts swap in after first paint and change line lengths, so re-check overflow when they land.
+    const recheck = () => { checkOverflow(); updateStatus(); };
+    document.fonts.addEventListener('loadingdone', recheck);
+    document.fonts.ready.then(recheck);
+
+    // The page's one keydown listener.
+    document.addEventListener('keydown', e => {
+      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 's') { e.preventDefault(); save(); return; }
+      if (e.key === 'Escape' && picker) { e.preventDefault(); closePicker(); return; }
+      const target = e.target.closest ? e.target : document.body;
+      const option = target.closest('.picker [role="option"]');
+      if (option && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); choosePicked(option); return; }
+      if (option && (e.key === 'ArrowDown' || e.key === 'ArrowUp')) {
+        e.preventDefault();
+        const next = e.key === 'ArrowDown' ? option.nextElementSibling : option.previousElementSibling;
+        if (next && next.matches('[role="option"]')) next.focus();
+        return;
+      }
+      const slotImg = target.closest('.slot-img');
+      if (slotImg && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); pickImage(slotImg.closest('.slot').dataset.path); return; }
+      const el = target.closest('[data-bind]');
+      if (e.key === 'Enter' && el) {
+        e.preventDefault();
+        // In a list item, Enter starts the next item; anywhere else it just finishes the field.
+        const m = el.dataset.bind.match(/^(.*\.(?:notes|steps|materials|hardware))\.(\d+)$/);
+        if (m) { const j = Number(m[2]); listAction(m[1], 'add', j); focusBind(`${m[1]}.${j + 1}`); }
+        else el.blur();
+      }
+    });
+
+    window.addEventListener('beforeunload', e => { if (state.dirty) e.preventDefault(); });
+
+    // ── Toolbar ──
+    document.querySelectorAll('.seg [data-paper]').forEach(b => b.addEventListener('click', () => setPaper(b.dataset.paper)));
+    document.querySelectorAll('[data-add]').forEach(b => b.addEventListener('click', () => {
+      b.closest('details').open = false;
+      if (!state.plan) { setStatus('Open a plan folder first.'); return; }
+      addSheet(b.dataset.add);
+    }));
+    document.getElementById('btn-print').addEventListener('click', () => window.print());
+    btnSave.addEventListener('click', () => save());
+    document.getElementById('btn-reload').addEventListener('click', () => reloadImages());
+    const btnOpen = document.getElementById('btn-open');
+    if (!window.showDirectoryPicker) {
+      btnOpen.disabled = true;
+      state.notice = "This browser can't open folders. Use Chrome.";
+    }
+    btnOpen.addEventListener('click', async () => {
+      // With unsaved changes the first click only warns; a second click goes ahead.
+      if (state.dirty && !state.prompt) { state.prompt = 'Unsaved changes. Click Open again to discard them.'; updateStatus(); return; }
+      let dir;
+      try { dir = await window.showDirectoryPicker({ mode: 'readwrite' }); }
+      catch (err) { if (err.name !== 'AbortError') setStatus(err.message, 'error'); return; }
+      state.prompt = null;
+      await openFolder(dir);
+    });
+
+    // ── Boot ──
+    let markReady;
+    const ready = new Promise(resolve => { markReady = resolve; });
+
+    window.PlanSheet = {
+      LAYOUTS, newPlan, newSheet, parsePlan, serializePlan, sheetNo, partLetter, numberPlan,
+      getPath, setPath, moveItem, removeItem, insertItem, ready,
+      state, load, render, setPaper, setStatus,
+      addSheet, moveSheet, deleteSheet, setSlots, listAction, checkOverflow,
+      openFolder, save, saveToFolder, reloadImages, pickImage,
+    };
+
+    (async () => {
+      const params = new URLSearchParams(location.search);
+      const planPath = params.get('plan');
+      if (planPath) {
+        const base = planPath.endsWith('/') ? planPath : planPath + '/';
+        try {
+          const res = await fetch(base + 'plan.json', { cache: 'no-store' });
+          if (!res.ok) throw new Error(`${base}plan.json: HTTP ${res.status}`);
+          const parsed = parsePlan(await res.text());
+          if (!parsed.ok) throw new Error(parsed.error);
+          await load(parsed.plan, { mode: 'http', base });
+          // &paper=a4 shows (and prints) the viewed plan at another size without changing it.
+          if (params.get('paper')) { applyPaper(params.get('paper')); checkOverflow(); updateStatus(); }
+        } catch (err) { render(); setStatus(err.message, 'error'); }
+      } else render();
+      markReady();
+    })();
+  }
+  </script>
+</body>
+</html>

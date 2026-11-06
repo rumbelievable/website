@@ -1,0 +1,326 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex">
+  <title>RUNNING</title>
+  <!-- Tests for plan-sheet.html. Run headless (see docs/superpowers/plans/2026-11-02-plan-sheet.md)
+       or open in Chrome via `make preview`. ?only=<text> runs the tests whose name contains it. -->
+  <style>
+    body { margin: 16px; font: 13px/1.5 ui-monospace, Menlo, monospace; }
+    .pass { color: #2c6e3f; } .fail { color: #a3262a; }
+    iframe { position: absolute; left: 0; top: 0; width: 1400px; height: 1000px; border: 0; visibility: hidden; }
+  </style>
+</head>
+<body>
+  <pre id="results"></pre>
+  <script>
+  {
+    const tests = [];
+    const test = (name, fn) => tests.push({ name, fn });
+    const eq = (actual, expected, msg = '') => {
+      const a = JSON.stringify(actual), e = JSON.stringify(expected);
+      if (a !== e) throw new Error(`${msg ? msg + ': ' : ''}expected ${e}, got ${a}`);
+    };
+    const ok = (cond, msg = 'expected truthy') => { if (!cond) throw new Error(msg); };
+
+    let frame = null;
+    const load = query => new Promise((resolve, reject) => {
+      if (frame) frame.remove();
+      frame = document.createElement('iframe');
+      const timer = setTimeout(() => reject(new Error('plan-sheet.html did not become ready')), 8000);
+      frame.addEventListener('load', async () => {
+        try {
+          const win = frame.contentWindow;
+          if (!win.PlanSheet) throw new Error('window.PlanSheet missing');
+          await win.PlanSheet.ready;
+          clearTimeout(timer);
+          resolve({ win, doc: win.document, PS: win.PlanSheet });
+        } catch (err) { clearTimeout(timer); reject(err); }
+      });
+      frame.src = 'plan-sheet.html' + query;
+      document.body.append(frame);
+    });
+
+    // ── Task 1: plan model ──
+    test('model: sheet numbers', async () => { const {PS} = await load('');
+      eq([0, 8, 99].map(PS.sheetNo), ['S-01', 'S-09', 'S-100']); });
+    test('model: part letters past Z', async () => { const {PS} = await load('');
+      eq([0, 25, 26, 27, 51, 52].map(PS.partLetter), ['A', 'Z', 'AA', 'AB', 'AZ', 'BA']); });
+    test('model: numbering across cut lists and steps', async () => { const {PS} = await load('');
+      const p = PS.newPlan(); p.sheets = ['cover', 'cutlist', 'step', 'cutlist', 'step'].map(PS.newSheet);
+      p.sheets[1].parts = [{}, {}, {}];
+      const n = PS.numberPlan(p);
+      eq(n.map(s => s.sheetNo), ['S-01', 'S-02', 'S-03', 'S-04', 'S-05']);
+      eq(n.map(s => s.total), [5, 5, 5, 5, 5]);
+      eq(n.map(s => s.firstPart), [null, 0, null, 3, null]);
+      eq(n.map(s => s.stepNo), [null, null, 1, null, 2]); });
+    test('model: empty plan', async () => { const {PS} = await load('');
+      const p = PS.newPlan(); p.sheets = [];
+      eq(PS.numberPlan(p), []);
+      ok(PS.serializePlan(p).includes('"sheets": []')); });
+    test('model: parse errors', async () => { const {PS} = await load('');
+      eq(PS.parsePlan('{\n"version": 1,\n}').error.startsWith('plan.json line 3'), true);
+      eq(PS.parsePlan('{"version": 2, "sheets": []}').error, 'plan.json is version 2; this editor reads version 1');
+      eq(PS.parsePlan('{"version": 1}').error, 'plan.json has no sheets list'); });
+    test('model: unknown keys survive', async () => { const {PS} = await load('');
+      const text = '{"version":1,"plan":{"no":"P-1","x":1},"sheets":[{"layout":"cover","y":[2]}],"z":true}';
+      eq(JSON.parse(PS.serializePlan(PS.parsePlan(text).plan)), JSON.parse(text)); });
+    test('model: paths and list ops', async () => { const {PS} = await load('');
+      const o = { sheets: [{ parts: [{ qty: '1' }] }] };
+      PS.setPath(o, 'sheets.0.parts.0.qty', '4'); eq(PS.getPath(o, 'sheets.0.parts.0.qty'), '4');
+      const a = [1, 2, 3]; PS.moveItem(a, 0, -1); eq(a, [1, 2, 3]); PS.moveItem(a, 0, 1); eq(a, [2, 1, 3]);
+      PS.removeItem(a, 1); eq(a, [2, 3]); PS.insertItem(a, 1, 9); eq(a, [2, 9, 3]); });
+
+    // ── Task 2: frame, title block, cover and drawing ──
+    const SAMPLE = '?plan=plan-sample/p-003-floating-night-stands/';
+    test('render: sample sheets and title blocks', async () => { const {doc} = await load(SAMPLE);
+      const pages = [...doc.querySelectorAll('.sheet-page')];
+      eq(pages.length, 6);
+      eq(pages.map(p => p.querySelector('.tb-sheet').textContent), ['01 / 06', '02 / 06', '03 / 06', '04 / 06', '05 / 06', '06 / 06']);
+      eq(pages[0].querySelector('.tb-no').textContent, 'P-003'); });
+    test('render: cover index lists every sheet', async () => { const {doc, PS} = await load(SAMPLE);
+      eq([...doc.querySelectorAll('.sheet-index li')].map(li => li.textContent),
+         PS.state.plan.sheets.map((s, i) => `${PS.sheetNo(i)} · ${s.title}`)); });
+    test('render: drawing slots', async () => { const {doc} = await load(SAMPLE);
+      eq(doc.querySelectorAll('[data-i="1"] .slot').length, 2);
+      eq(doc.querySelectorAll('[data-i="2"] .slot').length, 4); });
+    test('render: missing image placeholder', async () => { const {doc, PS} = await load(SAMPLE);
+      PS.state.plan.sheets[1].views[0].src = 'views/nope.png';
+      await PS.load(PS.state.plan, { mode: 'http', base: PS.state.base });
+      eq(doc.querySelector('[data-i="1"] .slot-missing').textContent, 'views/nope.png not found'); });
+    test('render: paper sizes', async () => { const {doc, PS} = await load(SAMPLE);
+      const r = () => doc.querySelector('.sheet-page').getBoundingClientRect();
+      eq([Math.round(r().width), Math.round(r().height)], [1056, 816]);
+      PS.setPaper('a4'); eq([Math.round(r().width), Math.round(r().height)], [1123, 794]);
+      ok(doc.getElementById('page-size').textContent.includes('A4 landscape')); });
+
+    test('render: paper query', async () => { const {doc, PS} = await load(SAMPLE + '&paper=a4');
+      eq(doc.body.dataset.paper, 'a4');
+      ok(doc.getElementById('page-size').textContent.includes('A4 landscape'));
+      eq(PS.state.dirty, false); });
+
+    // ── Task 3: cut list and build step ──
+    test('cutlist: letters continue across sheets', async () => { const {doc} = await load(SAMPLE);
+      const letters = i => [...doc.querySelectorAll(`[data-i="${i}"] .part-letter`)].map(td => td.textContent);
+      eq(letters(3), ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H']); eq(letters(4), ['I', 'J']); });
+    test('step: number, parts and callout', async () => { const {doc, PS} = await load(SAMPLE);
+      const s = doc.querySelector('[data-i="5"]');
+      eq(s.querySelector('.step-no').textContent, 'STEP 01');
+      eq(s.querySelector('.step-parts').textContent, 'Parts: D, E, F');
+      eq(s.querySelector('.callout').dataset.kind, 'tip');
+      eq(s.querySelectorAll('.steps li').length, 4);
+      PS.state.plan.sheets[5].callout.text = ''; PS.render();
+      const c = doc.querySelector('[data-i="5"] .callout');
+      ok(c === null || c.hidden, 'empty callout should be hidden'); });
+
+    // ── Task 4: editing ──
+    const input = (el, text) => { el.textContent = text; el.dispatchEvent(new Event('input', { bubbles: true })); };
+    test('edit: typing updates model and every bound copy', async () => { const {doc, PS} = await load(SAMPLE);
+      const el = doc.querySelector('[data-i="1"] [data-bind="plan.name"]');
+      el.focus(); input(el, 'Night Stand');
+      eq(PS.state.plan.plan.name, 'Night Stand');
+      eq([...doc.querySelectorAll('[data-bind="plan.name"]')].every(e => e.textContent === 'Night Stand'), true);
+      eq(PS.state.dirty, true); });
+    test('edit: notes and lists render as items', async () => { const {doc} = await load(SAMPLE);
+      eq(doc.querySelectorAll('[data-i="0"] .notes li').length, 4);
+      eq(doc.querySelectorAll('[data-i="1"] .sheet-foot .notes li').length, 2);
+      eq(doc.querySelectorAll('[data-i="3"] .plain-list li').length, 6);
+      ok(!doc.getElementById('desk').textContent.includes('[object'), 'no stringified elements'); });
+    test('edit: sheet title updates the cover index', async () => { const {doc} = await load(SAMPLE);
+      input(doc.querySelector('[data-i="2"] [data-bind="sheets.2.title"]'), 'All views');
+      eq(doc.querySelector('.sheet-index li:nth-child(3)').textContent, 'S-03 · All views'); });
+    test('edit: pasted text round-trips', async () => { const {doc, PS} = await load(SAMPLE);
+      const el = doc.querySelector('[data-bind="sheets.3.parts.0.notes"]');
+      input(el, '3/4" × 10 — ¾ "quoted"');
+      eq(PS.parsePlan(PS.serializePlan(PS.state.plan)).plan.sheets[3].parts[0].notes, '3/4" × 10 — ¾ "quoted"');
+      eq(el.getAttribute('contenteditable'), 'plaintext-only'); });
+    test('edit: pasted line breaks flatten in single-line fields', async () => { const {doc, PS} = await load(SAMPLE);
+      input(doc.querySelector('[data-i="1"] [data-bind="sheets.1.title"]'), 'Front\nelevation');
+      eq(PS.state.plan.sheets[1].title, 'Front elevation'); });
+    test('edit: Enter in a title does not add a newline', async () => { const {doc, win} = await load(SAMPLE);
+      const el = doc.querySelector('[data-bind="sheets.1.title"]'); el.focus();
+      const ev = new win.KeyboardEvent('keydown', { key: 'Enter', bubbles: true, cancelable: true });
+      el.dispatchEvent(ev); eq(ev.defaultPrevented, true); });
+    test('edit: Enter in a step adds the next step', async () => { const {doc, win, PS} = await load(SAMPLE);
+      const el = doc.querySelector('[data-bind="sheets.5.steps.1"]'); el.focus();
+      el.dispatchEvent(new win.KeyboardEvent('keydown', { key: 'Enter', bubbles: true, cancelable: true }));
+      eq(PS.state.plan.sheets[5].steps.length, 5); eq(PS.state.plan.sheets[5].steps[2], '');
+      eq(doc.activeElement.dataset.bind, 'sheets.5.steps.2'); });
+    test('edit: add, move and delete sheets renumber', async () => { const {doc, PS} = await load(SAMPLE);
+      PS.addSheet('drawing'); eq(doc.querySelectorAll('.sheet-page').length, 7);
+      eq(doc.querySelector('[data-i="6"] .tb-sheet').textContent, '07 / 07');
+      PS.moveSheet(6, -1); eq(PS.state.plan.sheets[5].layout, 'drawing');
+      eq(doc.querySelector('.sheet-index li:nth-child(6)').textContent, 'S-06 · Drawing');
+      PS.deleteSheet(5); eq(doc.querySelector('[data-i="0"] .tb-sheet').textContent, '01 / 06'); });
+    test('edit: slot switch keeps views', async () => { const {doc, PS} = await load(SAMPLE);
+      PS.setSlots(2, 1); eq(doc.querySelectorAll('[data-i="2"] .slot').length, 1);
+      eq(PS.state.plan.sheets[2].views.length, 4); PS.setSlots(2, 4);
+      eq(doc.querySelectorAll('[data-i="2"] .slot').length, 4); });
+    test('edit: list actions and part letters', async () => { const {doc, PS} = await load(SAMPLE);
+      PS.listAction('sheets.3.parts', 'remove', 0);
+      eq(doc.querySelector('[data-i="3"] .part-letter').textContent, 'A');
+      eq(doc.querySelector('[data-i="4"] .part-letter').textContent, 'H'); });
+    test('edit: delete last sheet', async () => { const {doc, PS} = await load(SAMPLE);
+      while (PS.state.plan.sheets.length) PS.deleteSheet(0);
+      ok(doc.querySelector('.desk-empty')); ok(PS.serializePlan(PS.state.plan).includes('"sheets": []')); });
+    test('edit: overflow warning', async () => { const {doc, PS} = await load(SAMPLE);
+      for (let i = 0; i < 30; i++) PS.listAction('sheets.4.parts', 'add', 0);
+      eq(PS.checkOverflow(), [4]);
+      ok(doc.querySelector('.status').textContent.includes('Sheet S-05: content runs past the sheet'));
+      ok(doc.querySelector('[data-i="4"]').classList.contains('is-overflowing')); });
+    test('edit: A4 switch re-checks overflow', async () => { const {PS} = await load(SAMPLE);
+      // Fill sheet 5 (index 4) with rows until it overflows, back off one, then top up with
+      // material lines, which are shorter than A4's 0.23in shortfall, until it just fits Letter.
+      let n = 0; while (PS.checkOverflow().length === 0 && n < 60) { PS.listAction('sheets.4.parts', 'add', 0); n++; }
+      PS.listAction('sheets.4.parts', 'remove', 0);
+      n = 0; while (PS.checkOverflow().length === 0 && n < 20) { PS.listAction('sheets.4.materials', 'add', 0); n++; }
+      PS.listAction('sheets.4.materials', 'remove', 0); eq(PS.checkOverflow(), []);
+      PS.setPaper('a4'); eq(PS.checkOverflow(), [4]); });
+
+    // ── Task 5: plan folders ──
+    // A stand-in for a FileSystemDirectoryHandle backed by a plain object: { 'plan.json': text,
+    // 'views/front.png': Blob }. Writes land back in `files`. Set handle.failWrites to make them fail.
+    const fakeDir = (files, name = 'p-test') => {
+      const dirs = new Set();
+      let root;
+      const notFound = () => new DOMException('A requested file or directory could not be found.', 'NotFoundError');
+      const fileHandle = (key, fname) => ({
+        kind: 'file', name: fname,
+        async getFile() {
+          const v = files[key];
+          return v instanceof Blob ? new File([v], fname, { type: v.type }) : new File([v], fname, { type: 'text/plain' });
+        },
+        async createWritable() {
+          if (root.failWrites) throw new DOMException('The request is not allowed.', 'NotAllowedError');
+          const parts = [];
+          return {
+            async write(d) { parts.push(d); },
+            async close() { files[key] = parts.every(p => typeof p === 'string') ? parts.join('') : new Blob(parts); },
+          };
+        },
+      });
+      const dirHandle = (prefix, dname) => ({
+        kind: 'directory', name: dname,
+        async queryPermission() { return 'granted'; },
+        async requestPermission() { return 'granted'; },
+        async getFileHandle(n, { create = false } = {}) {
+          const key = prefix + n;
+          if (!(key in files)) { if (!create) throw notFound(); files[key] = ''; }
+          return fileHandle(key, n);
+        },
+        async getDirectoryHandle(n, { create = false } = {}) {
+          const p = prefix + n + '/';
+          if (!dirs.has(p) && !Object.keys(files).some(k => k.startsWith(p))) { if (!create) throw notFound(); dirs.add(p); }
+          return dirHandle(p, n);
+        },
+        async *values() {
+          const seen = new Set();
+          for (const k of [...Object.keys(files), ...dirs]) {
+            if (!k.startsWith(prefix)) continue;
+            const rest = k.slice(prefix.length), slash = rest.indexOf('/');
+            if (slash === -1) { if (rest) yield fileHandle(k, rest); }
+            else { const d = rest.slice(0, slash); if (!seen.has(d)) { seen.add(d); yield dirHandle(prefix + d + '/', d); } }
+          }
+        },
+      });
+      root = dirHandle('', name);
+      root.failWrites = false;
+      return root;
+    };
+    const planText = async () => (await fetch('plan-sample/p-003-floating-night-stands/plan.json')).text();
+    const statusText = doc => doc.querySelector('.status').textContent;
+
+    test('folder: open and save round-trip', async () => { const {PS} = await load('');
+      const files = { 'plan.json': await planText(), 'views/front.svg': new Blob(['<svg xmlns="http://www.w3.org/2000/svg"/>'], { type: 'image/svg+xml' }) };
+      await PS.openFolder(fakeDir(files));
+      eq(PS.state.mode, 'folder'); ok(PS.state.images.get('views/front.svg'), 'front.svg resolves');
+      PS.state.plan.plan.rev = 'B'; PS.state.dirty = true;
+      eq(await PS.save(), true); eq(JSON.parse(files['plan.json']).plan.rev, 'B'); eq(PS.state.dirty, false); });
+    test('folder: missing plan.json starts a new plan', async () => { const {doc, PS} = await load('');
+      const files = {}; await PS.openFolder(fakeDir(files));
+      eq(PS.state.plan.sheets.map(s => s.layout), ['cover']);
+      ok(statusText(doc).includes('New plan'), statusText(doc));
+      await PS.save(); ok('plan.json' in files); });
+    test('folder: invalid plan.json is never overwritten', async () => { const {doc, PS} = await load('');
+      const files = { 'plan.json': '{"version": 1,,}' }; await PS.openFolder(fakeDir(files));
+      ok(statusText(doc).startsWith('plan.json line 1'), statusText(doc));
+      eq(await PS.save(), false); eq(files['plan.json'], '{"version": 1,,}'); });
+    test('folder: odd filenames', async () => { const {doc, PS} = await load('');
+      const files = { 'plan.json': await planText(), 'views/Front View.PNG': new Blob(['x']), 'views/notes.txt': 'x' };
+      await PS.openFolder(fakeDir(files)); await PS.pickImage('sheets.1.views.0');
+      const opts = [...doc.querySelectorAll('.picker [role="option"]')].map(o => o.textContent);
+      ok(opts.includes('Front View.PNG'), JSON.stringify(opts)); ok(!opts.includes('notes.txt'));
+      doc.querySelector('.picker [role="option"]').click();
+      eq(PS.state.plan.sheets[1].views[0].src, 'views/Front View.PNG'); });
+    test('folder: save failure keeps changes', async () => { const {doc, PS} = await load('');
+      const files = { 'plan.json': await planText() }; const dir = fakeDir(files);
+      await PS.openFolder(dir); PS.state.dirty = true; dir.failWrites = true;
+      eq(await PS.save(), false); eq(PS.state.dirty, true);
+      ok(statusText(doc).startsWith("Couldn't save"), statusText(doc)); });
+    test('folder: missing image count', async () => { const {doc, PS} = await load('');
+      await PS.openFolder(fakeDir({ 'plan.json': await planText() }));
+      ok(/\d+ images missing/.test(statusText(doc)), statusText(doc)); });
+    test('folder: save to folder copies the viewed plan and its images', async () => { const {PS} = await load(SAMPLE);
+      const files = {}; eq(await PS.saveToFolder(fakeDir(files)), true);
+      eq(JSON.parse(files['plan.json']).plan.no, 'P-003');
+      ok(files['views/front.svg'] instanceof Blob, 'front.svg copied');
+      eq(PS.state.mode, 'folder'); });
+
+    // ── Final review fixes ──
+    test('fix: save to folder asks before overwriting a plan', async () => { const {doc, PS} = await load(SAMPLE);
+      const files = { 'plan.json': '{"version":1,"plan":{"no":"P-009"},"sheets":[]}' }; const dir = fakeDir(files);
+      eq(await PS.saveToFolder(dir), false);
+      eq(JSON.parse(files['plan.json']).plan.no, 'P-009');
+      ok(statusText(doc).includes('already has a plan'), statusText(doc));
+      eq(await PS.saveToFolder(dir), true);
+      eq(JSON.parse(files['plan.json']).plan.no, 'P-003'); });
+    test('fix: plan without a plan block or cover image can be edited', async () => { const {doc, PS} = await load('');
+      await PS.openFolder(fakeDir({ 'plan.json': '{"version":1,"sheets":[{"layout":"cover"}]}' }));
+      input(doc.querySelector('[data-bind="plan.name"]'), 'Bench');
+      eq(PS.state.plan.plan.name, 'Bench');
+      input(doc.querySelector('[data-bind="sheets.0.image.caption"]'), 'As built');
+      eq(PS.state.plan.sheets[0].image.caption, 'As built');
+      PS.setPaper('a4'); eq(PS.state.plan.plan.paper, 'a4'); });
+    test('fix: focus follows a moved item', async () => { const {doc} = await load(SAMPLE);
+      doc.querySelector('[data-list="sheets.3.parts"][data-act="down"][data-j="0"]').click();
+      const a = doc.activeElement;
+      eq([a.dataset.list, a.dataset.act, a.dataset.j], ['sheets.3.parts', 'down', '1']); });
+    test('fix: focus stays on a sheet button after moving the sheet', async () => { const {doc} = await load(SAMPLE);
+      doc.querySelector('[data-sheet="2"][data-sheet-act="up"]').click();
+      const a = doc.activeElement;
+      eq([a.dataset.sheet, a.dataset.sheetAct], ['1', 'up']); });
+    test('fix: overflow re-checked when fonts finish loading', async () => { const {doc, win, PS} = await load(SAMPLE);
+      const parts = PS.state.plan.sheets[4].parts;
+      for (let i = 0; i < 40; i++) parts.push({ name: 'x', qty: '1', t: '', w: '', l: '', material: '', notes: '' });
+      // Grow the table without going through an edit, as a late font swap would.
+      const tbody = doc.querySelector('[data-i="4"] tbody');
+      for (let i = 0; i < 40; i++) tbody.append(tbody.rows[0].cloneNode(true));
+      win.document.fonts.dispatchEvent(new win.Event('loadingdone'));
+      ok(doc.querySelector('[data-i="4"]').classList.contains('is-overflowing')); });
+    test('fix: nothing on a sheet below 8pt except zone labels', async () => { const {doc, win} = await load(SAMPLE);
+      const small = [...doc.querySelectorAll('.sheet-page *')].filter(el =>
+        !el.closest('.sheet-zones, .item-controls, .list-add, .callout-tools') && [...el.childNodes].some(n => n.nodeType === 3 && n.textContent.trim())
+        && parseFloat(win.getComputedStyle(el).fontSize) < 10.66);
+      eq(small.map(el => el.className || el.tagName).slice(0, 5), []); });
+
+    // ── Runner ──
+    (async () => {
+      const only = new URLSearchParams(location.search).get('only');
+      const out = document.getElementById('results');
+      let pass = 0, fail = 0;
+      for (const t of tests) {
+        if (only && !t.name.includes(only)) continue;
+        const line = document.createElement('div');
+        try { await t.fn(); pass++; line.className = 'pass'; line.textContent = `PASS  ${t.name}`; }
+        catch (err) { fail++; line.className = 'fail'; line.textContent = `FAIL  ${t.name}: ${err.message}`; }
+        out.append(line);
+      }
+      if (frame) frame.remove();
+      document.title = fail ? `FAIL ${fail} / ${pass + fail}` : `PASS ${pass}`;
+    })();
+  }
+  </script>
+</body>
+</html>

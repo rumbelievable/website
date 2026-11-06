@@ -1,0 +1,106 @@
+{
+  "version": 1,
+  "plan": {
+    "no": "P-003",
+    "name": "Floating Night Stands",
+    "drawn": "A.R.",
+    "units": "Inches",
+    "rev": "A",
+    "date": "2026-11-02",
+    "built": "No. 003, 2025",
+    "paper": "letter"
+  },
+  "sheets": [
+    {
+      "layout": "cover",
+      "title": "Cover",
+      "scale": "Not to scale",
+      "image": { "src": "views/iso.svg", "caption": "Case, isometric" },
+      "notes": [
+        "Sample plan. Dimensions, parts and hardware are placeholders, not measured from the real piece.",
+        "Dimensions in inches.",
+        "Case is 3/4\" white oak, mitered at all four corners.",
+        "Find the studs first. Lath and plaster gets its own sheet."
+      ]
+    },
+    {
+      "layout": "drawing",
+      "title": "Front elevation and section A–A",
+      "scale": "1:4",
+      "slots": 2,
+      "views": [
+        { "src": "views/front.svg", "caption": "Front elevation" },
+        { "src": "views/section-a-a.svg", "caption": "Section A–A" }
+      ],
+      "notes": [
+        "Check your slides' clearance before cutting the drawer box.",
+        "The cleat bevel is 45°; cut both halves from one board."
+      ]
+    },
+    {
+      "layout": "drawing",
+      "title": "Views",
+      "scale": "Not to scale",
+      "slots": 4,
+      "views": [
+        { "src": "views/front.svg", "caption": "Front" },
+        { "src": "views/section-a-a.svg", "caption": "Section A–A" },
+        { "src": "views/iso.svg", "caption": "Iso" },
+        { "src": "views/exploded.svg", "caption": "Exploded" }
+      ],
+      "notes": []
+    },
+    {
+      "layout": "cutlist",
+      "title": "Cut list, for a pair",
+      "scale": "",
+      "parts": [
+        { "name": "Top", "qty": "2", "t": "¾", "w": "10", "l": "20", "material": "White oak", "notes": "Miter both ends" },
+        { "name": "Bottom", "qty": "2", "t": "¾", "w": "10", "l": "20", "material": "White oak", "notes": "Miter both ends" },
+        { "name": "Side", "qty": "4", "t": "¾", "w": "10", "l": "7", "material": "White oak", "notes": "Miter both ends" },
+        { "name": "Drawer front", "qty": "2", "t": "¾", "w": "5⅜", "l": "18⅜", "material": "Walnut", "notes": "Grain runs across the pair" },
+        { "name": "Drawer side", "qty": "4", "t": "½", "w": "4½", "l": "9", "material": "White oak", "notes": "" },
+        { "name": "Drawer front/back", "qty": "4", "t": "½", "w": "4½", "l": "16½", "material": "White oak", "notes": "" },
+        { "name": "Drawer bottom", "qty": "2", "t": "½", "w": "8½", "l": "16½", "material": "Baltic birch", "notes": "" },
+        { "name": "French cleat", "qty": "4", "t": "¾", "w": "3", "l": "18", "material": "White oak", "notes": "45° rip, one board per pair" }
+      ],
+      "materials": [
+        "White oak, 4/4, about 12 bd ft",
+        "Walnut, 4/4, about 2 bd ft",
+        "Baltic birch, ½\", one 2 × 4 ft panel"
+      ],
+      "hardware": [
+        "18\" undermount slides, one pair per drawer",
+        "Brass bar pull, 3\" centres, one per drawer",
+        "#10 × 3\" screws for the wall cleat, 4 per stand"
+      ]
+    },
+    {
+      "layout": "cutlist",
+      "title": "Cut list, extras",
+      "scale": "",
+      "parts": [
+        { "name": "Drawer pull block", "qty": "2", "t": "¾", "w": "1", "l": "4", "material": "Walnut", "notes": "Backer for the pull screws" },
+        { "name": "Cleat shim", "qty": "2", "t": "¼", "w": "3", "l": "18", "material": "White oak", "notes": "Only if the wall is out of plumb" }
+      ],
+      "materials": [],
+      "hardware": []
+    },
+    {
+      "layout": "step",
+      "title": "Fitting the undermount slides",
+      "scale": "Not to scale",
+      "images": [
+        { "src": "views/section-a-a.svg", "caption": "Slide position, section A–A" }
+      ],
+      "steps": [
+        "Mark a line 1/8\" up from the case bottom.",
+        "Set each slide to the line, flush with the front edge.",
+        "Drill the rear sockets with the template.",
+        "Clip the drawer on and check the reveal."
+      ],
+      "parts": "D, E, F",
+      "callout": { "kind": "tip", "text": "Set the slides before gluing the back cleat; you need your hand inside the case." }
+    }
+  ]
+}
