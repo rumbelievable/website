@@ -131,8 +131,10 @@ class GeneratorTest(unittest.TestCase):
         before = int(self.counts("woodworking.html")[0])
         np.generate(PROJECT, self.root)
         text = self.read("woodworking.html")
-        first = re.search(r'<a href="\./pages/woodworking/([\w-]+)\.html" class="project-card">', text)
+        grid = text[text.index(np.GRID_MARKER):]
+        first = re.search(r'<a href="\./pages/woodworking/([\w-]+)\.html" class="project-card">', grid)
         self.assertEqual(first.group(1), "test-bench")
+        self.assertIn('<h3 class="project-card-name">Test Bench</h3>', grid)
         self.assertIn('<span class="mill-tag">White Oak</span><span class="mill-tag">Walnut</span>', text)
         self.assertIn('<p class="project-card-finish">Danish Oil · 2026</p>', text)
         self.assertEqual(self.counts("woodworking.html"), [str(before + 1)])
@@ -160,6 +162,16 @@ class GeneratorTest(unittest.TestCase):
         self.assertEqual(self.counts("index.html"), [str(int(self.prev[0]) + 1)])
         prev_page = self.read(f"pages/woodworking/{self.prev[1]}.html")
         self.assertIn("014 Test Bench II", prev_page)
+
+    def test_regenerating_a_selected_card_keeps_it_in_selected_work(self):
+        href = 'href="./pages/woodworking/coffee-table.html"'
+        before = self.read("woodworking.html")
+        order = re.findall(r'woodworking/([\w-]+)\.html" class="project-card">', before)
+        out = np.patch_woodworking(before, dict(PROJECT, slug="coffee-table", title="Coffee Table II"), 13)
+        self.assertEqual(out.count(href), 1)
+        self.assertLess(out.index(href), out.index(np.GRID_MARKER))
+        self.assertIn("Coffee Table II", out[:out.index(np.GRID_MARKER)])
+        self.assertEqual(re.findall(r'woodworking/([\w-]+)\.html" class="project-card">', out), order)
 
     # ── Nothing written when a marker is missing ──
 
