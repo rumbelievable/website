@@ -363,7 +363,7 @@ a {
   font-size: 1.25rem;
   line-height: 1.5;
   color: var(--ink-2);
-  max-width: 46ch;
+  text-wrap: pretty;
 }
 
 .back-link,
@@ -1032,10 +1032,14 @@ a {
 }
 
 .project-title {
+  container-type: inline-size;
   display: flex;
   flex-direction: column;
   gap: 0.9rem;
 }
+
+/* Sized from the column so the longest word (HOUSEWARMING) always fits. */
+.project-title h1 { font-size: min(9cqi, 5.5rem); }
 
 .project-narrative {
   display: flex;
@@ -1340,7 +1344,7 @@ a {
   gap: 1rem;
 }
 
-.contact-intro p { max-width: 46ch; }
+.contact-intro p { text-wrap: pretty; }
 .contact-divider { display: none; }
 
 .contact-types {
