@@ -460,7 +460,7 @@ def card_html(d):
         f'          <img src="{d["card_img"]}" alt="{d["title"]}" loading="lazy">\n'
         f'        </figure>\n'
         f'        <p class="project-card-no">No. {d["no"]}</p>\n'
-        f'        <h2 class="project-card-name">{d["title"]}</h2>\n'
+        f'        <h3 class="project-card-name">{d["title"]}</h3>\n'
         f'        <p class="project-card-meta">{tags}</p>\n'
         f'        <p class="project-card-finish">{finish}</p>\n'
         f'        <span class="project-card-cta">View project '
@@ -515,8 +515,13 @@ def patch_woodworking(text, d, count):
     # Regenerating an existing slug replaces its card rather than adding a second one.
     old = re.compile(r'\n\n      <a href="\./pages/woodworking/' + re.escape(d["slug"])
                      + r'\.html" class="project-card">.*?\n      </a>', re.S)
-    text = old.sub("", text)
-    text = text.replace(GRID_MARKER, GRID_MARKER + card_html(d), 1)
+    found = old.search(text)
+    if found and found.start() < text.index(GRID_MARKER):
+        # A card above the grid is in Selected Work: refresh it where it sits.
+        text = text[:found.start()] + card_html(d) + text[found.end():]
+    else:
+        text = old.sub("", text)
+        text = text.replace(GRID_MARKER, GRID_MARKER + card_html(d), 1)
     return set_count(text, count, "woodworking.html")
 
 
