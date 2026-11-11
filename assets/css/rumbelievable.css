@@ -663,6 +663,16 @@ a {
   text-wrap: balance;
 }
 
+.intro-oops {
+  display: block;
+  margin-top: 0.5em;
+  font-size: 0.6em;
+  font-weight: 400;
+  font-stretch: 100%;
+  font-style: italic;
+  text-transform: none;
+}
+
 .intro-aside {
   display: flex;
   flex-direction: column;
