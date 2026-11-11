@@ -663,6 +663,16 @@ a {
   text-wrap: balance;
 }
 
+.intro-oops {
+  display: block;
+  margin-top: 0.5em;
+  font-size: 0.6em;
+  font-weight: 400;
+  font-stretch: 100%;
+  font-style: italic;
+  text-transform: none;
+}
+
 .intro-aside {
   display: flex;
   flex-direction: column;
@@ -1070,10 +1080,10 @@ a {
 .project-narrative h2 + .narrative-section { margin-top: -1.25rem; }
 
 .narrative-section {
-  max-width: 65ch;
   display: flex;
   flex-direction: column;
   gap: 1rem;
+  text-wrap: pretty;
 }
 
 .narrative-section .narrative-label { margin-bottom: 0; }
